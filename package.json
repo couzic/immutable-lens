@@ -1,0 +1,42 @@
+{
+  "name": "immutable-lens",
+  "version": "0.0.1",
+  "description": "Type-safe Lens API for immutable updates in complex data structures",
+  "keywords": [
+    "lens",
+    "typescript",
+    "immutable",
+    "update"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/couzic/immutable-lens.git"
+  },
+  "homepage": "https://github.com/couzic/immutable-lens#readme",
+  "bugs": {
+    "url": "https://github.com/couzic/immutable-lens/issues"
+  },
+  "author": {
+    "name": "Mikael Couzic",
+    "email": "mikaelcouzic@gmail.com",
+    "url": "https://github.com/couzic"
+  },
+  "scripts": {
+    "prebuild": "shx rm -rf ./lib",
+    "build": "tsc",
+    "type-test": "node test/testCompilationErrors.js",
+    "test": "mocha --opts mocha.opts",
+    "tdd": "mocha --opts mocha.opts --watch"
+  },
+  "files": [
+    "lib"
+  ],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "devDependencies": {
+    "chalk": "^2.0.1",
+    "shx": "^0.2.2",
+    "typescript": "^2.4.1"
+  }
+}
