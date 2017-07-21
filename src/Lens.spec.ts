@@ -20,11 +20,228 @@ const source = {
 }
 
 const lens = createLens<Source>()
+const counterLens = lens.focusOn('counter')
+const todoLens = lens.focusOn('todo')
+// const todoListLens = todoLens.focusOn('list')
 
-describe('Lens', () => {
+describe('Unfocused Lens', () => {
 
-   it('can read', () => {
+   it('can read source', () => {
       const result = lens.read(source)
+      expect(result).to.equal(source)
+      expect(result).to.deep.equal(source)
+   })
+
+   it('can set new value', () => {
+      const newValue = {
+         ...source,
+         counter: 24
+      }
+      const result = lens.setValue(source, newValue)
+      expect(result).to.not.equal(source)
+      expect(result).to.deep.equal(newValue)
+   })
+
+   it('can update value', () => {
+      const result = lens.update(source, current => ({
+         ...current,
+         counter: 24
+      }))
+      expect(result).to.not.equal(source)
+      expect(result).to.deep.equal({
+         ...source,
+         counter: 24
+      })
+   })
+
+   it('can update fields with new values', () => {
+      const result = lens.updateFields(source, {
+         counter: 24,
+         todo: {
+            ...source.todo,
+            input: 'new input value'
+         }
+      })
+      expect(result).to.not.equal(source)
+      expect(result).to.deep.equal({
+         counter: 24,
+         todo: {
+            ...source.todo,
+            input: 'new input value'
+         }
+      })
+   })
+
+   it('can update fields with updater', () => {
+      const result = lens.updateFields(source, {
+         counter: (v) => v + 1,
+         todo: (v) => v
+      })
+      expect(result).to.not.equal(source)
+      expect(result).to.deep.equal({
+         ...source,
+         counter: source.counter + 1
+      })
+   })
+
+   it('returns same source reference if no fields', () => {
+      const result = lens.updateFields(source, {})
+      expect(result).to.equal(source)
+      expect(result).to.deep.equal(source)
+   })
+
+   it('returns same source reference if field values are equal to source', () => {
+      const result = lens.updateFields(source, {
+         counter: source.counter
+      })
+      expect(result).to.equal(source)
+      expect(result).to.deep.equal(source)
+   })
+
+   it('returns same source reference if updaters do not change values', () => {
+      const result = lens.updateFields(source, {
+         counter: v => v
+      })
+      expect(result).to.equal(source)
+      expect(result).to.deep.equal(source)
+   })
+
+   it('throws error when passing function as fields object', () => {
+      expect(() => lens.updateFields(source, () => '')).to.throw()
+   })
+
+})
+
+describe('Primitive-focused Lens', () => {
+
+   it('can read value', () => {
+      const result = counterLens.read(source)
+      expect(result).to.equal(source.counter)
+   })
+
+   it('can set new value', () => {
+      const result = counterLens.setValue(source, 24)
+      expect(result).to.not.equal(source)
+      expect(result).to.deep.equal({
+         ...source,
+         counter: 24
+      })
+   })
+
+   it('returns same source reference when setting same value', () => {
+      const result = counterLens.setValue(source, source.counter)
+      expect(result).to.equal(source)
+      expect(result).to.deep.equal(source)
+   })
+
+   it('can update value', () => {
+      const result = counterLens.update(source, v => v + 1)
+      expect(result).to.not.equal(source)
+      expect(result).to.deep.equal({
+         ...source,
+         counter: source.counter + 1
+      })
+   })
+
+   it('returns same source reference when updating with same value', () => {
+      const result = counterLens.update(source, () => source.counter)
+      expect(result).to.equal(source)
+      expect(result).to.deep.equal(source)
+   })
+
+})
+
+describe('Object-focused Lens', () => {
+
+   it('can read value', () => {
+      const result = todoLens.read(source)
+      expect(result).to.equal(source.todo)
+      expect(result).to.deep.equal(source.todo)
+   })
+
+   it('can set new value', () => {
+      const result = todoLens.setValue(source, {
+         ...source.todo,
+         count: 24
+      })
+      expect(result).to.not.equal(source)
+      expect(result.todo).to.not.equal(source.todo)
+      expect(result.todo.list).to.equal(source.todo.list)
+      expect(result).to.deep.equal({
+         ...source,
+         todo: {
+            ...source.todo,
+            count: 24
+         }
+      })
+   })
+
+   it('can update value', () => {
+      const result = todoLens.update(source, todo => ({
+         ...todo,
+         count: 24
+      }))
+      expect(result).to.not.equal(source)
+      expect(result.todo).to.not.equal(source.todo)
+      expect(result.todo.list).to.equal(source.todo.list)
+      expect(result).to.deep.equal({
+         ...source,
+         todo: {
+            ...source.todo,
+            count: 24
+         }
+      })
+   })
+
+   it('can update fields with new values', () => {
+      const result = todoLens.updateFields(source, {
+         count: 24
+      })
+      expect(result).to.not.equal(source)
+      expect(result.todo).to.not.equal(source.todo)
+      expect(result.todo.list).to.equal(source.todo.list)
+      expect(result).to.deep.equal({
+         ...source,
+         todo: {
+            ...source.todo,
+            count: 24
+         }
+      })
+   })
+
+   it('returns same source reference when updating fields with same values', () => {
+      const result = todoLens.updateFields(source, {
+         count: source.todo.count
+      })
+      expect(result).to.equal(source)
+      expect(result.todo).to.equal(source.todo)
+      expect(result.todo.list).to.equal(source.todo.list)
+      expect(result).to.deep.equal(source)
+   })
+
+   it('can update fields with value updaters', () => {
+      const result = todoLens.updateFields(source, {
+         count: v => v + 1
+      })
+      expect(result).to.not.equal(source)
+      expect(result.todo).to.not.equal(source.todo)
+      expect(result.todo.list).to.equal(source.todo.list)
+      expect(result).to.deep.equal({
+         ...source,
+         todo: {
+            ...source.todo,
+            count: source.todo.count + 1
+         }
+      })
+   })
+
+   it('returns same source reference when value updaters return same values', () => {
+      const result = todoLens.updateFields(source, {
+         count: v => v
+      })
+      expect(result).to.equal(source)
+      expect(result.todo).to.equal(source.todo)
+      expect(result.todo.list).to.equal(source.todo.list)
       expect(result).to.deep.equal(source)
    })
 

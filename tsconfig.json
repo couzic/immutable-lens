@@ -4,6 +4,7 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "lib": [
+      "dom",
       "es5",
       "es6",
       "es2015.core"
