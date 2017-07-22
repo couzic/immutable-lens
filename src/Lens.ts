@@ -5,7 +5,7 @@ export interface ValueUpdater<V> {
 export type FieldsUpdater<T> = object & { [K in keyof T]?: T[K] | ValueUpdater<T[K]> }
 
 export interface Lens<T, Target> {
-   focusOn<TO extends T & object, K extends keyof Target>(this: Lens<TO, Target>, key: K): Lens<T, Target[K]>
+   focusOn<K extends keyof Target>(key: K): Lens<T, Target[K]>
 
    focusAt<NewTarget>(lens: Lens<Target, NewTarget>): Lens<T, NewTarget>
 
@@ -25,7 +25,7 @@ export function createLens<T extends object>(instance?: T): Lens<T, T> {
 }
 
 class UnfocusedLens<T extends object> implements Lens<T, T> {
-   focusOn<TO extends T & object, K extends keyof TO>(this: Lens<TO, TO>, key: K): Lens<TO, TO[K]> {
+   focusOn<K extends keyof T>(key: K): Lens<T, T[K]> {
       return new FocusedLens(this, key)
    }
 
@@ -58,7 +58,7 @@ class FocusedLens<T, ParentTarget extends object, K extends keyof ParentTarget, 
    constructor(private readonly parentLens: Lens<T, ParentTarget>, private readonly key: K) {
    }
 
-   focusOn<TO extends T & object, K extends keyof Target>(this: Lens<TO, Target>, key: K): Lens<TO, Target[K]> {
+   focusOn<K extends keyof Target>(key: K): Lens<T, Target[K]> {
       return new FocusedLens(this, key)
    }
 
