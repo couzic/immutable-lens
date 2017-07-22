@@ -9,7 +9,7 @@ export interface Lens<T, Target> {
 
    focusAt<NewTarget>(lens: Lens<Target, NewTarget>): Lens<T, NewTarget>
 
-   focusIndex<Item>(this: Lens<T, Item[]>, index: number): Lens<T, Item | undefined>
+   focusIndex<Item>(this: Lens<T, Item[]>, index: number): Lens<T, Item>
 
    read(source: T): Target
 
@@ -33,7 +33,7 @@ class UnfocusedLens<T extends object> implements Lens<T, T> {
       throw new Error("Method not implemented.")
    }
 
-   focusIndex<Item>(this: Lens<T, Item[]>, index: number): Lens<T, Item | undefined> {
+   focusIndex<Item>(this: Lens<T, Item[]>, index: number): Lens<T, Item> {
       return new IndexFocusedLens(this, index)
    }
 
@@ -66,7 +66,7 @@ class FocusedLens<T, ParentTarget extends object, K extends keyof ParentTarget, 
       throw new Error("Method not implemented.")
    }
 
-   focusIndex<Item>(this: Lens<T, Item[]>, index: number): Lens<T, Item | undefined> {
+   focusIndex<Item>(this: Lens<T, Item[]>, index: number): Lens<T, Item> {
       return new IndexFocusedLens(this, index)
    }
 
@@ -92,7 +92,7 @@ class FocusedLens<T, ParentTarget extends object, K extends keyof ParentTarget, 
    }
 }
 
-class IndexFocusedLens<T, Item> implements Lens<T, Item | undefined> {
+class IndexFocusedLens<T, Item> implements Lens<T, Item> {
    constructor(private readonly parentLens: Lens<T, Item[]>, private readonly index: number) {
    }
 
@@ -104,7 +104,7 @@ class IndexFocusedLens<T, Item> implements Lens<T, Item | undefined> {
       throw new Error("Method not implemented.")
    }
 
-   focusIndex<Item>(this: Lens<T, Item[]>, index: number): Lens<T, Item | undefined> {
+   focusIndex<Item>(this: Lens<T, Item[]>, index: number): Lens<T, Item> {
       throw new Error("Method not implemented.")
    }
 
@@ -129,7 +129,8 @@ class IndexFocusedLens<T, Item> implements Lens<T, Item | undefined> {
    }
 
    updateFields(this: Lens<T, Item & object>, source: T, fields: FieldsUpdater<Item>): T {
-      throw new Error("Method not implemented.")
+      const updatedFields = updateFields(this.read(source), fields)
+      return this.setValue(source, updatedFields)
    }
 }
 
