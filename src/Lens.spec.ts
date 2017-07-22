@@ -245,4 +245,12 @@ describe('Object-focused Lens', () => {
       expect(result).to.deep.equal(source)
    })
 
+   it('can focus', () => {
+      const grandChildLens = todoLens.focusOn('count')
+      const result = grandChildLens.read(source)
+      expect(result).to.equal(source.todo.count)
+   })
+
 })
+
+// describe('')
