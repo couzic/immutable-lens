@@ -279,4 +279,63 @@ describe('Existing index focused lens', () => {
       expect(result).to.deep.equal(source)
    })
 
+   it('can update value', () => {
+      const newValue = 'newValue'
+      const result = todoItem0Lens.update(source, () => newValue)
+      expect(result).to.not.equal(source)
+      expect(result.todo).to.not.equal(source.todo)
+      expect(result.todo.list).to.not.equal(source.todo.list)
+      expect(result.todo.list.length).to.equal(source.todo.list.length)
+      expect(result.todo.list[0]).to.equal(newValue)
+   })
+
+   it('returns same source reference if updated value unchanged', () => {
+      const result = todoItem0Lens.update(source, () => source.todo.list[0])
+      expect(result).to.equal(source)
+      expect(result.todo).to.equal(source.todo)
+      expect(result.todo.list).to.equal(source.todo.list)
+      expect(result).to.deep.equal(source)
+   })
+
 })
+
+describe('Non-existing index focused lens', () => {
+
+   const outOfRangeIndex = 42
+   const outOfRangeLens = todoListLens.focusIndex(outOfRangeIndex)
+
+   it('throws error when reading', () => {
+      expect(() => outOfRangeLens.read(source)).to.throw()
+   })
+
+   it('can set value', () => {
+      const value = 'value'
+      const result = outOfRangeLens.setValue(source, value)
+      expect(result).to.not.equal(source)
+      expect(result.todo).to.not.equal(source.todo)
+      expect(result.todo.list).to.not.equal(source.todo.list)
+      expect(result.todo.list.length).to.not.equal(source.todo.list.length)
+      expect(result.todo.list[outOfRangeIndex]).to.equal(value)
+   })
+
+   it('throws error when updating value', () => {
+      expect(() => outOfRangeLens.update(source, () => '')).to.throw()
+   })
+
+})
+
+// describe('Unfocused array lens', () => {
+//
+//    type Person = { name: string }
+//    const people: Person[] = [
+//       {name: 'John'},
+//       {name: 'Bob'}
+//    ]
+//    const lens = createLens(people)
+//    const firstPersonLens = lens.focusIndex(0)
+//
+//    it('can focus item key', () => {
+//       const firstPersonName = firstPersonLens.focusOn('name')
+//    })
+//
+// })

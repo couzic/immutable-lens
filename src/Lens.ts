@@ -34,7 +34,7 @@ class UnfocusedLens<T extends object> implements Lens<T, T> {
    }
 
    focusIndex<Item>(this: Lens<T, Item[]>, index: number): Lens<T, Item | undefined> {
-      throw new Error("Method not implemented.")
+      return new IndexFocusedLens(this, index)
    }
 
    read(source: T): T {
@@ -92,7 +92,7 @@ class FocusedLens<T, ParentTarget extends object, K extends keyof ParentTarget, 
    }
 }
 
-class IndexFocusedLens<T, Item> implements Lens<T, Item> {
+class IndexFocusedLens<T, Item> implements Lens<T, Item | undefined> {
    constructor(private readonly parentLens: Lens<T, Item[]>, private readonly index: number) {
    }
 
@@ -109,7 +109,9 @@ class IndexFocusedLens<T, Item> implements Lens<T, Item> {
    }
 
    read(source: T): Item {
-      return this.parentLens.read(source)[this.index]
+      const value = this.parentLens.read(source)[this.index]
+      if (value === undefined) throw Error('No value at index ' + this.index)
+      return value
    }
 
    setValue(source: T, newValue: Item): T {
@@ -121,7 +123,9 @@ class IndexFocusedLens<T, Item> implements Lens<T, Item> {
    }
 
    update(source: T, updater: ValueUpdater<Item>): T {
-      throw new Error("Method not implemented.")
+      const value = this.read(source)
+      const newValue = updater(value)
+      return this.setValue(source, newValue)
    }
 
    updateFields(this: Lens<T, Item & object>, source: T, fields: FieldsUpdater<Item>): T {
