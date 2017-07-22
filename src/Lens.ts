@@ -113,7 +113,11 @@ class IndexFocusedLens<T, Item> implements Lens<T, Item> {
    }
 
    setValue(source: T, newValue: Item): T {
-      throw new Error("Method not implemented.")
+      const array = this.parentLens.read(source)
+      if (array[this.index] === newValue) return source
+      const copy = [...array]
+      copy[this.index] = newValue
+      return this.parentLens.setValue(source, copy)
    }
 
    update(source: T, updater: ValueUpdater<Item>): T {

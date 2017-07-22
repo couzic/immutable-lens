@@ -23,6 +23,7 @@ const lens = createLens<Source>()
 const counterLens = lens.focusOn('counter')
 const todoLens = lens.focusOn('todo')
 const todoListLens = todoLens.focusOn('list')
+const todoItem0Lens = todoListLens.focusIndex(0)
 
 describe('Unfocused Lens', () => {
 
@@ -253,12 +254,29 @@ describe('Object-focused Lens', () => {
 
 })
 
-describe('Array-focused lens', () => {
+describe('Existing index focused lens', () => {
 
-   it('can focus existing index', () => {
-      const indexLens = todoListLens.focusIndex(0)
-      const result = indexLens.read(source)
+   it('can read value', () => {
+      const result = todoItem0Lens.read(source)
       expect(result).to.equal(source.todo.list[0])
+   })
+
+   it('can set value', () => {
+      const newValue = 'newValue'
+      const result = todoItem0Lens.setValue(source, newValue)
+      expect(result).to.not.equal(source)
+      expect(result.todo).to.not.equal(source.todo)
+      expect(result.todo.list).to.not.equal(source.todo.list)
+      expect(result.todo.list.length).to.equal(source.todo.list.length)
+      expect(result.todo.list[0]).to.equal(newValue)
+   })
+
+   it('returns same source reference if value does not change', () => {
+      const result = todoItem0Lens.setValue(source, source.todo.list[0])
+      expect(result).to.equal(source)
+      expect(result.todo).to.equal(source.todo)
+      expect(result.todo.list).to.equal(source.todo.list)
+      expect(result).to.deep.equal(source)
    })
 
 })
