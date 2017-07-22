@@ -1,20 +1,29 @@
 import {expect} from 'chai'
 import {createLens} from './Lens'
 
+type TodoItem = {
+   title: string
+   done: boolean
+}
+
 type Source = {
    counter: number
    todo: {
       input: string
-      list: string[]
+      list: TodoItem[]
       count: number
    }
 }
 
-const source = {
+const source: Source = {
    counter: 42,
    todo: {
       input: 'input',
-      list: ['item0', 'item1', 'item2'],
+      list: [
+         {title: 'item0', done: false},
+         {title: 'item1', done: false},
+         {title: 'item2', done: false}
+      ],
       count: 42
    }
 }
@@ -254,76 +263,88 @@ describe('Object-focused Lens', () => {
 
 })
 
+const newTodoItem: TodoItem = {title: 'New Todo Item', done: false}
+
 describe('Existing index focused lens', () => {
 
-   it('can read value', () => {
-      const result = todoItem0Lens.read(source)
-      expect(result).to.equal(source.todo.list[0])
+   describe('Existing index focused lens', () => {
+
+      const checkHasChanged = (source: Source, result: Source) => {
+         expect(result).to.not.equal(source)
+         expect(result.todo).to.not.equal(source.todo)
+         expect(result.todo.list).to.not.equal(source.todo.list)
+         expect(result.todo.list.length).to.equal(source.todo.list.length)
+      }
+
+      const checkHasNotChanged = (source: Source, result: Source) => {
+         expect(result).to.equal(source)
+         expect(result.todo).to.equal(source.todo)
+         expect(result.todo.list).to.equal(source.todo.list)
+         expect(result).to.deep.equal(source)
+      }
+
+      it('can read value', () => {
+         const result = todoItem0Lens.read(source)
+         expect(result).to.equal(source.todo.list[0])
+      })
+
+      it('can set value', () => {
+         const result = todoItem0Lens.setValue(source, newTodoItem)
+         checkHasChanged(source, result)
+         expect(result.todo.list[0]).to.equal(newTodoItem)
+         expect(result.todo.list[0]).to.deep.equal(newTodoItem)
+      })
+
+      it('returns same source reference if value does not change', () => {
+         const result = todoItem0Lens.setValue(source, source.todo.list[0])
+         checkHasNotChanged(source, result)
+      })
+
+      it('can update value', () => {
+         const result = todoItem0Lens.update(source, () => newTodoItem)
+         expect(result).to.not.equal(source)
+         expect(result.todo).to.not.equal(source.todo)
+         expect(result.todo.list).to.not.equal(source.todo.list)
+         expect(result.todo.list.length).to.equal(source.todo.list.length)
+         expect(result.todo.list[0]).to.equal(newTodoItem)
+         expect(result.todo.list[0]).to.deep.equal(newTodoItem)
+      })
+
+      it('returns same source reference if updated value unchanged', () => {
+         const result = todoItem0Lens.update(source, () => source.todo.list[0])
+         expect(result).to.equal(source)
+         expect(result.todo).to.equal(source.todo)
+         expect(result.todo.list).to.equal(source.todo.list)
+         expect(result).to.deep.equal(source)
+      })
+
    })
 
-   it('can set value', () => {
-      const newValue = 'newValue'
-      const result = todoItem0Lens.setValue(source, newValue)
-      expect(result).to.not.equal(source)
-      expect(result.todo).to.not.equal(source.todo)
-      expect(result.todo.list).to.not.equal(source.todo.list)
-      expect(result.todo.list.length).to.equal(source.todo.list.length)
-      expect(result.todo.list[0]).to.equal(newValue)
-   })
+   describe('Non-existing index focused lens', () => {
 
-   it('returns same source reference if value does not change', () => {
-      const result = todoItem0Lens.setValue(source, source.todo.list[0])
-      expect(result).to.equal(source)
-      expect(result.todo).to.equal(source.todo)
-      expect(result.todo.list).to.equal(source.todo.list)
-      expect(result).to.deep.equal(source)
-   })
+      const outOfRangeIndex = 42
+      const outOfRangeLens = todoListLens.focusIndex(outOfRangeIndex)
 
-   it('can update value', () => {
-      const newValue = 'newValue'
-      const result = todoItem0Lens.update(source, () => newValue)
-      expect(result).to.not.equal(source)
-      expect(result.todo).to.not.equal(source.todo)
-      expect(result.todo.list).to.not.equal(source.todo.list)
-      expect(result.todo.list.length).to.equal(source.todo.list.length)
-      expect(result.todo.list[0]).to.equal(newValue)
-   })
+      it('throws error when reading', () => {
+         expect(() => outOfRangeLens.read(source)).to.throw()
+      })
 
-   it('returns same source reference if updated value unchanged', () => {
-      const result = todoItem0Lens.update(source, () => source.todo.list[0])
-      expect(result).to.equal(source)
-      expect(result.todo).to.equal(source.todo)
-      expect(result.todo.list).to.equal(source.todo.list)
-      expect(result).to.deep.equal(source)
+      it('can set value', () => {
+         const result = outOfRangeLens.setValue(source, newTodoItem)
+         expect(result).to.not.equal(source)
+         expect(result.todo).to.not.equal(source.todo)
+         expect(result.todo.list).to.not.equal(source.todo.list)
+         expect(result.todo.list.length).to.not.equal(source.todo.list.length)
+         expect(result.todo.list[outOfRangeIndex]).to.equal(newTodoItem)
+      })
+
+      it('throws error when updating value', () => {
+         expect(() => outOfRangeLens.update(source, () => newTodoItem)).to.throw()
+      })
+
    })
 
 })
-
-describe('Non-existing index focused lens', () => {
-
-   const outOfRangeIndex = 42
-   const outOfRangeLens = todoListLens.focusIndex(outOfRangeIndex)
-
-   it('throws error when reading', () => {
-      expect(() => outOfRangeLens.read(source)).to.throw()
-   })
-
-   it('can set value', () => {
-      const value = 'value'
-      const result = outOfRangeLens.setValue(source, value)
-      expect(result).to.not.equal(source)
-      expect(result.todo).to.not.equal(source.todo)
-      expect(result.todo.list).to.not.equal(source.todo.list)
-      expect(result.todo.list.length).to.not.equal(source.todo.list.length)
-      expect(result.todo.list[outOfRangeIndex]).to.equal(value)
-   })
-
-   it('throws error when updating value', () => {
-      expect(() => outOfRangeLens.update(source, () => '')).to.throw()
-   })
-
-})
-
 // describe('Unfocused array lens', () => {
 //
 //    type Person = { name: string }
