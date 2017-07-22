@@ -18,30 +18,51 @@ export interface Lens<T, Target> {
 
    update(source: T, updater: ValueUpdater<Target>): T
 
-   // TODO runtime check : fields NOT a function
    updateFields(this: Lens<T, Target & object>, source: T, fields: FieldsUpdater<Target>): T
 }
 
 export type UnfocusedLens<T> = Lens<T, T>
 
-function focusLens<T, ParentTarget extends object, K extends keyof ParentTarget>(parentLens: Lens<T, ParentTarget>, key: K): Lens<T, ParentTarget[K]> {
+export function createLens<T>(instance?: T): UnfocusedLens<T> {
    return {
-      read(source: T) {
+      focusOn<TO extends T & object, K extends keyof TO>(this: UnfocusedLens<TO>, key: K): Lens<T, TO[K]> {
+         return focusLens(this, key)
+      },
+      read(source) {
+         return source
+      },
+      setValue(source, newValue) {
+         return newValue
+      },
+      update(source, updater) {
+         return updater(source)
+      },
+      updateFields(source, fields) {
+         return updateFields(source, fields)
+      }
+   } as UnfocusedLens<T>
+}
+
+function focusLens<T, Target extends object, K extends keyof Target>(parentLens: Lens<T, Target>, key: K): Lens<T, Target[K]> {
+   return {
+      read(source: T): Target[K] {
          return parentLens.read(source)[key]
       },
-      setValue(source: T, newValue: ParentTarget[K]): T {
-         const fields = {[key as string]: newValue} as any
+      setValue(source: T, newValue: Target[K]): T {
+         const fields = {} as any
+         fields[key] = newValue
          return parentLens.updateFields(source, fields)
       },
-      update(source: T, updater: ValueUpdater<ParentTarget[K]>): T {
-         const fields = {[key as string]: updater} as any
+      update(source: T, updater: ValueUpdater<Target[K]>): T {
+         const fields = {} as any
+         fields[key] = updater
          return parentLens.updateFields(source, fields)
       },
-      updateFields(source: T, fields: FieldsUpdater<ParentTarget[K]>): T {
+      updateFields(source: T, fields: FieldsUpdater<Target[K]>): T {
          const updatedFields = updateFields(this.read(source), fields)
          return this.setValue(source, updatedFields)
       }
-   } as any as Lens<T, ParentTarget[K]>
+   } as any as Lens<T, Target[K]>
 }
 
 function updateFields<T, Target>(source: T, fields: FieldsUpdater<Target>): T {
@@ -69,24 +90,4 @@ function updateFields<T, Target>(source: T, fields: FieldsUpdater<Target>): T {
       }
    }
    return hasChanged ? copy : source
-}
-
-export function createLens<T>(instance?: T): UnfocusedLens<T> {
-   return {
-      focusOn<TO extends T & object, K extends keyof TO>(this: UnfocusedLens<TO>, key: K): Lens<T, TO[K]> {
-         return focusLens(this, key)
-      },
-      read(source) {
-         return source
-      },
-      setValue(source, newValue) {
-         return newValue
-      },
-      update(source, updater) {
-         return updater(source)
-      },
-      updateFields(source, fields) {
-         return updateFields(source, fields)
-      }
-   } as UnfocusedLens<T>
 }
