@@ -263,25 +263,24 @@ describe('Object-focused Lens', () => {
 
 })
 
-const newTodoItem: TodoItem = {title: 'New Todo Item', done: false}
+describe('Index-focused lens', () => {
 
-describe('Existing index focused lens', () => {
+   const newTodoItem: TodoItem = {title: 'New Todo Item', done: false}
 
-   describe('Existing index focused lens', () => {
+   const checkHasChanged = (result: Source) => {
+      expect(result).to.not.equal(source)
+      expect(result.todo).to.not.equal(source.todo)
+      expect(result.todo.list).to.not.equal(source.todo.list)
+   }
 
-      const checkHasChanged = (source: Source, result: Source) => {
-         expect(result).to.not.equal(source)
-         expect(result.todo).to.not.equal(source.todo)
-         expect(result.todo.list).to.not.equal(source.todo.list)
-         expect(result.todo.list.length).to.equal(source.todo.list.length)
-      }
+   const checkHasNotChanged = (result: Source) => {
+      expect(result).to.equal(source)
+      expect(result.todo).to.equal(source.todo)
+      expect(result.todo.list).to.equal(source.todo.list)
+      expect(result).to.deep.equal(source)
+   }
 
-      const checkHasNotChanged = (source: Source, result: Source) => {
-         expect(result).to.equal(source)
-         expect(result.todo).to.equal(source.todo)
-         expect(result.todo.list).to.equal(source.todo.list)
-         expect(result).to.deep.equal(source)
-      }
+   describe('with existing index', () => {
 
       it('can read value', () => {
          const result = todoItem0Lens.read(source)
@@ -290,37 +289,37 @@ describe('Existing index focused lens', () => {
 
       it('can set value', () => {
          const result = todoItem0Lens.setValue(source, newTodoItem)
-         checkHasChanged(source, result)
+         checkHasChanged(result)
+         expect(result.todo.list.length).to.equal(source.todo.list.length)
          expect(result.todo.list[0]).to.equal(newTodoItem)
          expect(result.todo.list[0]).to.deep.equal(newTodoItem)
       })
 
       it('returns same source reference if value does not change', () => {
          const result = todoItem0Lens.setValue(source, source.todo.list[0])
-         checkHasNotChanged(source, result)
+         checkHasNotChanged(result)
       })
 
       it('can update value', () => {
          const result = todoItem0Lens.update(source, () => newTodoItem)
-         expect(result).to.not.equal(source)
-         expect(result.todo).to.not.equal(source.todo)
-         expect(result.todo.list).to.not.equal(source.todo.list)
-         expect(result.todo.list.length).to.equal(source.todo.list.length)
+         checkHasChanged(result)
          expect(result.todo.list[0]).to.equal(newTodoItem)
          expect(result.todo.list[0]).to.deep.equal(newTodoItem)
       })
 
       it('returns same source reference if updated value unchanged', () => {
          const result = todoItem0Lens.update(source, () => source.todo.list[0])
-         expect(result).to.equal(source)
-         expect(result.todo).to.equal(source.todo)
-         expect(result.todo.list).to.equal(source.todo.list)
-         expect(result).to.deep.equal(source)
+         checkHasNotChanged(result)
+      })
+
+      it('can update fields', () => {
+         // const result = todoItem0Lens.updateFields(source, {done: true})
+         // checkHasChanged(result)
       })
 
    })
 
-   describe('Non-existing index focused lens', () => {
+   describe('with non-existing index', () => {
 
       const outOfRangeIndex = 42
       const outOfRangeLens = todoListLens.focusIndex(outOfRangeIndex)
@@ -331,9 +330,7 @@ describe('Existing index focused lens', () => {
 
       it('can set value', () => {
          const result = outOfRangeLens.setValue(source, newTodoItem)
-         expect(result).to.not.equal(source)
-         expect(result.todo).to.not.equal(source.todo)
-         expect(result.todo.list).to.not.equal(source.todo.list)
+         checkHasChanged(result)
          expect(result.todo.list.length).to.not.equal(source.todo.list.length)
          expect(result.todo.list[outOfRangeIndex]).to.equal(newTodoItem)
       })
