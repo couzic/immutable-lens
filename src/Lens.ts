@@ -67,7 +67,7 @@ class FocusedLens<T, ParentTarget extends object, K extends keyof ParentTarget, 
    }
 
    focusIndex<Item>(this: Lens<T, Item[]>, index: number): Lens<T, Item | undefined> {
-      throw new Error("Method not implemented.")
+      return new IndexFocusedLens(this, index)
    }
 
    read(source: T): Target {
@@ -89,6 +89,39 @@ class FocusedLens<T, ParentTarget extends object, K extends keyof ParentTarget, 
    updateFields(this: Lens<T, Target & object>, source: T, fields: FieldsUpdater<Target>): T {
       const updatedFields = updateFields(this.read(source), fields)
       return this.setValue(source, updatedFields)
+   }
+}
+
+class IndexFocusedLens<T, Item> implements Lens<T, Item> {
+   constructor(private readonly parentLens: Lens<T, Item[]>, private readonly index: number) {
+   }
+
+   focusOn<K extends keyof Item>(this: Lens<T, Item & object>, key: K): Lens<T, Item[K]> {
+      return new FocusedLens(this, key)
+   }
+
+   focusAt<NewTarget>(lens: Lens<Item, NewTarget>): Lens<T, NewTarget> {
+      throw new Error("Method not implemented.")
+   }
+
+   focusIndex<Item>(this: Lens<T, Item[]>, index: number): Lens<T, Item | undefined> {
+      throw new Error("Method not implemented.")
+   }
+
+   read(source: T): Item {
+      return this.parentLens.read(source)[this.index]
+   }
+
+   setValue(source: T, newValue: Item): T {
+      throw new Error("Method not implemented.")
+   }
+
+   update(source: T, updater: ValueUpdater<Item>): T {
+      throw new Error("Method not implemented.")
+   }
+
+   updateFields(this: Lens<T, Item & object>, source: T, fields: FieldsUpdater<Item>): T {
+      throw new Error("Method not implemented.")
    }
 }
 

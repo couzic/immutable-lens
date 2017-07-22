@@ -14,7 +14,7 @@ const source = {
    counter: 42,
    todo: {
       input: 'input',
-      list: [],
+      list: ['item0', 'item1', 'item2'],
       count: 42
    }
 }
@@ -22,7 +22,7 @@ const source = {
 const lens = createLens<Source>()
 const counterLens = lens.focusOn('counter')
 const todoLens = lens.focusOn('todo')
-// const todoListLens = todoLens.focusOn('list')
+const todoListLens = todoLens.focusOn('list')
 
 describe('Unfocused Lens', () => {
 
@@ -253,4 +253,12 @@ describe('Object-focused Lens', () => {
 
 })
 
-// describe('')
+describe('Array-focused lens', () => {
+
+   it('can focus existing index', () => {
+      const indexLens = todoListLens.focusIndex(0)
+      const result = indexLens.read(source)
+      expect(result).to.equal(source.todo.list[0])
+   })
+
+})
