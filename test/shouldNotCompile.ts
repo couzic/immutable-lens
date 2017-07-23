@@ -1,5 +1,7 @@
 import {createLens} from '../src/Lens'
 
+type User = { name: string }
+
 type Source = {
    counter: number
    todo: {
@@ -7,6 +9,7 @@ type Source = {
       list: string[]
       count: number
    }
+   user: User | undefined
 }
 
 const source = {} as Source
@@ -15,6 +18,7 @@ const lens = createLens<Source>()
 const counterLens = lens.focusOn('counter')
 const todoLens = lens.focusOn('todo')
 const todoListLens = todoLens.focusOn('list')
+const todoListItemLens = todoListLens.focusIndex(0)
 
 // Focusing on null key @shouldNotCompile
 lens.focusOn(null)
@@ -195,3 +199,10 @@ lens.updateFields(source, {todo: (value: { input: number }) => source.todo})
 
 // Updating object field with wrong output type updater @shouldNotCompile
 lens.updateFields(source, {todo: (value) => ({})})
+
+// Reading optional value focused lens and assigning result to non-optional reference @shouldNotCompile
+const user: { name: string } = lens.focusOn('user').read(source)
+
+// Reading indexed-focused lens and assigning to non-optional reference @shouldNotCompile
+const item: string = todoListItemLens.read(sources) // TODO Figure out what to do
+

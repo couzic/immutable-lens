@@ -20,11 +20,14 @@ export interface Lens<T, Target> {
    updateFields(this: Lens<T, Target & object>, source: T, fields: FieldsUpdater<Target>): T
 }
 
-export function createLens<T extends object>(instance?: T): Lens<T, T> {
-   return new UnfocusedLens<T>()
+export interface UnfocusedLens<T> extends Lens<T, T> {
 }
 
-class UnfocusedLens<T extends object> implements Lens<T, T> {
+export function createLens<T extends object>(instance?: T): UnfocusedLens<T> {
+   return new RootLens<T>()
+}
+
+class RootLens<T extends object> implements UnfocusedLens<T> {
    focusOn<K extends keyof T>(key: K): Lens<T, T[K]> {
       return new FocusedLens(this, key)
    }
@@ -135,6 +138,7 @@ class IndexFocusedLens<T, Item> implements Lens<T, Item> {
 }
 
 function updateFields<T, Target>(source: T, fields: FieldsUpdater<Target>): T {
+   if (Array.isArray(source)) throw Error('Lens.updateFields() can NOT be called when focused on an array. Try calling focusIndex() first')
    if (typeof fields === 'function') throw Error('Lens.updateFields() does NOT accept functions as argument')
    let hasChanged = false
    const sourceObject = source as any
