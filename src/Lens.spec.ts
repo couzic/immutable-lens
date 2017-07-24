@@ -6,6 +6,8 @@ type TodoItem = {
    done: boolean
 }
 
+type User = { name: string }
+
 type Source = {
    counter: number
    todo: {
@@ -13,6 +15,7 @@ type Source = {
       list: TodoItem[]
       count: number
    }
+   user: User | undefined
 }
 
 const source: Source = {
@@ -25,7 +28,8 @@ const source: Source = {
          {title: 'item2', done: false}
       ],
       count: 42
-   }
+   },
+   user: undefined
 }
 
 const lens = createLens<Source>()
@@ -33,6 +37,7 @@ const counterLens = lens.focusOn('counter')
 const todoLens = lens.focusOn('todo')
 const todoListLens = todoLens.focusOn('list')
 const todoItem0Lens = todoListLens.focusIndex(0)
+const userLens = lens.focusOn('user')
 
 describe('Unfocused Lens', () => {
 
@@ -74,6 +79,7 @@ describe('Unfocused Lens', () => {
       })
       expect(result).to.not.equal(source)
       expect(result).to.deep.equal({
+         ...source,
          counter: 24,
          todo: {
             ...source.todo,
@@ -281,6 +287,11 @@ describe('Index-focused lens', () => {
       checkHasNotChanged(source)
    }
 
+   it('returns path', () => {
+      const path = todoItem0Lens.getPath()
+      expect(path).to.equal('source.todo.list[0]')
+   })
+
    describe('with existing index', () => {
 
       it('can read value', () => {
@@ -338,13 +349,8 @@ describe('Index-focused lens', () => {
          expect(result.todo.list[outOfRangeIndex]).to.equal(newTodoItem)
       })
 
-      it('can update value', () => {
-         const result = outOfRangeLens.update(source, (item) => {
-            expect(item).to.equal(undefined)
-            return newTodoItem
-         })
-         checkHasChanged(result)
-         expect(result.todo.list[outOfRangeIndex]).to.equal(newTodoItem)
+      it('throws error when updating value', () => {
+         expect(() => outOfRangeLens.update(source, v => v)).to.throw()
       })
 
       it('throws error when updating fields', () => {
@@ -365,22 +371,13 @@ describe('Array-focused lens', () => {
 
 describe('Optional value focused lens', () => {
 
-   type Source = {
-      counter: number
-      todo: TodoItem | undefined
-   }
-   const sourceWithTodo: Source = {
-      counter: 42,
-      todo: {title: 'Todo Item', done: false}
-   }
-   const sourceWithoutTodo: Source = {
-      counter: 42,
-      todo: undefined
-   }
+   it('throws error when updating undefined value', () => {
+      expect(() => userLens.update(source, v => v)).to.throw()
+   })
 
-   const lens = createLens<Source>()
-
-   const result: TodoItem | undefined = lens.focusOn('todo').read(sourceWithoutTodo)
+   it('throws error when updating field of undefined value', () => {
+      // expect(() => userLens.focusOn('name').update(source, (v: string) => v)).to.throw()
+   })
 
 })
 
