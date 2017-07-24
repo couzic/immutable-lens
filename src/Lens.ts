@@ -113,7 +113,6 @@ class IndexFocusedLens<T, Item> implements Lens<T, Item> {
 
    read(source: T): Item {
       const value = this.parentLens.read(source)[this.index]
-      if (value === undefined) throw Error('No value at index ' + this.index)
       return value
    }
 
