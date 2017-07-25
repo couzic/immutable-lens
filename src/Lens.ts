@@ -56,7 +56,7 @@ class RootLens<T extends object> implements UnfocusedLens<T> {
       return updater(source)
    }
 
-   updateFields(this: Lens<T, T & object>, source: T, fields: FieldsUpdater<T>): T {
+   updateFields(source: T, fields: FieldsUpdater<T>): T {
       return updateFields(source, fields)
    }
 
@@ -77,7 +77,7 @@ class KeyFocusedLens<T, ParentTarget extends object, K extends keyof ParentTarge
    //    throw new Error("Method not implemented.")
    // }
 
-   focusIndex<Item>(this: Lens<T, Item[]>, index: number): Lens<T, Item | undefined> {
+   focusIndex<Item>(index: number): Lens<T, Item | undefined> {
       return new IndexFocusedLens(this, index)
    }
 
@@ -98,7 +98,7 @@ class KeyFocusedLens<T, ParentTarget extends object, K extends keyof ParentTarge
       return this.setValue(source, newValue)
    }
 
-   updateFields(this: Lens<T, Target & object>, source: T, fields: FieldsUpdater<Target>): T {
+   updateFields(source: T, fields: FieldsUpdater<Target>): T {
       const updatedFields = updateFields(this.read(source), fields)
       return this.setValue(source, updatedFields)
    }
