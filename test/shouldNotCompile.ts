@@ -1,6 +1,12 @@
-import {createLens} from '../src/Lens'
+import {createLens, Lens} from '../src/Lens'
 
-type User = { name: string }
+type User = {
+   name: string
+   address: {
+      street: string
+      city: string
+   }
+}
 
 type Source = {
    counter: number
@@ -20,7 +26,6 @@ const todoLens = lens.focusOn('todo')
 const todoListLens = todoLens.focusOn('list')
 const todoListItemLens = todoListLens.focusIndex(0)
 const userLens = lens.focusOn('user')
-const userNameLens = userLens.focusOn('name')
 
 // Focusing on null key @shouldNotCompile
 lens.focusOn(null)
@@ -187,6 +192,9 @@ todoLens.updateFields(source, {unknown: ''})
 // Updating primitive field with wrong type @shouldNotCompile
 todoLens.updateFields(source, {input: 42})
 
+// Updating fields with array @shouldNotButDoesCompile
+// todoLens.updateFields(source, [])
+
 // Updating primitive field with wrong input type updater @shouldNotCompile
 todoLens.updateFields(source, {input: (v: number) => ''})
 
@@ -202,31 +210,31 @@ lens.updateFields(source, {todo: (value: { input: number }) => source.todo})
 // Updating object field with wrong output type updater @shouldNotCompile
 lens.updateFields(source, {todo: (value) => ({})})
 
+/////////////////////////
+// Handling undefined //
+///////////////////////
+
+// Assigning optional value focused lens to non-optional reference @shouldNotCompile
+const nonOptionalUserLens: Lens<Source, User> = lens.focusOn('user')
+
 // Reading optional value and assigning result to non-optional reference @shouldNotCompile
 const userRead: User = userLens.read(source)
 
-// Updating field of optional value @shouldNotCompile
-userNameLens.update(source, (v: string) => v)
+// Focusing on key of optional value @shouldNotCompile
+userLens.focusOn('name')
 
 // Updating fields of optional value @shouldNotCompile
-userLens.updateFields(source, {})
+userLens.updateFields(source, {name: 'toto'})
 
 // Reading indexed-focused value and assigning result to non-optional reference @shouldNotCompile
 const indexedFocusedRead: string = todoListItemLens.read(source)
 
+//////////////////////////////////
+// Should not but does compile //
+////////////////////////////////
+
 // Updating optional value with non-optional input updater @shouldNotButDoesCompile
 const userUpdated: Source = userLens.update(source, (current: User) => source.user)
 
-// Updating indexed-focused value with non-optional output updater @shouldNotButDoesCompile
-const nonOptionalUserOutputUpdater = (user: User | undefined): User => ({name: 'User'})
-userLens.update(source, nonOptionalUserOutputUpdater)
-
 // Updating indexed-focused value with non-optional input updater @shouldNotButDoesCompile
 todoListItemLens.update(source, (item: string) => '')
-
-// Updating indexed-focused value with non-optional output updater @shouldNotButDoesCompile
-const nonOptionalOutputUpdater = (item: string | undefined): string => ''
-todoListItemLens.update(source, nonOptionalOutputUpdater)
-
-// Updating indexed-focused value and assigning result to non-optional reference @shouldNotButDoesCompile
-const indexedFocusedUpdate: Source = todoListItemLens.update(source, source => source)

@@ -6,7 +6,13 @@ type TodoItem = {
    done: boolean
 }
 
-type User = { name: string }
+type User = {
+   name: string
+   address: {
+      street: string
+      city: string
+   }
+}
 
 type Source = {
    counter: number
@@ -373,10 +379,6 @@ describe('Optional value focused lens', () => {
 
    it('throws error when updating undefined value', () => {
       expect(() => userLens.update(source, v => v)).to.throw()
-   })
-
-   it('throws error when updating field of undefined value', () => {
-      // expect(() => userLens.focusOn('name').update(source, (v: string) => v)).to.throw()
    })
 
 })

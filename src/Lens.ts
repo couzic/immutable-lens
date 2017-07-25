@@ -1,7 +1,9 @@
+export type ObjectLiteral = object & { reduceRight?: 'Not an array' }
+
 export interface Lens<T, Target> {
    focusOn<K extends keyof Target>(key: K): Lens<T, Target[K]>
 
-   focusAt<NewTarget>(lens: Lens<Target, NewTarget>): Lens<T, NewTarget>
+   // focusAt<NewTarget>(lens: Lens<Target, NewTarget>): Lens<T, NewTarget>
 
    focusIndex<Item>(this: Lens<T, Item[]>, index: number): MaybeLens<T, Item>
 
@@ -25,7 +27,7 @@ export type FieldsUpdater<T> = object & { [K in keyof T]?: T[K] | ValueUpdater<T
 export interface MaybeLens<T, Target> {
    focusOn<K extends keyof Target>(key: K): MaybeLens<T, Target[K]>
 
-   focusAt<NewTarget>(lens: Lens<Target, NewTarget>): MaybeLens<T, NewTarget>
+   // focusAt<NewTarget>(lens: Lens<Target, NewTarget>): MaybeLens<T, NewTarget>
 
    focusIndex<Item>(this: MaybeLens<T, Item[]>, index: number): MaybeLens<T, Item>
 
@@ -52,9 +54,9 @@ class RootLens<T extends object> implements UnfocusedLens<T> {
       return new FocusedLens(this, key)
    }
 
-   focusAt<NewTarget>(lens: Lens<T, NewTarget>): Lens<T, NewTarget> {
-      throw new Error("Method not implemented.")
-   }
+   // focusAt<NewTarget>(lens: Lens<T, NewTarget>): Lens<T, NewTarget> {
+   //    throw new Error("Method not implemented.")
+   // }
 
    focusIndex<Item>(this: Lens<T, Item[]>, index: number): MaybeLens<T, Item> {
       return new IndexFocusedLens(this, index)
@@ -89,9 +91,9 @@ class FocusedLens<T, ParentTarget extends object, K extends keyof ParentTarget, 
       return new FocusedLens(this, key)
    }
 
-   focusAt<NewTarget>(lens: Lens<Target, NewTarget>): Lens<T, NewTarget> {
-      throw new Error("Method not implemented.")
-   }
+   // focusAt<NewTarget>(lens: Lens<Target, NewTarget>): Lens<T, NewTarget> {
+   //    throw new Error("Method not implemented.")
+   // }
 
    focusIndex<Item>(this: Lens<T, Item[]>, index: number): MaybeLens<T, Item> {
       return new IndexFocusedLens(this, index)
@@ -133,9 +135,9 @@ class IndexFocusedLens<T, Item> implements MaybeLens<T, Item> {
       throw new Error("Method not implemented.")
    }
 
-   focusAt<NewTarget>(lens: MaybeLens<Item, NewTarget>): MaybeLens<T, NewTarget> {
-      throw new Error("Method not implemented.")
-   }
+   // focusAt<NewTarget>(lens: MaybeLens<Item, NewTarget>): MaybeLens<T, NewTarget> {
+   //    throw new Error("Method not implemented.")
+   // }
 
    focusIndex<Item>(this: MaybeLens<T, Item[]>, index: number): MaybeLens<T, Item> {
       throw new Error("Method not implemented.")
