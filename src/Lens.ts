@@ -1,11 +1,17 @@
 export type ObjectLiteral = object & { reduceRight?: 'Not an array' }
 
+export interface ValueUpdater<V> {
+   (value: V): V
+}
+
+export type FieldsUpdater<T> = ObjectLiteral & { [K in keyof T]?: T[K] | ValueUpdater<T[K]> }
+
 export interface Lens<T, Target> {
    focusOn<K extends keyof Target>(this: Lens<T, Target & ObjectLiteral>, key: K): Lens<T, Target[K]>
 
    // focusAt<NewTarget>(lens: Lens<Target, NewTarget>): Lens<T, NewTarget>
 
-   focusIndex<Item>(this: Lens<T, Item[]>, index: number): MaybeLens<T, Item>
+   focusIndex<Item>(this: Lens<T, Item[]>, index: number): Lens<T, Item | undefined>
 
    read(source: T): Target
 
@@ -14,30 +20,6 @@ export interface Lens<T, Target> {
    update(source: T, updater: ValueUpdater<Target>): T
 
    updateFields(this: Lens<T, Target & ObjectLiteral>, source: T, fields: FieldsUpdater<Target>): T
-
-   getPath(): string
-}
-
-export interface ValueUpdater<V> {
-   (value: V): V
-}
-
-export type FieldsUpdater<T> = ObjectLiteral & { [K in keyof T]?: T[K] | ValueUpdater<T[K]> }
-
-export interface MaybeLens<T, Target> {
-   focusOn<K extends keyof Target>(key: K): MaybeLens<T, Target[K]>
-
-   // focusAt<NewTarget>(lens: Lens<Target, NewTarget>): MaybeLens<T, NewTarget>
-
-   focusIndex<Item>(this: MaybeLens<T, Item[]>, index: number): MaybeLens<T, Item>
-
-   read(source: T): Target | undefined
-
-   setValue(source: T, newValue: Target): T
-
-   update(source: T, updater: ValueUpdater<Target>): T
-
-   updateFields(this: MaybeLens<T, Target & object>, source: T, fields: FieldsUpdater<Target>): T
 
    getPath(): string
 }
@@ -51,14 +33,14 @@ export function createLens<T extends object>(instance?: T): UnfocusedLens<T> {
 
 class RootLens<T extends object> implements UnfocusedLens<T> {
    focusOn<K extends keyof T>(key: K): Lens<T, T[K]> {
-      return new FocusedLens(this, key)
+      return new KeyFocusedLens(this, key)
    }
 
    // focusAt<NewTarget>(lens: Lens<T, NewTarget>): Lens<T, NewTarget> {
    //    throw new Error("Method not implemented.")
    // }
 
-   focusIndex<Item>(this: Lens<T, Item[]>, index: number): MaybeLens<T, Item> {
+   focusIndex<Item>(this: Lens<T, Item[]>, index: number): Lens<T, Item | undefined> {
       return new IndexFocusedLens(this, index)
    }
 
@@ -83,19 +65,19 @@ class RootLens<T extends object> implements UnfocusedLens<T> {
    }
 }
 
-class FocusedLens<T, ParentTarget extends object, K extends keyof ParentTarget, Target extends ParentTarget[K]> implements Lens<T, Target> {
+class KeyFocusedLens<T, ParentTarget extends object, K extends keyof ParentTarget, Target extends ParentTarget[K]> implements Lens<T, Target> {
    constructor(private readonly parentLens: Lens<T, ParentTarget>, private readonly key: K) {
    }
 
    focusOn<K extends keyof Target>(key: K): Lens<T, Target[K]> {
-      return new FocusedLens(this, key)
+      return new KeyFocusedLens(this, key)
    }
 
    // focusAt<NewTarget>(lens: Lens<Target, NewTarget>): Lens<T, NewTarget> {
    //    throw new Error("Method not implemented.")
    // }
 
-   focusIndex<Item>(this: Lens<T, Item[]>, index: number): MaybeLens<T, Item> {
+   focusIndex<Item>(this: Lens<T, Item[]>, index: number): Lens<T, Item | undefined> {
       return new IndexFocusedLens(this, index)
    }
 
@@ -126,24 +108,19 @@ class FocusedLens<T, ParentTarget extends object, K extends keyof ParentTarget, 
    }
 }
 
-class IndexFocusedLens<T, Item> implements MaybeLens<T, Item> {
+class IndexFocusedLens<T, Item> implements Lens<T, Item> {
    constructor(private readonly parentLens: Lens<T, Item[]>, private readonly index: number) {
    }
 
-   focusOn<K extends keyof Item>(this: MaybeLens<T, Item & object>, key: K): MaybeLens<T, Item[K]> {
-      // return new FocusedLens(this, key)
+   focusOn<K extends keyof Item>(key: K): Lens<T, Item[K]> {
       throw new Error("Method not implemented.")
    }
 
-   // focusAt<NewTarget>(lens: MaybeLens<Item, NewTarget>): MaybeLens<T, NewTarget> {
-   //    throw new Error("Method not implemented.")
-   // }
-
-   focusIndex<Item>(this: MaybeLens<T, Item[]>, index: number): MaybeLens<T, Item> {
+   focusIndex<Item>(index: number): Lens<T, any | Item> {
       throw new Error("Method not implemented.")
    }
 
-   read(source: T): Item | undefined {
+   read(source: T): Item {
       return this.parentLens.read(source)[this.index]
    }
 
@@ -162,12 +139,12 @@ class IndexFocusedLens<T, Item> implements MaybeLens<T, Item> {
       return this.setValue(source, newValue)
    }
 
-   updateFields(this: MaybeLens<T, (Item & object) | undefined>, source: T, fields: FieldsUpdater<Item>): T {
+   updateFields(source: T, fields: FieldsUpdater<Item>): T {
       const updatedFields = updateFields(this.read(source), fields)
       return this.setValue(source, updatedFields)
    }
 
-   getPath() {
+   getPath(): string {
       return this.parentLens.getPath() + `[${this.index}]`
    }
 }
