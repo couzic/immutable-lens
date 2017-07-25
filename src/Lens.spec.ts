@@ -330,12 +330,6 @@ describe('Index-focused lens', () => {
          checkHasNotChanged(result)
       })
 
-      it('can update fields', () => {
-         const result = todoItem0Lens.updateFields(source, {done: true})
-         checkHasChanged(result)
-         expect(result.todo.list[0]).to.deep.equal({title: 'item0', done: true})
-      })
-
    })
 
    describe('with non-existing index', () => {
@@ -359,19 +353,11 @@ describe('Index-focused lens', () => {
          expect(() => outOfRangeLens.update(source, v => v)).to.throw()
       })
 
-      it('throws error when updating fields', () => {
-         expect(() => outOfRangeLens.updateFields(source, {done: true})).to.throw()
-      })
-
    })
 
 })
 
 describe('Array-focused lens', () => {
-
-   it('throws error when updating fields', () => {
-      expect(() => todoListLens.updateFields(source, {})).to.throw()
-   })
 
 })
 

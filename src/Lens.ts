@@ -22,6 +22,10 @@ export interface Lens<T, Target> {
    updateFields(this: Lens<T, Target & ObjectLiteral>, source: T, fields: FieldsUpdater<Target>): T
 
    getPath(): string
+
+   defaultTo<SafeTarget extends Target>(this: Lens<T, SafeTarget | undefined>, value: SafeTarget): Lens<T, SafeTarget>
+
+   abortIfUndefined<SafeTarget>(this: Lens<T, SafeTarget | undefined>): Lens<T, SafeTarget>
 }
 
 export interface UnfocusedLens<T> extends Lens<T, T> {
@@ -62,6 +66,14 @@ class RootLens<T extends object> implements UnfocusedLens<T> {
 
    getPath() {
       return 'source'
+   }
+
+   defaultTo<SafeTarget>(value: SafeTarget): Lens<T, SafeTarget> {
+      throw new Error("Method not implemented.")
+   }
+
+   abortIfUndefined<SafeTarget>(): Lens<T, SafeTarget> {
+      throw new Error("Method not implemented.")
    }
 }
 
@@ -106,6 +118,14 @@ class KeyFocusedLens<T, ParentTarget extends object, K extends keyof ParentTarge
    getPath() {
       return this.parentLens.getPath() + '.' + this.key
    }
+
+   defaultTo<SafeTarget>(value: SafeTarget): Lens<T, SafeTarget> {
+      throw new Error("Method not implemented.")
+   }
+
+   abortIfUndefined<SafeTarget>(): Lens<T, SafeTarget> {
+      throw new Error("Method not implemented.")
+   }
 }
 
 class IndexFocusedLens<T, Item> implements Lens<T, Item> {
@@ -146,6 +166,14 @@ class IndexFocusedLens<T, Item> implements Lens<T, Item> {
 
    getPath(): string {
       return this.parentLens.getPath() + `[${this.index}]`
+   }
+
+   defaultTo<SafeTarget>(value: SafeTarget): Lens<T, SafeTarget> {
+      throw new Error("Method not implemented.")
+   }
+
+   abortIfUndefined<SafeTarget>(): Lens<T, SafeTarget> {
+      throw new Error("Method not implemented.")
    }
 }
 

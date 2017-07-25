@@ -1,5 +1,10 @@
 import {createLens, Lens} from '../src/Lens'
 
+type TodoItem = {
+   title: string
+   done: boolean
+}
+
 type User = {
    name: string
    address: {
@@ -12,7 +17,7 @@ type Source = {
    counter: number
    todo: {
       input: string
-      list: string[]
+      list: TodoItem[]
       count: number
    }
    user: User | undefined
@@ -226,14 +231,32 @@ const nonOptionalUserLens: Lens<Source, User> = lens.focusOn('user')
 // Reading optional value and assigning result to non-optional reference @shouldNotCompile
 const userRead: User = userLens.read(source)
 
+// Reading indexed-focused value and assigning result to non-optional reference @shouldNotCompile
+const indexedFocusedRead: string = todoListItemLens.read(source)
+
 // Focusing on key of optional value @shouldNotCompile
 userLens.focusOn('name')
 
 // Updating fields of optional value @shouldNotCompile
 userLens.updateFields(source, {name: 'toto'})
 
-// Reading indexed-focused value and assigning result to non-optional reference @shouldNotCompile
-const indexedFocusedRead: string = todoListItemLens.read(source)
+// Updating fields of index-focused value @shouldNotCompile
+todoListItemLens.updateFields(source, {done: true})
+
+// Defaulting to wrong type @shouldNotCompile
+todoListItemLens.defaultTo({})
+
+// Defaulting to wrong type @shouldNotCompile
+userLens.defaultTo({})
+
+// Defaulting non-optional value @shouldNotCompile
+counterLens.defaultTo(44)
+
+// Defaulting to undefined and assigning to non optional reference @shouldNotCompile
+const defaultToUndefined: TodoItem = todoListItemLens.defaultTo(undefined).read(source)
+
+// Defaulting to on aborted if undefined lens @shouldNotCompile
+todoListItemLens.abortIfUndefined().defaultTo({title: '', done: true})
 
 //////////////////////////////////
 // Should not but does compile //
@@ -243,4 +266,7 @@ const indexedFocusedRead: string = todoListItemLens.read(source)
 const userUpdated: Source = userLens.update(source, (current: User) => source.user)
 
 // Updating indexed-focused value with non-optional input updater @shouldNotButDoesCompile
-todoListItemLens.update(source, (item: string) => '')
+todoListItemLens.update(source, (item: TodoItem) => item)
+
+// Aborting if undefined on non-optional value @shouldNotButDoesCompile
+counterLens.abortIfUndefined()
