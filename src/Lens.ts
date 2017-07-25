@@ -1,7 +1,7 @@
 export type ObjectLiteral = object & { reduceRight?: 'Not an array' }
 
 export interface Lens<T, Target> {
-   focusOn<K extends keyof Target>(key: K): Lens<T, Target[K]>
+   focusOn<K extends keyof Target>(this: Lens<T, Target & ObjectLiteral>, key: K): Lens<T, Target[K]>
 
    // focusAt<NewTarget>(lens: Lens<Target, NewTarget>): Lens<T, NewTarget>
 
@@ -13,7 +13,7 @@ export interface Lens<T, Target> {
 
    update(source: T, updater: ValueUpdater<Target>): T
 
-   updateFields(this: Lens<T, Target & object>, source: T, fields: FieldsUpdater<Target>): T
+   updateFields(this: Lens<T, Target & ObjectLiteral>, source: T, fields: FieldsUpdater<Target>): T
 
    getPath(): string
 }
@@ -22,7 +22,7 @@ export interface ValueUpdater<V> {
    (value: V): V
 }
 
-export type FieldsUpdater<T> = object & { [K in keyof T]?: T[K] | ValueUpdater<T[K]> }
+export type FieldsUpdater<T> = ObjectLiteral & { [K in keyof T]?: T[K] | ValueUpdater<T[K]> }
 
 export interface MaybeLens<T, Target> {
    focusOn<K extends keyof Target>(key: K): MaybeLens<T, Target[K]>

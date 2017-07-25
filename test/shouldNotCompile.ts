@@ -66,6 +66,9 @@ todoLens.focusAt(lens)
 // Focusing at sibling lens @shouldNotCompile
 todoLens.focusAt(lens.focusOn('counter'))
 
+// Focusing on key of array @shouldNotCompile
+todoListLens.focusOn('length')
+
 // Focusing null index @shouldNotCompile
 todoListLens.focusIndex(null)
 
@@ -192,8 +195,8 @@ todoLens.updateFields(source, {unknown: ''})
 // Updating primitive field with wrong type @shouldNotCompile
 todoLens.updateFields(source, {input: 42})
 
-// Updating fields with array @shouldNotButDoesCompile
-// todoLens.updateFields(source, [])
+// Updating fields with array @shouldNotCompile
+todoLens.updateFields(source, [])
 
 // Updating primitive field with wrong input type updater @shouldNotCompile
 todoLens.updateFields(source, {input: (v: number) => ''})
@@ -209,6 +212,9 @@ lens.updateFields(source, {todo: (value: { input: number }) => source.todo})
 
 // Updating object field with wrong output type updater @shouldNotCompile
 lens.updateFields(source, {todo: (value) => ({})})
+
+// Updating fields of array @shouldNotCompile
+todoListLens.updateFields(source, {})
 
 /////////////////////////
 // Handling undefined //
