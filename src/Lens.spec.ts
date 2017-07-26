@@ -14,6 +14,14 @@ type User = {
    }
 }
 
+const bob: User = {
+   name: 'Bob',
+   address: {
+      street: '',
+      city: ''
+   }
+}
+
 type Source = {
    counter: number
    todo: {
@@ -359,6 +367,9 @@ describe('Index-focused lens', () => {
 
 describe('Array-focused lens', () => {
 
+   // can read existing value
+   // returns undefined when reading missing value
+
 })
 
 describe('Optional value focused lens', () => {
@@ -366,6 +377,19 @@ describe('Optional value focused lens', () => {
    it('throws error when updating undefined value', () => {
       expect(() => userLens.update(source, v => v)).to.throw()
    })
+
+   it('can default to value', () => {
+      const withDefaultUser = userLens.defaultTo(bob)
+      const user = withDefaultUser.read(source)
+      expect(user).to.equal(bob)
+   })
+
+   it('can focus on default value key', () => {
+      const withDefaultUser = userLens.defaultTo(bob)
+      const name = withDefaultUser.focusOn('name').read(source)
+      expect(name).to.equal(bob.name)
+   })
+
 
 })
 
