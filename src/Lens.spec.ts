@@ -390,7 +390,6 @@ describe('Optional value focused lens', () => {
       expect(name).to.equal(bob.name)
    })
 
-
 })
 
 // describe('Unfocused array lens', () => {

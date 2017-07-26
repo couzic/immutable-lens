@@ -8,10 +8,6 @@ export class RootLens<T extends object> implements UnfocusedLens<T> {
       return new KeyFocusedLens(this, key)
    }
 
-   // focusAt<NewTarget>(lens: Lens<T, NewTarget>): Lens<T, NewTarget> {
-   //    throw new Error("Method not implemented.")
-   // }
-
    focusIndex<Item>(this: Lens<T, Item[]>, index: number): Lens<T, Item | undefined> {
       return new IndexFocusedLens(this, index)
    }

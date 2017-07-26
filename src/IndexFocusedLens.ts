@@ -10,7 +10,7 @@ export class IndexFocusedLens<T, Item> implements Lens<T, Item> {
       throw new Error("Method not implemented.")
    }
 
-   focusIndex<Item>(index: number): Lens<T, any | Item> {
+   focusIndex<Item>(index: number): Lens<T, Item | undefined> {
       throw new Error("Method not implemented.")
    }
 
@@ -38,7 +38,7 @@ export class IndexFocusedLens<T, Item> implements Lens<T, Item> {
       return this.setValue(source, updatedFields)
    }
 
-   getPath(): string {
+   getPath() {
       return this.parentLens.getPath() + `[${this.index}]`
    }
 

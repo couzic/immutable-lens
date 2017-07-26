@@ -12,10 +12,6 @@ export class KeyFocusedLens<T, ParentTarget extends object, K extends keyof Pare
       return new KeyFocusedLens(this, key)
    }
 
-   // focusAt<NewTarget>(lens: Lens<Target, NewTarget>): Lens<T, NewTarget> {
-   //    throw new Error("Method not implemented.")
-   // }
-
    focusIndex<Item>(index: number): Lens<T, Item | undefined> {
       return new IndexFocusedLens(this, index)
    }
