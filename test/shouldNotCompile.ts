@@ -262,6 +262,9 @@ todoListItemLens.abortIfUndefined().defaultTo({title: '', done: true})
 // Focusing index on index-focused lens @shouldNotCompile
 lens.focusOn('matrix').focusIndex(0).focusIndex(0)
 
+// Creating lens with optional type @shouldNotCompile
+createLens<{} | undefined>()
+
 //////////////////////////////////
 // Should not but does compile //
 ////////////////////////////////

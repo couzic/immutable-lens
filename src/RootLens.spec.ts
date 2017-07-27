@@ -96,12 +96,12 @@ describe('RootLens', () => {
    })
 
    describe('when focused on array', () => {
+      type Data = string[]
+      const lens = createLens<Data>()
 
-      const lens = createLens(source.todo.list)
-
-      xit('can focus item key', () => {
-         // const firstPersonName = lens.focusOn('name')
+      it('can read index-focused value', () => {
+         const result = lens.focusIndex(0).read(['Value'])
+         expect(result).to.equal('Value')
       })
-
    })
 })

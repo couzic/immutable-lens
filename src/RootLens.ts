@@ -32,8 +32,8 @@ export class RootLens<T extends object> implements UnfocusedLens<T> {
       return 'source'
    }
 
-   defaultTo<SafeTarget>(value: SafeTarget): Lens<T, SafeTarget> {
-      throw new Error("Method not implemented.")
+   defaultTo<SafeTarget>(this: Lens<T, SafeTarget | undefined>, value: SafeTarget): Lens<T, SafeTarget> {
+      throw Error('createLens() does NOT support optional types')
    }
 
    abortIfUndefined<SafeTarget>(): Lens<T, SafeTarget> {
