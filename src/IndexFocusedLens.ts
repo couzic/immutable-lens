@@ -1,5 +1,6 @@
 import {FieldsUpdater, Lens, ValueUpdater} from './Lens'
 import {updateFields} from './updateFields'
+import {DefaultValueLens} from './DefaultValueLens'
 
 export class IndexFocusedLens<T, Item> implements Lens<T, Item> {
    constructor(private readonly parentLens: Lens<T, Item[]>,
@@ -7,11 +8,11 @@ export class IndexFocusedLens<T, Item> implements Lens<T, Item> {
    }
 
    focusOn<K extends keyof Item>(key: K): Lens<T, Item[K]> {
-      throw Error('Can NOT focus on a property of a possibly undefined target')
+      throw Error('Can NOT focus on a property of a possibly undefined value')
    }
 
    focusIndex<Item>(index: number): Lens<T, Item | undefined> {
-      throw new Error("Method not implemented.")
+      throw Error('Can NOT focus on an index of a possibly undefined value')
    }
 
    read(source: T): Item {
@@ -42,8 +43,8 @@ export class IndexFocusedLens<T, Item> implements Lens<T, Item> {
       return this.parentLens.getPath() + `[${this.index}]`
    }
 
-   defaultTo<SafeTarget>(value: SafeTarget): Lens<T, SafeTarget> {
-      throw new Error("Method not implemented.")
+   defaultTo<SafeTarget>(this: Lens<T, SafeTarget | undefined>, value: SafeTarget): Lens<T, SafeTarget> {
+      return new DefaultValueLens(this, value)
    }
 
    abortIfUndefined<SafeTarget>(): Lens<T, SafeTarget> {

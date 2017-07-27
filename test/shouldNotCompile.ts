@@ -21,6 +21,7 @@ type Source = {
       count: number
    }
    user: User | undefined
+   matrix: number[][]
 }
 
 const source = {} as Source
@@ -257,6 +258,9 @@ const defaultToUndefined: TodoItem = todoListItemLens.defaultTo(undefined).read(
 
 // Defaulting to on aborted if undefined lens @shouldNotCompile
 todoListItemLens.abortIfUndefined().defaultTo({title: '', done: true})
+
+// Focusing index on index-focused lens @shouldNotCompile
+lens.focusOn('matrix').focusIndex(0).focusIndex(0)
 
 //////////////////////////////////
 // Should not but does compile //

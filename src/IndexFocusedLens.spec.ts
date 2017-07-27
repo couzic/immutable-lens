@@ -13,6 +13,10 @@ describe('IndexFocusedLens', () => {
          expect(path).to.equal('source.users[0]')
       })
 
+      it('can default to value', () => {
+         lens.defaultTo({name: 'Default User'})
+      })
+
       describe('when target is defined', () => {
          const definedUser = {name: 'User Name'}
          const data = {users: [definedUser]}
