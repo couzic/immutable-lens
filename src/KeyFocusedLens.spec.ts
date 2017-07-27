@@ -150,22 +150,32 @@ describe('KeyFocusedLens', () => {
    })
 
    describe('when focused on optional object', () => {
+      type User = { name: string }
+      type Data = { user?: User }
+      const lens = createLens<Data>().focusOn('user')
 
-      const lens = createLens(source).focusOn('user')
+      describe('when target is defined', () => {
+         const definedUser: User = {name: 'Defined User'}
+         const data: Data = {user: definedUser}
 
-      it('throws error when updating undefined value', () => {
-         expect(() => lens.update(source, v => v)).to.throw()
+         it('can read value', () => {
+            const user = lens.read(data)
+            expect(user).to.equal(definedUser)
+            expect(user).to.deep.equal(definedUser)
+         })
       })
 
-   })
+      describe('when target is undefined', () => {
+         const data: Data = {}
 
+         it('returns undefined when reading value', () => {
+            expect(lens.read(data)).to.equal(undefined)
+         })
 
-   describe('when focused on array', () => {
-
-      it('can read existing value')
-
-      it('returns undefined when reading missing value')
-
+         it('throws error when updating undefined value', () => {
+            expect(() => lens.update(source, v => v)).to.throw()
+         })
+      })
    })
 
 })

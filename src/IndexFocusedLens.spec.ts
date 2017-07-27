@@ -30,7 +30,7 @@ describe('IndexFocusedLens', () => {
       expect(path).to.equal('source.todo.list[0]')
    })
 
-   describe('with existing index', () => {
+   describe('with value at index', () => {
 
       it('can read value', () => {
          const result = lens.read(source)
@@ -64,8 +64,7 @@ describe('IndexFocusedLens', () => {
 
    })
 
-   describe('with missing index', () => {
-
+   describe('with no value at index', () => {
       const outOfRangeIndex = 42
       const outOfRangeLens = todoListLens.focusIndex(outOfRangeIndex)
 

@@ -38,7 +38,7 @@ export class DefaultValueLens<T, Target> implements Lens<T, Target> {
       return this.setValue(source, updatedFields)
    }
 
-   getPath(): string {
+   getPath() {
       return this.parentLens.getPath() + '?.defaultTo(' + JSON.stringify(this.defaultValue) + ')'
    }
 
