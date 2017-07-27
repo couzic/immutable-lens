@@ -112,4 +112,20 @@ describe('DefaultValueLens', () => {
          })
       })
    })
+
+   describe('when focused on array item', () => {
+      type User = { name: string }
+      type Data = { users: User[] }
+      const defaultUser = {name: 'Default User'}
+      const lens = createLens<Data>().focusOn('users').focusIndex(0).defaultTo(defaultUser)
+
+      describe('when target is undefined', () => {
+         const data: Data = {users: []}
+
+         it('reads default value', () => {
+            const user = lens.read(data)
+            expect(user).to.equal(defaultUser)
+         })
+      })
+   })
 })
