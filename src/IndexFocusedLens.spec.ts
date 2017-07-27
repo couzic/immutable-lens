@@ -1,89 +1,72 @@
 import {expect} from 'chai'
-import {Source, source, TodoItem, todoListLens} from '../test/testData'
 import {createLens} from './Lens'
-
-const lens = createLens(source)
-   .focusOn('todo')
-   .focusOn('list')
-   .focusIndex(0)
-
-const newTodoItem: TodoItem = {title: 'New Todo Item', done: false}
-
-const checkHasNotChanged = (result: Source) => {
-   expect(result).to.equal(source)
-   expect(result.todo).to.equal(source.todo)
-   expect(result.todo.list).to.equal(source.todo.list)
-   expect(result).to.deep.equal(source)
-}
-
-const checkHasChanged = (result: Source) => {
-   expect(result).to.not.equal(source)
-   expect(result.todo).to.not.equal(source.todo)
-   expect(result.todo.list).to.not.equal(source.todo.list)
-   checkHasNotChanged(source)
-}
 
 describe('IndexFocusedLens', () => {
 
-   it('returns path', () => {
-      const path = lens.getPath()
-      expect(path).to.equal('source.todo.list[0]')
+   describe('when focused on object', () => {
+      type User = { name: string }
+      type Data = { users: User[] }
+      const lens = createLens<Data>().focusOn('users').focusIndex(0)
+
+      it('returns path', () => {
+         const path = lens.getPath()
+         expect(path).to.equal('source.users[0]')
+      })
+
+      describe('when target is defined', () => {
+         const definedUser = {name: 'User Name'}
+         const data = {users: [definedUser]}
+
+         it('can read value', () => {
+            expect(lens.read(data)).to.equal(data.users[0])
+         })
+
+         it('can set value', () => {
+            const newUser: User = {name: 'New User'}
+            const result = lens.setValue(data, newUser)
+            expect(result.users.length).to.equal(data.users.length)
+            expect(result.users[0]).to.equal(newUser)
+            expect(result.users[0]).to.deep.equal(newUser)
+         })
+
+         it('returns same data reference if value does not change', () => {
+            const result = lens.setValue(data, data.users[0])
+            expect(result).to.equal(data)
+         })
+
+         it('can update value', () => {
+            const user: User = {name: 'Updated User'}
+            const result = lens.update(data, () => user)
+            expect(result).not.to.equal(data)
+            expect(result.users[0]).to.equal(user)
+            expect(result.users[0]).to.deep.equal(user)
+         })
+
+         it('returns same data reference if updated value unchanged', () => {
+            const result = lens.update(data, () => definedUser)
+            expect(result).to.equal(data)
+         })
+      })
+
+      describe('when target is undefined', () => {
+         const data = {users: []}
+
+         it('returns undefined when reading', () => {
+            const result = lens.read(data)
+            expect(result).to.equal(undefined)
+         })
+
+         it('can set value', () => {
+            const newUser: User = {name: 'New User'}
+            const result = lens.setValue(data, newUser)
+            expect(result).not.to.equal(data)
+            expect(result.users.length).to.not.equal(data.users.length)
+            expect(result.users).to.deep.equal([newUser])
+         })
+
+         it('throws error when updating value', () => {
+            expect(() => lens.update(data, v => v)).to.throw()
+         })
+      })
    })
-
-   describe('with value at index', () => {
-
-      it('can read value', () => {
-         const result = lens.read(source)
-         expect(result).to.equal(source.todo.list[0])
-      })
-
-      it('can set value', () => {
-         const result = lens.setValue(source, newTodoItem)
-         checkHasChanged(result)
-         expect(result.todo.list.length).to.equal(source.todo.list.length)
-         expect(result.todo.list[0]).to.equal(newTodoItem)
-         expect(result.todo.list[0]).to.deep.equal(newTodoItem)
-      })
-
-      it('returns same source reference if value does not change', () => {
-         const result = lens.setValue(source, source.todo.list[0])
-         checkHasNotChanged(result)
-      })
-
-      it('can update value', () => {
-         const result = lens.update(source, () => newTodoItem)
-         checkHasChanged(result)
-         expect(result.todo.list[0]).to.equal(newTodoItem)
-         expect(result.todo.list[0]).to.deep.equal(newTodoItem)
-      })
-
-      it('returns same source reference if updated value unchanged', () => {
-         const result = lens.update(source, () => source.todo.list[0])
-         checkHasNotChanged(result)
-      })
-
-   })
-
-   describe('with no value at index', () => {
-      const outOfRangeIndex = 42
-      const outOfRangeLens = todoListLens.focusIndex(outOfRangeIndex)
-
-      it('returns undefined when reading', () => {
-         const result = outOfRangeLens.read(source)
-         expect(result).to.equal(undefined)
-      })
-
-      it('can set value', () => {
-         const result = outOfRangeLens.setValue(source, newTodoItem)
-         checkHasChanged(result)
-         expect(result.todo.list.length).to.not.equal(source.todo.list.length)
-         expect(result.todo.list[outOfRangeIndex]).to.equal(newTodoItem)
-      })
-
-      it('throws error when updating value', () => {
-         expect(() => outOfRangeLens.update(source, v => v)).to.throw()
-      })
-
-   })
-
 })

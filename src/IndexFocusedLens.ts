@@ -7,7 +7,7 @@ export class IndexFocusedLens<T, Item> implements Lens<T, Item> {
    }
 
    focusOn<K extends keyof Item>(key: K): Lens<T, Item[K]> {
-      throw new Error("Method not implemented.")
+      throw Error('Can NOT focus on a property of a possibly undefined target')
    }
 
    focusIndex<Item>(index: number): Lens<T, Item | undefined> {
