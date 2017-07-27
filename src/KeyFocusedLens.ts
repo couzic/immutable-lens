@@ -21,9 +21,11 @@ export class KeyFocusedLens<T, ParentTarget extends object, K extends keyof Pare
    }
 
    setValue(source: T, newValue: Target): T {
-      const fields = {} as any
-      fields[this.key] = newValue
-      return this.parentLens.updateFields(source, fields)
+      const parent = this.parentLens.read(source) as any
+      if (parent[this.key] === newValue) return source
+      const parentCopy = {...parent}
+      parentCopy[this.key] = newValue
+      return this.parentLens.setValue(source, parentCopy)
    }
 
    update(source: T, updater: ValueUpdater<Target>): T {

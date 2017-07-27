@@ -178,4 +178,83 @@ describe('KeyFocusedLens', () => {
       })
    })
 
+   describe('when focused on Date', () => {
+      type Model = { date: Date }
+      const lens = createLens<Model>().focusOn('date')
+      const model: Model = {date: new Date()}
+
+      it('can read value', () => {
+         const result = lens.read(model)
+         expect(result).to.equal(model.date)
+      })
+
+      it('can update value', () => {
+         const newDate = new Date()
+         const result = lens.update(model, () => newDate)
+         expect(result.date).to.equal(newDate)
+      })
+   })
+
+   describe('when focused on object containing date field', () => {
+      type Model = {
+         clock: {
+            date: Date
+         }
+      }
+      const lens = createLens<Model>().focusOn('clock')
+      const model: Model = {clock: {date: new Date()}}
+
+      it('can update date field with value', () => {
+         const newDate = new Date()
+         const result = lens.updateFields(model, {date: newDate})
+         expect(result.clock.date).to.equal(newDate)
+      })
+
+      it('can update date field with updater', () => {
+         const newDate = new Date()
+         const result = lens.updateFields(model, {date: () => newDate})
+         expect(result.clock.date).to.equal(newDate)
+      })
+   })
+
+   describe('when focused on function', () => {
+      type Model = {
+         action: (val: number) => number
+      }
+      const lens = createLens<Model>().focusOn('action')
+      const model: Model = {action: (val) => val + 1}
+
+      it('can set value', () => {
+         const result = lens.setValue(model, (val) => val + 5)
+         expect(result.action(0)).to.equal(5)
+      })
+
+      it('can update value', () => {
+         const result = lens.update(model, (action) => (val) => action(val) + 7)
+         expect(result.action(0)).to.equal(8)
+      })
+   })
+
+   describe('when focused on object containing function field', () => {
+      type Model = {
+         actions: {
+            action: (val: number) => number
+         }
+      }
+      const lens = createLens<Model>().focusOn('actions')
+      const model: Model = {actions: {action: (val) => val + 1}}
+
+      it('can update function field with value', () => {
+         const result = lens.updateFields(model, {action: (val: number) => val + 5})
+         // console.log(typeof result.actions.action)
+         // expect(result.actions.action(0)).to.equal(5)
+      })
+
+      it('can update function field with updater', () => {
+         const action = (action: (v: number) => number) => (val: number) => action(val) + 7
+         const result = lens.updateFields(model, {action})
+         // console.log(result.actions.action)
+         // expect(result.actions.action(0)).to.equal(8)
+      })
+   })
 })

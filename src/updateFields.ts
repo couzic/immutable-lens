@@ -4,11 +4,11 @@ export function updateFields<T, Target>(source: T, fields: FieldsUpdater<Target>
    // TODO: Keep runtime check for array detection ?
    // if (Array.isArray(source)) throw Error('Lens.updateFields() can NOT be called when focused on an array. Try calling focusIndex() first')
    if (typeof fields === 'function') throw Error('Lens.updateFields() does NOT accept functions as argument')
-   let hasChanged = false
+   if (Object.keys(fields).length === 0) return source
    const sourceObject = source as any
    const fieldsObject = fields as any
-   if (Object.keys(fields).length === 0) return source
    const copy = {...sourceObject}
+   let hasChanged = false
    for (let key in fields) {
       const fieldSpec = fieldsObject[key]
       if (typeof fieldSpec === 'function') {
