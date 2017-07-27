@@ -1,5 +1,5 @@
 import {FieldsUpdater, Lens, ValueUpdater} from './Lens'
-import {WithDefaultValueLens} from './WithDefaultValueLens'
+import {WithDefaultValueLens} from './DefaultValueLens'
 import {updateFields} from './updateFields'
 import {IndexFocusedLens} from './IndexFocusedLens'
 
