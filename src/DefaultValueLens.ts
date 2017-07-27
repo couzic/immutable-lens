@@ -1,7 +1,9 @@
 import {FieldsUpdater, Lens, NotAnArray, ValueUpdater} from './Lens'
 import {KeyFocusedLens} from './KeyFocusedLens'
+import {IndexFocusedLens} from './IndexFocusedLens'
+import {updateFields} from './updateFields'
 
-export class WithDefaultValueLens<T, Target> implements Lens<T, Target> {
+export class DefaultValueLens<T, Target> implements Lens<T, Target> {
    constructor(private readonly parentLens: Lens<T, Target | undefined>,
                private readonly defaultValue: Target) {
    }
@@ -11,7 +13,7 @@ export class WithDefaultValueLens<T, Target> implements Lens<T, Target> {
    }
 
    focusIndex<Item>(this: Lens<T, Item[]>, index: number): Lens<T, Item | undefined> {
-      throw new Error("Method not implemented.")
+      return new IndexFocusedLens(this, index)
    }
 
    read(source: T): Target {
@@ -21,23 +23,27 @@ export class WithDefaultValueLens<T, Target> implements Lens<T, Target> {
    }
 
    setValue(source: T, newValue: Target): T {
-      throw new Error("Method not implemented.")
+      return this.parentLens.setValue(source, newValue)
    }
 
    update(source: T, updater: ValueUpdater<Target>): T {
-      throw new Error("Method not implemented.")
+      const value = this.read(source)
+      if (value === undefined) throw Error('No value defined at ' + this.getPath())
+      const newValue = updater(value)
+      return this.setValue(source, newValue)
    }
 
-   updateFields(this: Lens<T, Target & NotAnArray>, source: T, fields: FieldsUpdater<Target>): T {
-      throw new Error("Method not implemented.")
+   updateFields(source: T, fields: FieldsUpdater<Target>): T {
+      const updatedFields = updateFields(this.read(source), fields)
+      return this.setValue(source, updatedFields)
    }
 
    getPath(): string {
-      throw new Error("Method not implemented.")
+      return this.parentLens.getPath() + '?.defaultTo(' + JSON.stringify(this.defaultValue) + ')'
    }
 
    defaultTo<SafeTarget extends Target>(this: Lens<T, SafeTarget | undefined>, value: SafeTarget): Lens<T, SafeTarget> {
-      throw new Error("Method not implemented.")
+      return new DefaultValueLens(this, value)
    }
 
    abortIfUndefined<SafeTarget>(this: Lens<T, SafeTarget | undefined>): Lens<T, SafeTarget> {

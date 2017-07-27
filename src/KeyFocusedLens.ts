@@ -1,5 +1,5 @@
 import {FieldsUpdater, Lens, ValueUpdater} from './Lens'
-import {WithDefaultValueLens} from './DefaultValueLens'
+import {DefaultValueLens} from './DefaultValueLens'
 import {updateFields} from './updateFields'
 import {IndexFocusedLens} from './IndexFocusedLens'
 
@@ -43,7 +43,7 @@ export class KeyFocusedLens<T, ParentTarget extends object, K extends keyof Pare
    }
 
    defaultTo<SafeTarget>(value: SafeTarget): Lens<T, SafeTarget> {
-      return new WithDefaultValueLens(this, value)
+      return new DefaultValueLens(this, value)
    }
 
    abortIfUndefined<SafeTarget>(): Lens<T, SafeTarget> {
