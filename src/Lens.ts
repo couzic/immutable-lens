@@ -8,7 +8,9 @@ export interface ValueUpdater<V> {
    (value: V): V
 }
 
-export type FieldsUpdater<T> = object & NotAnArray & { [K in keyof T]?: T[K] | ValueUpdater<T[K]> }
+export type FieldValues<T> = object & NotAnArray & { [K in keyof T]?: T[K] }
+
+export type FieldUpdaters<T> = object & NotAnArray & { [K in keyof T]?: ValueUpdater<T[K]> }
 
 export interface Lens<T, Target> {
    focusOn<K extends keyof Target>(this: Lens<T, Target & NotAnArray>, key: K): Lens<T, Target[K]>
@@ -23,7 +25,9 @@ export interface Lens<T, Target> {
 
    update(source: T, updater: ValueUpdater<Target>): T
 
-   updateFields(this: Lens<T, Target & NotAnArray>, source: T, fields: FieldsUpdater<Target>): T
+   setFieldValues(this: Lens<T, Target & NotAnArray>, source: T, fields: FieldValues<Target>): T
+
+   updateFields(this: Lens<T, Target & NotAnArray>, source: T, updaters: FieldUpdaters<Target>): T
 
    getPath(): string
 

@@ -1,5 +1,4 @@
-import {FieldsUpdater, Lens, ValueUpdater} from './Lens'
-import {updateFields} from './updateFields'
+import {FieldUpdaters, FieldValues, Lens, ValueUpdater} from './Lens'
 import {DefaultValueLens} from './DefaultValueLens'
 
 export class IndexFocusedLens<T, Item> implements Lens<T, Item> {
@@ -34,9 +33,12 @@ export class IndexFocusedLens<T, Item> implements Lens<T, Item> {
       return this.setValue(source, newValue)
    }
 
-   updateFields(source: T, fields: FieldsUpdater<Item>): T {
-      const updatedFields = updateFields(this.read(source), fields)
-      return this.setValue(source, updatedFields)
+   setFieldValues(source: T, fields: FieldValues<Item>): T {
+      throw Error('setFieldValues() can NOT be called on a Lens focused on a possibly undefined value. Try calling defaultTo() first.')
+   }
+
+   updateFields(source: T, fields: FieldUpdaters<Item>): T {
+      throw Error('updateFields() can NOT be called on a Lens focused on a possibly undefined value. Try calling defaultTo() first.')
    }
 
    getPath() {

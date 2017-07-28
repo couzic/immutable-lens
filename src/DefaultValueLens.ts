@@ -1,7 +1,8 @@
-import {FieldsUpdater, Lens, NotAnArray, ValueUpdater} from './Lens'
+import {FieldUpdaters, FieldValues, Lens, NotAnArray, ValueUpdater} from './Lens'
 import {KeyFocusedLens} from './KeyFocusedLens'
 import {IndexFocusedLens} from './IndexFocusedLens'
 import {updateFields} from './updateFields'
+import {setFieldValues} from './setFieldValues'
 
 export class DefaultValueLens<T, Target> implements Lens<T, Target> {
    constructor(private readonly parentLens: Lens<T, Target | undefined>,
@@ -33,9 +34,18 @@ export class DefaultValueLens<T, Target> implements Lens<T, Target> {
       return this.setValue(source, newValue)
    }
 
-   updateFields(source: T, fields: FieldsUpdater<Target>): T {
-      const updatedFields = updateFields(this.read(source), fields)
-      return this.setValue(source, updatedFields)
+   setFieldValues(source: T, fields: FieldValues<Target>): T {
+      const currentTarget = this.read(source)
+      const updatedTarget = setFieldValues(currentTarget, fields)
+      // TODO Optimize by checking target references here (save a read() in setValue())
+      return this.setValue(source, updatedTarget)
+   }
+
+   updateFields(source: T, fields: FieldUpdaters<Target>): T {
+      const currentTarget = this.read(source)
+      const updatedTarget = updateFields(currentTarget, fields)
+      // TODO Optimize by checking target references here (save a read() in setValue())
+      return this.setValue(source, updatedTarget)
    }
 
    getPath() {

@@ -36,22 +36,15 @@ describe('RootLens', () => {
          })
       })
 
-      it('can update fields with new values', () => {
-         const result = lens.updateFields(source, {
-            counter: 24,
-            todo: {
-               ...source.todo,
-               input: 'new input value'
-            }
+      it('can set field values', () => {
+         const result = lens.setFieldValues(source, {
+            counter: 24
          })
          expect(result).to.not.equal(source)
          expect(result).to.deep.equal({
             ...source,
             counter: 24,
-            todo: {
-               ...source.todo,
-               input: 'new input value'
-            }
+            todo: source.todo
          })
       })
 
@@ -73,9 +66,17 @@ describe('RootLens', () => {
          expect(result).to.deep.equal(source)
       })
 
-      it('returns same source reference if field values are equal to source', () => {
-         const result = lens.updateFields(source, {
+      it('returns same source reference if field values unchanged', () => {
+         const result = lens.setFieldValues(source, {
             counter: source.counter
+         })
+         expect(result).to.equal(source)
+         expect(result).to.deep.equal(source)
+      })
+
+      it('returns same source reference if updated field values are unchanged', () => {
+         const result = lens.updateFields(source, {
+            counter: () => source.counter
          })
          expect(result).to.equal(source)
          expect(result).to.deep.equal(source)

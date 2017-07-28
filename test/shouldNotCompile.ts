@@ -186,38 +186,56 @@ counterLens.update(source, (counter: number) => '42')
 // Updating object with wrong output type updater @shouldNotCompile
 todoLens.update(source, (todo) => 'todo')
 
+// Setting field values with primitive-focused lens @shouldNotCompile
+counterLens.setFieldValues(source, {})
+
 // Updating fields with primitive-focused lens @shouldNotCompile
 counterLens.updateFields(source, {})
 
-// Updating null fields @shouldNotCompile
+// Setting field values with null fields @shouldNotCompile
+todoLens.setFieldValues(source, null)
+
+// Updating fields with null updaters @shouldNotCompile
 todoLens.updateFields(source, null)
 
-// Updating undefined fields @shouldNotCompile
+// Setting field values with undefined fields @shouldNotCompile
+todoLens.setFieldValues(source, undefined)
+
+// Updating fields with undefined updaters @shouldNotCompile
 todoLens.updateFields(source, undefined)
 
-// Updating unknown fields @shouldNotCompile
-todoLens.updateFields(source, {unknown: ''})
+// Setting field values for unknown fields @shouldNotCompile
+todoLens.setFieldValues(source, {unknown: ''})
 
-// Updating primitive field with wrong type @shouldNotCompile
-todoLens.updateFields(source, {input: 42})
+// Updating unknown fields @shouldNotCompile
+todoLens.updateFields(source, {unknown: () => ''})
+
+// Setting primitive field values with wrong types @shouldNotCompile
+todoLens.setFieldValues(source, {input: 42})
+
+// Setting field values with array @shouldNotCompile
+todoLens.setFieldValues(source, [])
 
 // Updating fields with array @shouldNotCompile
 todoLens.updateFields(source, [])
 
-// Updating primitive field with wrong input type updater @shouldNotCompile
+// Updating fields with wrong input type updaters @shouldNotCompile
 todoLens.updateFields(source, {input: (v: number) => ''})
 
-// Updating primitive field with wrong output type updater @shouldNotCompile
+// Updating fields with wrong output type updaters @shouldNotCompile
 todoLens.updateFields(source, {input: (v: string) => 42})
 
-// Updating object field with wrong type @shouldNotCompile
-lens.updateFields(source, {todo: {}})
+// Setting object field values with wrong type @shouldNotCompile
+lens.setFieldValues(source, {todo: {}})
 
-// Updating object field with wrong input type updater @shouldNotCompile
+// Updating object fields with wrong input type updaters @shouldNotCompile
 lens.updateFields(source, {todo: (value: { input: number }) => source.todo})
 
-// Updating object field with wrong output type updater @shouldNotCompile
+// Updating object fields with wrong output type updaters @shouldNotCompile
 lens.updateFields(source, {todo: (value) => ({})})
+
+// Setting field values of array @shouldNotCompile
+todoListLens.setFieldValues(source, {})
 
 // Updating fields of array @shouldNotCompile
 todoListLens.updateFields(source, {})
@@ -238,11 +256,17 @@ const indexedFocusedRead: string = todoListItemLens.read(source)
 // Focusing on key of optional value @shouldNotCompile
 userLens.focusOn('name')
 
-// Updating fields of optional value @shouldNotCompile
-userLens.updateFields(source, {name: 'toto'})
+// Setting field values of optional target @shouldNotCompile
+userLens.setFieldValues(source, {name: 'toto'})
+
+// Updating fields of optional target @shouldNotCompile
+userLens.updateFields(source, {name: () => 'toto'})
+
+// Setting field values with index-focused lens @shouldNotCompile
+todoListItemLens.setFieldValues(source, {done: true})
 
 // Updating fields of index-focused value @shouldNotCompile
-todoListItemLens.updateFields(source, {done: true})
+todoListItemLens.updateFields(source, {done: () => true})
 
 // Defaulting to wrong type @shouldNotCompile
 todoListItemLens.defaultTo({})
