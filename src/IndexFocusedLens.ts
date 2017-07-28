@@ -30,6 +30,7 @@ export class IndexFocusedLens<T, Item> implements Lens<T, Item> {
       const value = this.read(source)
       if (value === undefined) throw Error('No value defined at ' + this.getPath())
       const newValue = updater(value)
+      // TODO Optimize by checking reference equality here (save a read() in setValue())
       return this.setValue(source, newValue)
    }
 
@@ -47,9 +48,5 @@ export class IndexFocusedLens<T, Item> implements Lens<T, Item> {
 
    defaultTo<SafeTarget>(this: Lens<T, SafeTarget | undefined>, value: SafeTarget): Lens<T, SafeTarget> {
       return new DefaultValueLens(this, value)
-   }
-
-   abortIfUndefined<SafeTarget>(): Lens<T, SafeTarget> {
-      throw new Error("Method not implemented.")
    }
 }

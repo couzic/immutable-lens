@@ -298,6 +298,3 @@ const userUpdated: Source = userLens.update(source, (current: User) => source.us
 
 // Updating indexed-focused value with non-optional input updater @shouldNotButDoesCompile
 todoListItemLens.update(source, (item: TodoItem) => item)
-
-// Aborting if undefined on non-optional value @shouldNotButDoesCompile
-counterLens.abortIfUndefined()
