@@ -1,9 +1,9 @@
 import {Lens, NotAnArray} from './Lens'
-import {SafeFocusedLens} from './SafeFocusedLens'
+import {AbstractLens} from './AbstractLens'
 import {DefaultValueLens} from './DefaultValueLens'
 import {IndexFocusedLens} from './IndexFocusedLens'
 
-export class KeyFocusedLens<T, ParentTarget extends object, K extends keyof ParentTarget, Target extends ParentTarget[K]> extends SafeFocusedLens<T, Target> {
+export class KeyFocusedLens<T, ParentTarget extends object, K extends keyof ParentTarget, Target extends ParentTarget[K]> extends AbstractLens<T, Target> {
    constructor(private readonly parentLens: Lens<T, ParentTarget>,
                private readonly key: K) {
       super()

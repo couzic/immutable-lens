@@ -2,7 +2,7 @@ import {FieldUpdaters, FieldValues, Lens, NotAnArray, ValueUpdater} from './Lens
 import {setFieldValues} from './setFieldValues'
 import {updateFields} from './updateFields'
 
-export abstract class SafeFocusedLens<T, Target> implements Lens<T, Target> {
+export abstract class AbstractLens<T, Target> implements Lens<T, Target> {
 
    abstract focusOn<K extends keyof Target>(this: Lens<T, Target & NotAnArray>, key: K): Lens<T, Target[K]>
 

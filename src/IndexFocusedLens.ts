@@ -1,9 +1,11 @@
-import {FieldUpdaters, FieldValues, Lens, ValueUpdater} from './Lens'
+import {FieldUpdaters, FieldValues, Lens} from './Lens'
 import {DefaultValueLens} from './DefaultValueLens'
+import {AbstractLens} from './AbstractLens'
 
-export class IndexFocusedLens<T, Item> implements Lens<T, Item> {
+export class IndexFocusedLens<T, Item> extends AbstractLens<T, Item> {
    constructor(private readonly parentLens: Lens<T, Item[]>,
                private readonly index: number) {
+      super()
    }
 
    focusOn<K extends keyof Item>(key: K): Lens<T, Item[K]> {
@@ -24,14 +26,6 @@ export class IndexFocusedLens<T, Item> implements Lens<T, Item> {
       const copy = [...array]
       copy[this.index] = newValue
       return this.parentLens.setValue(source, copy)
-   }
-
-   update(source: T, updater: ValueUpdater<Item>): T {
-      const value = this.read(source)
-      if (value === undefined) throw Error('No value defined at ' + this.getPath())
-      const newValue = updater(value)
-      // TODO Optimize by checking reference equality here (save a read() in setValue())
-      return this.setValue(source, newValue)
    }
 
    setFieldValues(source: T, fields: FieldValues<Item>): T {
