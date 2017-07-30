@@ -18,7 +18,6 @@ export abstract class AbstractLens<T, Target> implements Lens<T, Target> {
 
    update(source: T, updater: ValueUpdater<Target>): T {
       const value = this.read(source)
-      if (value === undefined) throw Error('No value defined at ' + this.getPath())
       const newValue = updater(value)
       if (newValue === value) return source
       return this.setValue(source, newValue)

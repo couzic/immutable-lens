@@ -289,6 +289,20 @@ lens.focusOn('matrix').focusIndex(0).focusIndex(0)
 // Creating lens with optional type @shouldNotCompile
 createLens<{} | undefined>()
 
+// Accessing properties of optional target in updater @shouldNotCompile
+userLens.update(source, (user) => {
+   const name = user.name
+   return user
+})
+
+// Accessing properties in updaters of optional fields @shouldNotCompile
+lens.updateFields(source, {
+   user: (user) => {
+      const name = user.name
+      return user
+   }
+})
+
 //////////////////////////////////
 // Should not but does compile //
 ////////////////////////////////

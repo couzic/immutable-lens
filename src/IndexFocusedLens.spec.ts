@@ -68,8 +68,15 @@ describe('IndexFocusedLens', () => {
             expect(result.users).to.deep.equal([newUser])
          })
 
-         it('throws error when updating value', () => {
-            expect(() => lens.update(data, v => v)).to.throw()
+         it('returns same reference when updater returns undefined', () => {
+            const result = lens.update(data, user => undefined)
+            expect(result).to.equal(data)
+         })
+
+         it('updates target', () => {
+            const updatedUser = {name: 'Updated User'}
+            const result = lens.update(data, user => updatedUser)
+            expect(result.users[0]).to.equal(updatedUser)
          })
       })
    })

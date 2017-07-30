@@ -198,8 +198,15 @@ describe('KeyFocusedLens', () => {
             expect(lens.read(data)).to.equal(undefined)
          })
 
-         it('throws error when updating undefined value', () => {
-            expect(() => lens.update(source, v => v)).to.throw()
+         it('returns same reference when updater returns undefined', () => {
+            const result = lens.update(data, user => undefined)
+            expect(result).to.equal(data)
+         })
+
+         it('updates target', () => {
+            const updatedUser = {name: 'Updated User'}
+            const result = lens.update(data, user => updatedUser)
+            expect(result.user).to.equal(updatedUser)
          })
       })
    })

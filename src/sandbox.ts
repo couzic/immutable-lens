@@ -1,4 +1,4 @@
-import {createLens} from './Lens'
+import {createLens, Lens, UnfocusedLens} from './Lens'
 
 export type TodoItem = {
    title: string
@@ -44,6 +44,12 @@ export const source: Source = {
    },
    user: undefined
 }
+
+const lens: UnfocusedLens<Source> = createLens(source)
+const todoLens: Lens<Source, number> = lens.focusOn('counter')
+const userLens: Lens<Source, User | undefined> = lens.focusOn('user')
+
+userLens.focusOn('name').setValue(source, 'Bob')
 
 createLens(source)
    .focusOn('todo')

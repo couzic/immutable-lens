@@ -8,8 +8,16 @@ describe('DefaultValueLens', () => {
       type Data = { user?: User }
       const lens = createLens<Data>().focusOn('user').defaultTo(undefined)
 
-      it('throws error when updating value', () => {
-         expect(() => lens.update({}, v => v)).to.throw()
+      it('returns same reference when updater returns undefined', () => {
+         const data = {}
+         const result = lens.update(data, user => undefined)
+         expect(result).to.equal(data)
+      })
+
+      it('updates target', () => {
+         const updatedUser = {name: 'Updated User'}
+         const result = lens.update({}, user => updatedUser)
+         expect(result.user).to.equal(updatedUser)
       })
 
       it('can override default to defined value', () => {
