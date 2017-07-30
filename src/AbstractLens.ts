@@ -20,21 +20,21 @@ export abstract class AbstractLens<T, Target> implements Lens<T, Target> {
       const value = this.read(source)
       if (value === undefined) throw Error('No value defined at ' + this.getPath())
       const newValue = updater(value)
-      // TODO Optimize by checking reference equality here (save a read() in setValue())
+      if (newValue === value) return source
       return this.setValue(source, newValue)
    }
 
    setFieldValues(source: T, fields: FieldValues<Target>): T {
       const currentTarget = this.read(source)
       const updatedTarget = setFieldValues(currentTarget, fields)
-      // TODO Optimize by checking reference equality here (save a call to setValue())
+      if (updatedTarget === currentTarget) return source
       return this.setValue(source, updatedTarget)
    }
 
    updateFields(source: T, fields: FieldUpdaters<Target>): T {
       const currentTarget = this.read(source)
       const updatedTarget = updateFields(currentTarget, fields)
-      // TODO Optimize by checking target references here (save a read() in setValue())
+      if (updatedTarget === currentTarget) return source
       return this.setValue(source, updatedTarget)
    }
 }

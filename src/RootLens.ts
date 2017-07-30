@@ -38,7 +38,7 @@ export class RootLens<T extends object> implements UnfocusedLens<T> {
    }
 
    defaultTo<SafeTarget>(value: SafeTarget): Lens<T, SafeTarget> {
-      throw Error('createLens() does NOT support optional types') // TODO Support optional types
+      throw Error('createLens() does NOT support optional types')
    }
 }
 
