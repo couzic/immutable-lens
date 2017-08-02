@@ -1,4 +1,4 @@
-import {FieldUpdaters, FieldValues, Lens} from './Lens'
+import {FieldUpdaters, FieldValues, Lens, ValueUpdater} from './Lens'
 import {DefaultValueLens} from './DefaultValueLens'
 import {AbstractLens} from './AbstractLens'
 
@@ -20,19 +20,21 @@ export class IndexFocusedLens<T, Item> extends AbstractLens<T, Item> {
       return this.parentLens.read(source)[this.index]
    }
 
-   setValue(source: T, newValue: Item): T {
-      const array = this.parentLens.read(source)
-      if (array[this.index] === newValue) return source
-      const copy = [...array]
-      copy[this.index] = newValue
-      return this.parentLens.setValue(source, copy)
+   setValue(newValue: Item): ValueUpdater<T> {
+      return (source: T) => {
+         const array = this.parentLens.read(source)
+         if (array[this.index] === newValue) return source
+         const copy = [...array]
+         copy[this.index] = newValue
+         return this.parentLens.setValue(copy)(source)
+      }
    }
 
-   setFieldValues(source: T, fields: FieldValues<Item>): T {
+   setFieldValues(fields: FieldValues<Item>): ValueUpdater<T> {
       throw Error('setFieldValues() can NOT be called on a Lens focused on a possibly undefined value. Try calling defaultTo() first.')
    }
 
-   updateFields(source: T, fields: FieldUpdaters<Item>): T {
+   updateFields(fields: FieldUpdaters<Item>): ValueUpdater<T> {
       throw Error('updateFields() can NOT be called on a Lens focused on a possibly undefined value. Try calling defaultTo() first.')
    }
 

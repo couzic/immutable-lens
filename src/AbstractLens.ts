@@ -10,30 +10,36 @@ export abstract class AbstractLens<T, Target> implements Lens<T, Target> {
 
    abstract read(source: T): Target
 
-   abstract setValue(source: T, newValue: Target): T
+   abstract setValue(newValue: Target): ValueUpdater<T>
 
    abstract getPath(): string
 
    abstract defaultTo<SafeTarget>(this: Lens<T, SafeTarget | undefined>, value: SafeTarget): Lens<T, SafeTarget>
 
-   update(source: T, updater: ValueUpdater<Target>): T {
-      const value = this.read(source)
-      const newValue = updater(value)
-      if (newValue === value) return source
-      return this.setValue(source, newValue)
+   update(updater: ValueUpdater<Target>): ValueUpdater<T> {
+      return (source: T) => {
+         const value = this.read(source)
+         const newValue = updater(value)
+         if (newValue === value) return source
+         return this.setValue(newValue)(source)
+      }
    }
 
-   setFieldValues(source: T, fields: FieldValues<Target>): T {
-      const currentTarget = this.read(source)
-      const updatedTarget = setFieldValues(currentTarget, fields)
-      if (updatedTarget === currentTarget) return source
-      return this.setValue(source, updatedTarget)
+   setFieldValues(fields: FieldValues<Target>): ValueUpdater<T> {
+      return (source: T) => {
+         const currentTarget = this.read(source)
+         const updatedTarget = setFieldValues(currentTarget, fields)
+         if (updatedTarget === currentTarget) return source
+         return this.setValue(updatedTarget)(source)
+      }
    }
 
-   updateFields(source: T, fields: FieldUpdaters<Target>): T {
-      const currentTarget = this.read(source)
-      const updatedTarget = updateFields(currentTarget, fields)
-      if (updatedTarget === currentTarget) return source
-      return this.setValue(source, updatedTarget)
+   updateFields(fields: FieldUpdaters<Target>): ValueUpdater<T> {
+      return (source: T) => {
+         const currentTarget = this.read(source)
+         const updatedTarget = updateFields(currentTarget, fields)
+         if (updatedTarget === currentTarget) return source
+         return this.setValue(updatedTarget)(source)
+      }
    }
 }

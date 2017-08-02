@@ -27,27 +27,27 @@ describe('IndexFocusedLens', () => {
 
          it('can set value', () => {
             const newUser: User = {name: 'New User'}
-            const result = lens.setValue(data, newUser)
+            const result = lens.setValue(newUser)(data)
             expect(result.users.length).to.equal(data.users.length)
             expect(result.users[0]).to.equal(newUser)
             expect(result.users[0]).to.deep.equal(newUser)
          })
 
          it('returns same data reference if value does not change', () => {
-            const result = lens.setValue(data, data.users[0])
+            const result = lens.setValue(data.users[0])(data)
             expect(result).to.equal(data)
          })
 
          it('can update value', () => {
             const user: User = {name: 'Updated User'}
-            const result = lens.update(data, () => user)
+            const result = lens.update(() => user)(data)
             expect(result).not.to.equal(data)
             expect(result.users[0]).to.equal(user)
             expect(result.users[0]).to.deep.equal(user)
          })
 
          it('returns same data reference if updated value unchanged', () => {
-            const result = lens.update(data, () => definedUser)
+            const result = lens.update(() => definedUser)(data)
             expect(result).to.equal(data)
          })
       })
@@ -62,20 +62,20 @@ describe('IndexFocusedLens', () => {
 
          it('can set value', () => {
             const newUser: User = {name: 'New User'}
-            const result = lens.setValue(data, newUser)
+            const result = lens.setValue(newUser)(data)
             expect(result).not.to.equal(data)
             expect(result.users.length).to.not.equal(data.users.length)
             expect(result.users).to.deep.equal([newUser])
          })
 
          it('returns same reference when updater returns undefined', () => {
-            const result = lens.update(data, user => undefined)
+            const result = lens.update(user => undefined)(data)
             expect(result).to.equal(data)
          })
 
          it('updates target', () => {
             const updatedUser = {name: 'Updated User'}
-            const result = lens.update(data, user => updatedUser)
+            const result = lens.update(user => updatedUser)(data)
             expect(result.users[0]).to.equal(updatedUser)
          })
       })

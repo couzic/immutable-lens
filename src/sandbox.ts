@@ -1,4 +1,27 @@
-import {createLens, Lens, UnfocusedLens} from './Lens'
+import {createLens} from './Lens'
+
+type State = {
+   user: {
+      name: string
+   }
+}
+const state: State = {user: {name: 'Bob'}}
+
+const lens = createLens<State>() // OR
+// const lens = createLens(state)
+
+const userLens = lens.focusOn('user')
+const userNameLens = userLens.focusOn('name')
+
+const updatedState: State =
+   // ALL EQUIVALENT
+   userNameLens.setValue(state, 'BOB')
+userNameLens.update(state, (name) => name.toUpperCase())
+userLens.setFieldValues(state, {name: 'BOB'})
+userLens.updateFields(state, {name: (name) => name.toUpperCase()})
+
+console.log(updatedState) // {user: {name: 'BOB'}}
+
 
 export type TodoItem = {
    title: string
@@ -44,12 +67,6 @@ export const source: Source = {
    },
    user: undefined
 }
-
-const lens: UnfocusedLens<Source> = createLens(source)
-const todoLens: Lens<Source, number> = lens.focusOn('counter')
-const userLens: Lens<Source, User | undefined> = lens.focusOn('user')
-
-userLens.focusOn('name').setValue(source, 'Bob')
 
 createLens(source)
    .focusOn('todo')

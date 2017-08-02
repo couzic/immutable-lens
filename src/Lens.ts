@@ -21,13 +21,13 @@ export interface Lens<T, Target> {
 
    read(source: T): Target
 
-   setValue(source: T, newValue: Target): T
+   setValue(newValue: Target): ValueUpdater<T>
 
-   update(source: T, updater: ValueUpdater<Target>): T
+   update(updater: ValueUpdater<Target>): ValueUpdater<T>
 
-   setFieldValues(this: Lens<T, Target & NotAnArray>, source: T, fields: FieldValues<Target>): T
+   setFieldValues(this: Lens<T, Target & NotAnArray>, fields: FieldValues<Target>): ValueUpdater<T>
 
-   updateFields(this: Lens<T, Target & NotAnArray>, source: T, updaters: FieldUpdaters<Target>): T
+   updateFields(this: Lens<T, Target & NotAnArray>, updaters: FieldUpdaters<Target>): ValueUpdater<T>
 
    getPath(): string
 

@@ -17,20 +17,20 @@ export class RootLens<T extends object> implements UnfocusedLens<T> {
       return source
    }
 
-   setValue(source: T, newValue: T): T {
-      return newValue
+   setValue(newValue: T): ValueUpdater<T> {
+      return () => newValue
    }
 
-   update(source: T, updater: ValueUpdater<T>): T {
-      return updater(source)
+   update(updater: ValueUpdater<T>): ValueUpdater<T> {
+      return updater
    }
 
-   setFieldValues(source: T, fields: FieldValues<T>): T {
-      return setFieldValues(source, fields)
+   setFieldValues(fields: FieldValues<T>): ValueUpdater<T> {
+      return (source: T) => setFieldValues(source, fields)
    }
 
-   updateFields(source: T, fields: FieldUpdaters<T>): T {
-      return updateFields(source, fields)
+   updateFields(fields: FieldUpdaters<T>): ValueUpdater<T> {
+      return (source: T) => updateFields(source, fields)
    }
 
    getPath() {

@@ -2,7 +2,7 @@
 
 #### Type-safe Lens API for immutable updates in complex data structures
 
-### Introduction
+### Features
  - No mutations
  - Powerful API
 
@@ -18,13 +18,11 @@ $ npm i -S immutable-lens
 import {createLens} from 'immutable-lens'
 
 type State = {
-   counter: number
    user: {
-      id: string
       name: string
    }
 }
-const state: State = { ... }
+const state: State = {user: {name: 'Bob'}}
 
 const lens = createLens<State>() // OR
 const lens = createLens(state)
@@ -32,17 +30,21 @@ const lens = createLens(state)
 
 #### Focus
 ```ts
-const counterLens = lens.focusOn('counter')
-const userNameLens = lens.focusOn('user').focusOn('name')
+const userLens = lens.focusOn('user')
+const userNameLens = userLens.focusOn('name')
 ```
 
-#### Update
+#### Describe and apply updates
 ```ts
-const updatedState: State = 
-   userNameLens.setValue(state, 'Bob')
-   userNameLens.update(state, name => 'Bob')
-   lens.focusOn('user').setFieldValues(state, {name: 'Bob'})
-   lens.focusOn('user').updateFields(state, {name: () => 'Bob'})
+const upperCaseUserName: (state: State) => State = 
+   // ALL EQUIVALENT
+   userNameLens.setValue('BOB')
+   userNameLens.update(name => name.toUpperCase())
+   userLens.setFieldValues({name: 'BOB'})
+   userLens.updateFields({name: (name) => name.toUpperCase()})
+   
+const updatedState = upperCaseUserName(state) 
+console.log(updatedState) // {user: {name: 'BOB'}}
 ```
 
 #### Optional types

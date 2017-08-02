@@ -10,13 +10,13 @@ describe('DefaultValueLens', () => {
 
       it('returns same reference when updater returns undefined', () => {
          const data = {}
-         const result = lens.update(data, user => undefined)
+         const result = lens.update(user => undefined)(data)
          expect(result).to.equal(data)
       })
 
       it('updates target', () => {
          const updatedUser = {name: 'Updated User'}
-         const result = lens.update({}, user => updatedUser)
+         const result = lens.update(user => updatedUser)({})
          expect(result.user).to.equal(updatedUser)
       })
 
@@ -54,18 +54,18 @@ describe('DefaultValueLens', () => {
 
          it('can set value', () => {
             const newUser: User = {name: 'New User'}
-            const result = lens.setValue(data, newUser)
+            const result = lens.setValue(newUser)(data)
             expect(result.user).to.equal(newUser)
          })
 
          it('can update value', () => {
             const updatedName = 'Updated Name'
-            const result = lens.update(data, user => ({name: updatedName}))
+            const result = lens.update(user => ({name: updatedName}))(data)
             expect(result.user).to.deep.equal({name: updatedName})
          })
 
          it('can update fields', () => {
-            const result = lens.updateFields(data, {name: (name) => name.toUpperCase()})
+            const result = lens.updateFields({name: (name) => name.toUpperCase()})(data)
             expect(result.user).to.deep.equal({name: defaultUser.name.toUpperCase()})
          })
       })
@@ -88,12 +88,12 @@ describe('DefaultValueLens', () => {
 
          it('can set field values', () => {
             const newName = 'New Name'
-            const result = lens.setFieldValues(data, {name: newName})
+            const result = lens.setFieldValues({name: newName})(data)
             expect(result.user).to.deep.equal({name: newName})
          })
 
          it('can update fields', () => {
-            const result = lens.updateFields(data, {name: (name) => name.toUpperCase()})
+            const result = lens.updateFields({name: (name) => name.toUpperCase()})(data)
             expect(result.user).to.deep.equal({name: definedUser.name.toUpperCase()})
          })
       })
