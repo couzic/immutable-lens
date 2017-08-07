@@ -1,4 +1,4 @@
-import {createLens} from './Lens'
+import {createLens, FocusedUpdater} from './Lens'
 
 type State = {
    user: {
@@ -13,13 +13,14 @@ const lens = createLens<State>() // OR
 const userLens = lens.focusOn('user')
 const userNameLens = userLens.focusOn('name')
 
-const updatedState: State =
-   // ALL EQUIVALENT
-   userNameLens.setValue(state, 'BOB')
-userNameLens.update(state, (name) => name.toUpperCase())
-userLens.setFieldValues(state, {name: 'BOB'})
-userLens.updateFields(state, {name: (name) => name.toUpperCase()})
+const upperCaseUserName: (state: State) => State =
+// ALL EQUIVALENT
+   userNameLens.setValue('BOB')
+userNameLens.update(name => name.toUpperCase())
+userLens.setFieldValues({name: 'BOB'})
+userLens.updateFields({name: (name) => name.toUpperCase()})
 
+const updatedState = upperCaseUserName(state)
 console.log(updatedState) // {user: {name: 'BOB'}}
 
 
@@ -68,10 +69,10 @@ export const source: Source = {
    user: undefined
 }
 
-createLens(source)
+const setNewVal: FocusedUpdater<Source> = createLens(source)
    .focusOn('todo')
    .focusOn('input')
-   .setValue(source, 'New val')
+   .setValue('New val')
 
 
 
