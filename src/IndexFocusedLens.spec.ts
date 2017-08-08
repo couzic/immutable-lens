@@ -68,7 +68,7 @@ describe('IndexFocusedLens', () => {
             expect(result.users).to.deep.equal([newUser])
          })
 
-         it('returns same reference when updater returns undefined', () => {
+         it('returns same reference when update returns undefined', () => {
             const result = lens.update(user => undefined)(data)
             expect(result).to.equal(data)
          })

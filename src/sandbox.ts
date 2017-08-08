@@ -1,4 +1,4 @@
-import {createLens, FocusedUpdater} from './Lens'
+import {createLens, Update} from './Lens'
 
 type State = {
    user: {
@@ -69,7 +69,7 @@ export const source: Source = {
    user: undefined
 }
 
-const setNewVal: FocusedUpdater<Source> = createLens(source)
+const setNewVal: Update<Source> = createLens(source)
    .focusOn('todo')
    .focusOn('input')
    .setValue('New val')

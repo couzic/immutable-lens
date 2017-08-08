@@ -4,13 +4,11 @@ export interface NotAnArray {
    reduceRight?: 'NotAnArray'
 }
 
-export interface FocusedUpdater<V> {
-   (value: V): V
-}
+export type Update<T> = (value: T) => T
 
 export type FieldValues<T> = object & NotAnArray & { [K in keyof T]?: T[K] }
 
-export type FieldUpdaters<T> = object & NotAnArray & { [K in keyof T]?: FocusedUpdater<T[K]> }
+export type FieldUpdates<T> = object & NotAnArray & { [K in keyof T]?: Update<T[K]> }
 
 export interface Lens<T, Target> {
 
@@ -22,13 +20,13 @@ export interface Lens<T, Target> {
 
    read(source: T): Target
 
-   setValue(newValue: Target): FocusedUpdater<T>
+   setValue(newValue: Target): Update<T>
 
-   update(updater: FocusedUpdater<Target>): FocusedUpdater<T>
+   update(update: Update<Target>): Update<T>
 
-   setFieldValues(this: Lens<T, Target & NotAnArray>, fields: FieldValues<Target>): FocusedUpdater<T>
+   setFieldValues(this: Lens<T, Target & NotAnArray>, newValues: FieldValues<Target>): Update<T>
 
-   updateFields(this: Lens<T, Target & NotAnArray>, updaters: FieldUpdaters<Target>): FocusedUpdater<T>
+   updateFields(this: Lens<T, Target & NotAnArray>, updates: FieldUpdates<Target>): Update<T>
 
    getPath(): string
 

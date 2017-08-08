@@ -141,7 +141,7 @@ describe('KeyFocusedLens', () => {
          expect(result).to.deep.equal(source)
       })
 
-      it('can update fields with value updaters', () => {
+      it('can update fields with value updates', () => {
          const result = lens.updateFields({
             count: v => v + 1
          })(source)
@@ -157,7 +157,7 @@ describe('KeyFocusedLens', () => {
          })
       })
 
-      it('returns same source reference when value updaters return same values', () => {
+      it('returns same source reference when updates return same values', () => {
          const result = lens.updateFields({
             count: v => v
          })(source)
@@ -198,7 +198,7 @@ describe('KeyFocusedLens', () => {
             expect(lens.read(data)).to.equal(undefined)
          })
 
-         it('returns same reference when updater returns undefined', () => {
+         it('returns same reference when update returns undefined', () => {
             const result = lens.update(user => undefined)(data)
             expect(result).to.equal(data)
          })

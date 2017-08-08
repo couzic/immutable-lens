@@ -1,4 +1,4 @@
-import {FieldUpdaters, FieldValues, Lens, NotAnArray, FocusedUpdater} from './Lens'
+import {FieldUpdates, FieldValues, Lens, NotAnArray, Update} from './Lens'
 import {setFieldValues} from './setFieldValues'
 import {updateFields} from './updateFields'
 
@@ -10,34 +10,34 @@ export abstract class AbstractLens<T, Target> implements Lens<T, Target> {
 
    abstract read(source: T): Target
 
-   abstract setValue(newValue: Target): FocusedUpdater<T>
+   abstract setValue(newValue: Target): Update<T>
 
    abstract getPath(): string
 
    abstract defaultTo<SafeTarget>(this: Lens<T, SafeTarget | undefined>, value: SafeTarget): Lens<T, SafeTarget>
 
-   update(updater: FocusedUpdater<Target>): FocusedUpdater<T> {
+   update(update: Update<Target>): Update<T> {
       return (source: T) => {
          const value = this.read(source)
-         const newValue = updater(value)
+         const newValue = update(value)
          if (newValue === value) return source
          return this.setValue(newValue)(source)
       }
    }
 
-   setFieldValues(fields: FieldValues<Target>): FocusedUpdater<T> {
+   setFieldValues(newValues: FieldValues<Target>): Update<T> {
       return (source: T) => {
          const currentTarget = this.read(source)
-         const updatedTarget = setFieldValues(currentTarget, fields)
+         const updatedTarget = setFieldValues(currentTarget, newValues)
          if (updatedTarget === currentTarget) return source
          return this.setValue(updatedTarget)(source)
       }
    }
 
-   updateFields(fields: FieldUpdaters<Target>): FocusedUpdater<T> {
+   updateFields(updates: FieldUpdates<Target>): Update<T> {
       return (source: T) => {
          const currentTarget = this.read(source)
-         const updatedTarget = updateFields(currentTarget, fields)
+         const updatedTarget = updateFields(currentTarget, updates)
          if (updatedTarget === currentTarget) return source
          return this.setValue(updatedTarget)(source)
       }

@@ -8,7 +8,7 @@ describe('DefaultValueLens', () => {
       type Data = { user?: User }
       const lens = createLens<Data>().focusOn('user').defaultTo(undefined)
 
-      it('returns same reference when updater returns undefined', () => {
+      it('returns same reference when update returns undefined', () => {
          const data = {}
          const result = lens.update(user => undefined)(data)
          expect(result).to.equal(data)

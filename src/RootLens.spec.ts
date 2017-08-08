@@ -48,7 +48,7 @@ describe('RootLens', () => {
          })
       })
 
-      it('can update fields with updater', () => {
+      it('can update fields with Update', () => {
          const result = lens.updateFields({
             counter: (v) => v + 1,
             todo: (v) => v
@@ -82,7 +82,7 @@ describe('RootLens', () => {
          expect(result).to.deep.equal(source)
       })
 
-      it('returns same source reference if updaters do not change values', () => {
+      it('returns same source reference if updates do not change values', () => {
          const result = lens.updateFields({
             counter: v => v
          })(source)

@@ -1,4 +1,4 @@
-import {FieldUpdaters, FieldValues, Lens, UnfocusedLens, FocusedUpdater} from './Lens'
+import {FieldUpdates, FieldValues, Lens, UnfocusedLens, Update} from './Lens'
 import {KeyFocusedLens} from './KeyFocusedLens'
 import {IndexFocusedLens} from './IndexFocusedLens'
 import {updateFields} from './updateFields'
@@ -17,19 +17,19 @@ export class RootLens<T extends object> implements UnfocusedLens<T> {
       return source
    }
 
-   setValue(newValue: T): FocusedUpdater<T> {
+   setValue(newValue: T): Update<T> {
       return () => newValue
    }
 
-   update(updater: FocusedUpdater<T>): FocusedUpdater<T> {
-      return updater
+   update(update: Update<T>): Update<T> {
+      return update
    }
 
-   setFieldValues(fields: FieldValues<T>): FocusedUpdater<T> {
+   setFieldValues(fields: FieldValues<T>): Update<T> {
       return (source: T) => setFieldValues(source, fields)
    }
 
-   updateFields(fields: FieldUpdaters<T>): FocusedUpdater<T> {
+   updateFields(fields: FieldUpdates<T>): Update<T> {
       return (source: T) => updateFields(source, fields)
    }
 

@@ -1,2 +1,2 @@
 export * from './Lens'
-export * from './pipeUpdaters'
+export * from './pipeUpdates'
