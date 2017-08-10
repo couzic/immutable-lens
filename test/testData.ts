@@ -1,5 +1,3 @@
-import {createLens} from '../src/Lens'
-
 export type TodoItem = {
    title: string
    done: boolean
@@ -10,14 +8,6 @@ export type User = {
    address: {
       street: string
       city: string
-   }
-}
-
-export const bob: User = {
-   name: 'Bob',
-   address: {
-      street: '',
-      city: ''
    }
 }
 
@@ -44,7 +34,3 @@ export const source: Source = {
    },
    user: undefined
 }
-
-export const lens = createLens<Source>()
-export const todoLens = lens.focusOn('todo')
-export const todoListLens = todoLens.focusOn('list')

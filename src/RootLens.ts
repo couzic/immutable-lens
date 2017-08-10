@@ -3,6 +3,7 @@ import {KeyFocusedLens} from './KeyFocusedLens'
 import {IndexFocusedLens} from './IndexFocusedLens'
 import {updateFields} from './updateFields'
 import {setFieldValues} from './setFieldValues'
+import {pipeUpdates} from './pipeUpdates'
 
 export class RootLens<T extends object> implements UnfocusedLens<T> {
    focusOn<K extends keyof T>(key: K): Lens<T, T[K]> {
@@ -33,10 +34,15 @@ export class RootLens<T extends object> implements UnfocusedLens<T> {
       return (source: T) => updateFields(source, fields)
    }
 
+   pipe(...updates: Update<T>[]): Update<T> {
+      return pipeUpdates(...updates)
+   }
+
    getPath() {
       return 'source'
    }
 
+   // TODO Support optional types
    defaultTo<SafeTarget>(value: SafeTarget): Lens<T, SafeTarget> {
       throw Error('createLens() does NOT support optional types')
    }

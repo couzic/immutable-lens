@@ -26,7 +26,9 @@ export interface Lens<T, Target> {
 
    setFieldValues(this: Lens<T, Target & NotAnArray>, newValues: FieldValues<Target>): Update<T>
 
-   updateFields(this: Lens<T, Target & NotAnArray>, updates: FieldUpdates<Target>): Update<T>
+   updateFields(this: Lens<T, Target & NotAnArray>, fieldUpdates: FieldUpdates<Target>): Update<T>
+
+   pipe(...updates: Update<Target>[]): Update<T>
 
    getPath(): string
 

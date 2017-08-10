@@ -1,6 +1,7 @@
 import {FieldUpdates, FieldValues, Lens, NotAnArray, Update} from './Lens'
 import {setFieldValues} from './setFieldValues'
 import {updateFields} from './updateFields'
+import {pipeUpdates} from './pipeUpdates'
 
 export abstract class AbstractLens<T, Target> implements Lens<T, Target> {
 
@@ -34,12 +35,17 @@ export abstract class AbstractLens<T, Target> implements Lens<T, Target> {
       }
    }
 
-   updateFields(updates: FieldUpdates<Target>): Update<T> {
+   updateFields(fieldUpdates: FieldUpdates<Target>): Update<T> {
       return (source: T) => {
          const currentTarget = this.read(source)
-         const updatedTarget = updateFields(currentTarget, updates)
+         const updatedTarget = updateFields(currentTarget, fieldUpdates)
          if (updatedTarget === currentTarget) return source
          return this.setValue(updatedTarget)(source)
       }
    }
+
+   pipe(...updates: Update<Target>[]): Update<T> {
+      return this.update(pipeUpdates(...updates))
+   }
+
 }
