@@ -1,10 +1,12 @@
-# immutable-lens
+# WIP - immutable-lens
 
 #### Type-safe Lens API for immutable updates in complex data structures
 
 ### Features
- - No mutations
- - Powerful API
+ - No mutations (obviously...)
+ - Human-friendly API
+ - Bring in your favorite functional library (Ramda, lodash-fp, date-fns, Immutable.js...)
+ - Written in TypeScript for maximal type-safety
 
 ### Quickstart
 
@@ -22,10 +24,7 @@ type State = {
       name: string
    }
 }
-const state: State = {user: {name: 'Bob'}}
-
-const lens = createLens<State>() // OR
-const lens = createLens(state)
+const lens = createLens<State>()
 ```
 
 #### Focus
@@ -36,34 +35,35 @@ const userNameLens = userLens.focusOn('name')
 
 #### Describe and apply updates
 ```ts
-const upperCaseUserName: (state: State) => State = 
-   // ALL EQUIVALENT
-   userNameLens.setValue('BOB')
-   userNameLens.update(name => name.toUpperCase())
-   userLens.setFieldValues({name: 'BOB'})
-   userLens.updateFields({name: (name) => name.toUpperCase()})
-   
-const updatedState = upperCaseUserName(state) 
-console.log(updatedState) // {user: {name: 'BOB'}}
+const setUserNameToJohn = 
+   // THE FOUR LINES BELOW ARE ALL EQUIVALENT
+   userNameLens.setValue('John')
+   userNameLens.update(name => 'John')
+   userLens.setFieldValues({name: 'John'})
+   userLens.updateFields({name: (name) => 'John'})
+
+setUserNameToJohn({user: {name: 'Bob'}}) // {user: {name: 'John'}}
 ```
 
-#### Optional types
+#### Use `defaultTo()` to avoid undefined values when updating optional types
 ```ts
 type State = {
    loggedUser?: {
       name: string
    }
 }
-const state: State = { ... }
+const defaultUserLens = createLens<State>()
+   .focusOn('loggedUser')
+   .defaultTo({name: 'Default User'})
 
-const lens = createLens<State>()
-const loggedUserLens = lens.focusOn('loggedUser')
+const setLoggedUserNameToBob = defaultUserLens
+   .focusOn('name')
+   .setValue('Bob')
 
-loggedUserLens.setValue(state, {name: 'Bob}) // OK
-loggedUserLens.update(state, loggedUser => ({name: 'Bob'})) // OK (Runtime error if loggedUser udefined)
+setLoggedUserNameToBob({}) // {user: {name: 'Bob'}}
 
-loggedUserLens.setFieldValues(state, { ... }) // ERROR: 
-loggedUserLens.defaultTo({ id: '', name: 'Default User' })
 ```
 
+#### `pipe()`
 
+#### `getPath()`
