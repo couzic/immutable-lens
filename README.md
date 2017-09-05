@@ -1,4 +1,4 @@
-# WIP - immutable-lens
+# immutable-lens
 
 #### Type-safe Lens API for immutable updates in deep data structures
 
@@ -90,7 +90,6 @@ const name = nameLens.read(state) // 'Guest'
 
 const setNameToBob = nameLens.setValue('Bob')
 const updatedState = setNameToBob(state) // {user: {name: 'Bob', age: 0}}
-
 ```
 
 #### Use `pipe()` to compose updates
@@ -121,6 +120,21 @@ const setNameToJOHN = pipeUpdates(
 )
 
 const updatedState = setNameToJOHN(state) // {user: {name: 'JOHN', age: 18}}
+```
+
+#### Focus on array index
+```ts
+type Person = {
+   name: string
+}
+
+type State = {
+   friends: Person[] 
+}
+
+const firstFriendLens: Lens<State, Person | undefined> = createLens<State>()
+   .focusOn('friends')
+   .focusIndex(0)
 ```
 
 #### `getPath()`
