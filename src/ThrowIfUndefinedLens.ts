@@ -2,11 +2,10 @@ import {Lens, NotAnArray, Update} from './Lens'
 import {AbstractLens} from './AbstractLens'
 import {KeyFocusedLens} from './KeyFocusedLens'
 import {IndexFocusedLens} from './IndexFocusedLens'
-import {ThrowIfUndefinedLens} from './ThrowIfUndefinedLens'
+import {DefaultValueLens} from "./DefaultValueLens"
 
-export class DefaultValueLens<T, Target> extends AbstractLens<T, Target> {
-   constructor(private readonly parentLens: Lens<T, Target | undefined>,
-               private readonly defaultValue: Target) {
+export class ThrowIfUndefinedLens<T, Target> extends AbstractLens<T, Target> {
+   constructor(private readonly parentLens: Lens<T, Target | undefined>) {
       super()
    }
 
@@ -20,7 +19,7 @@ export class DefaultValueLens<T, Target> extends AbstractLens<T, Target> {
 
    read(source: T): Target {
       const value = this.parentLens.read(source)
-      if (value === undefined) return this.defaultValue
+      if (value === undefined) throw Error('Unable to read data: Undefined value')
       else return value
    }
 
@@ -29,14 +28,14 @@ export class DefaultValueLens<T, Target> extends AbstractLens<T, Target> {
    }
 
    getPath() {
-      return this.parentLens.getPath() + '?.defaultTo(' + JSON.stringify(this.defaultValue) + ')'
+      return this.parentLens.getPath() + '?.throwIfUndefined'
    }
 
-   defaultTo<SafeTarget>(this: DefaultValueLens<T, SafeTarget | undefined>, value: SafeTarget): Lens<T, SafeTarget> {
+   defaultTo<SafeTarget>(this: ThrowIfUndefinedLens<T, SafeTarget | undefined>, value: SafeTarget): Lens<T, SafeTarget> {
       return new DefaultValueLens(this.parentLens, value)
    }
 
-   throwIfUndefined<SafeTarget extends Target>(this: Lens<T, SafeTarget | undefined>): Lens<T, SafeTarget> {
-      return new ThrowIfUndefinedLens(this)
+   throwIfUndefined<SafeTarget>(this: Lens<T, SafeTarget>): Lens<T, SafeTarget> {
+      return this
    }
 }

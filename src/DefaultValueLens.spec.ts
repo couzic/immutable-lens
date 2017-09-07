@@ -25,6 +25,10 @@ describe('DefaultValueLens', () => {
          const user = lens.defaultTo({name}).read({})
          expect(user).to.deep.equal({name})
       })
+
+      it('can throw', () => {
+         expect(() => lens.throwIfUndefined().read({})).to.throw()
+      })
    })
 
    describe('when focused on object', () => {
@@ -67,6 +71,10 @@ describe('DefaultValueLens', () => {
          it('can update fields', () => {
             const result = lens.updateFields({name: (name) => name.toUpperCase()})(data)
             expect(result.user).to.deep.equal({name: defaultUser.name.toUpperCase()})
+         })
+
+         it('returns default value even if asked to throw if undefined', () => {
+            expect(lens.throwIfUndefined().read(data)).to.equal(defaultUser)
          })
       })
 

@@ -1,6 +1,7 @@
 import {FieldUpdates, FieldValues, Lens, Update} from './Lens'
 import {DefaultValueLens} from './DefaultValueLens'
 import {AbstractLens} from './AbstractLens'
+import {ThrowIfUndefinedLens} from './ThrowIfUndefinedLens'
 
 export class IndexFocusedLens<T, Item> extends AbstractLens<T, Item> {
    constructor(private readonly parentLens: Lens<T, Item[]>,
@@ -44,5 +45,9 @@ export class IndexFocusedLens<T, Item> extends AbstractLens<T, Item> {
 
    defaultTo<SafeTarget>(this: Lens<T, SafeTarget | undefined>, value: SafeTarget): Lens<T, SafeTarget> {
       return new DefaultValueLens(this, value)
+   }
+
+   throwIfUndefined<SafeTarget>(this: Lens<T, SafeTarget | undefined>): Lens<T, SafeTarget> {
+      return new ThrowIfUndefinedLens(this)
    }
 }

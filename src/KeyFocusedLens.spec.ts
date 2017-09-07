@@ -208,6 +208,10 @@ describe('KeyFocusedLens', () => {
             const result = lens.update(user => updatedUser)(data)
             expect(result.user).to.equal(updatedUser)
          })
+
+         it('can throw', () => {
+            lens.throwIfUndefined()
+         })
       })
    })
 

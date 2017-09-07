@@ -78,6 +78,10 @@ describe('IndexFocusedLens', () => {
             const result = lens.update(user => updatedUser)(data)
             expect(result.users[0]).to.equal(updatedUser)
          })
+
+         it('can throw', () => {
+            lens.throwIfUndefined()
+         })
       })
    })
 })

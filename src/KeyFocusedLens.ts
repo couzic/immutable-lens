@@ -2,6 +2,7 @@ import {Lens, NotAnArray, Update} from './Lens'
 import {AbstractLens} from './AbstractLens'
 import {DefaultValueLens} from './DefaultValueLens'
 import {IndexFocusedLens} from './IndexFocusedLens'
+import {ThrowIfUndefinedLens} from './ThrowIfUndefinedLens'
 
 export class KeyFocusedLens<T, ParentTarget extends object, K extends keyof ParentTarget, Target extends ParentTarget[K]> extends AbstractLens<T, Target> {
    constructor(private readonly parentLens: Lens<T, ParentTarget>,
@@ -37,5 +38,9 @@ export class KeyFocusedLens<T, ParentTarget extends object, K extends keyof Pare
 
    defaultTo<SafeTarget>(this: Lens<T, SafeTarget | undefined>, value: SafeTarget): Lens<T, SafeTarget> {
       return new DefaultValueLens(this, value)
+   }
+
+   throwIfUndefined<SafeTarget>(this: Lens<T, SafeTarget | undefined>): Lens<T, SafeTarget> {
+      return new ThrowIfUndefinedLens(this)
    }
 }

@@ -17,6 +17,8 @@ export abstract class AbstractLens<T, Target> implements Lens<T, Target> {
 
    abstract defaultTo<SafeTarget>(this: Lens<T, SafeTarget | undefined>, value: SafeTarget): Lens<T, SafeTarget>
 
+   abstract throwIfUndefined<SafeTarget extends Target>(this: Lens<T, SafeTarget | undefined>): Lens<T, SafeTarget>
+
    update(update: Update<Target>): Update<T> {
       return (source: T) => {
          const value = this.read(source)
