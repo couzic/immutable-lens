@@ -5,7 +5,7 @@ const ts = require('typescript')
 const chalk = require('chalk')
 const fs = require('fs')
 
-const tsOptions = {noImplicitAny: false, noEmit: true, strict: true}
+const tsOptions = {noImplicitAny: false, noEmit: true, strict: true, target: 'es5'}
 const expectedErrorCount = (fs.readFileSync('test/shouldNotCompile.ts', 'utf8').match(/@shouldNotCompile/g) || []).length
 const program = ts.createProgram(['test/shouldNotCompile'], tsOptions)
 const diagnostics = ts.getPreEmitDiagnostics(program)
@@ -19,5 +19,6 @@ else {
 }
 
 function errors(arr) {
+   // console.log(arr.filter(diag => diag.file.path !== '/home/mcouzic/WebstormProjects/immutable-lens/test/shouldNotCompile.ts').map(diag => diag.file.path + ', line ' + diag.file.getLineAndCharacterOfPosition(diag.start).line + ', message: ' + diag.messageText))
    return arr.map(diag => ({line: diag.file.getLineAndCharacterOfPosition(diag.start).line + 1}))
 }
