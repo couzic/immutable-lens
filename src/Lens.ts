@@ -12,6 +12,8 @@ export type FieldUpdates<T> = object & NotAnArray & { [K in keyof T]?: Update<T[
 
 export interface Lens<T, Target> {
 
+   readonly path: string
+
    focusOn<K extends keyof Target>(this: Lens<T, Target & NotAnArray>, key: K): Lens<T, Target[K]>
 
    // focusAt<NewTarget>(lens: Lens<Target, NewTarget>): Lens<T, NewTarget>
@@ -29,8 +31,6 @@ export interface Lens<T, Target> {
    updateFields(this: Lens<T, Target & NotAnArray>, fieldUpdates: FieldUpdates<Target>): Update<T>
 
    pipe(...updates: Update<Target>[]): Update<T>
-
-   getPath(): string
 
    defaultTo<SafeTarget extends Target>(this: Lens<T, SafeTarget | undefined>, value: SafeTarget): Lens<T, SafeTarget>
 

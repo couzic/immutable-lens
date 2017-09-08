@@ -8,8 +8,7 @@ describe('ThrowIfUndefinedLens', () => {
       const lens = createLens<Data>().focusOn('user').throwIfUndefined()
 
       it('returns path', () => {
-         const path = lens.getPath()
-         expect(path).to.equal('source.user?.throwIfUndefined')
+         expect(lens.path).to.equal('source.user?.throwIfUndefined')
       })
 
       it('returns itself when asked to throw if undefined', () => {

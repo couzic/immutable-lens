@@ -7,6 +7,10 @@ import {pipeUpdates} from './pipeUpdates'
 
 export class RootLens<T extends object> implements UnfocusedLens<T> {
 
+   get path() {
+      return 'source'
+   }
+
    focusOn<K extends keyof T>(key: K): Lens<T, T[K]> {
       return new KeyFocusedLens(this, key)
    }
@@ -37,10 +41,6 @@ export class RootLens<T extends object> implements UnfocusedLens<T> {
 
    pipe(...updates: Update<T>[]): Update<T> {
       return pipeUpdates(...updates)
-   }
-
-   getPath() {
-      return 'source'
    }
 
    // TODO Support optional types

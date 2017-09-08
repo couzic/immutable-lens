@@ -10,6 +10,11 @@ export class KeyFocusedLens<T, ParentTarget extends object, K extends keyof Pare
       super()
    }
 
+   get path() {
+      return this.parentLens.path + '.' + this.key
+   }
+
+
    focusOn<K extends keyof Target>(this: Lens<T, Target & NotAnArray>, key: K): Lens<T, Target[K]> {
       return new KeyFocusedLens(this, key)
    }
@@ -30,10 +35,6 @@ export class KeyFocusedLens<T, ParentTarget extends object, K extends keyof Pare
          parentCopy[this.key] = newValue
          return this.parentLens.setValue(parentCopy)(source)
       }
-   }
-
-   getPath() {
-      return this.parentLens.getPath() + '.' + this.key
    }
 
    defaultTo<SafeTarget>(this: Lens<T, SafeTarget | undefined>, value: SafeTarget): Lens<T, SafeTarget> {
