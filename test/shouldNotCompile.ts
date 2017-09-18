@@ -1,5 +1,5 @@
 import {createLens} from '../src/createLens'
-import {Lens} from '../src/Lens'
+import {Lens, Updater} from '../src/Lens'
 
 type TodoItem = {
    title: string
@@ -304,6 +304,12 @@ lens.updateFields({
 //////////////////////////////////
 // Should not but does compile //
 ////////////////////////////////
+
+// Adding unknown props in Updater output @shouldNotButDoesCompile
+const updater: Updater<Source> = (source) => ({
+   ...source,
+   unknownProp: 42
+})
 
 // Updating optional value with non-optional input updater @shouldNotButDoesCompile
 const userUpdated: Source = userLens.update((current: User) => source.user)(source)

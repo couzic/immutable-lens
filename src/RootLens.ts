@@ -5,7 +5,7 @@ import {updateFields} from './updateFields'
 import {setFieldValues} from './setFieldValues'
 import {pipe} from './pipe'
 
-export class RootLens<T extends object> implements UnfocusedLens<T> {
+export class RootLens<T extends {}> implements UnfocusedLens<T> {
 
    get path() {
       return 'source'
