@@ -1,14 +1,14 @@
-import {RootLens} from './RootLens'
-
 export interface NotAnArray {
    reduceRight?: 'NotAnArray'
 }
 
-export type Update<T> = (value: T) => T
+export interface Updater<T> {
+   (value: T): T
+}
 
 export type FieldValues<T> = object & NotAnArray & { [K in keyof T]?: T[K] }
 
-export type FieldUpdates<T> = object & NotAnArray & { [K in keyof T]?: Update<T[K]> }
+export type FieldUpdaters<T> = object & NotAnArray & { [K in keyof T]?: Updater<T[K]> }
 
 export interface Lens<T, Target> {
 
@@ -20,15 +20,15 @@ export interface Lens<T, Target> {
 
    read(source: T): Target
 
-   setValue(newValue: Target): Update<T>
+   setValue(newValue: Target): Updater<T>
 
-   update(update: Update<Target>): Update<T>
+   update(updater: Updater<Target>): Updater<T>
 
-   setFieldValues(this: Lens<T, Target & NotAnArray>, newValues: FieldValues<Target>): Update<T>
+   setFieldValues(this: Lens<T, Target & NotAnArray>, newValues: FieldValues<Target>): Updater<T>
 
-   updateFields(this: Lens<T, Target & NotAnArray>, fieldUpdates: FieldUpdates<Target>): Update<T>
+   updateFields(this: Lens<T, Target & NotAnArray>, updaters: FieldUpdaters<Target>): Updater<T>
 
-   pipe(...updates: Update<Target>[]): Update<T>
+   pipe(...updaters: Updater<Target>[]): Updater<T>
 
    getPath(): string
 
@@ -40,8 +40,4 @@ export interface Lens<T, Target> {
 }
 
 export interface UnfocusedLens<T> extends Lens<T, T> {
-}
-
-export function createLens<T extends object>(instance?: T): UnfocusedLens<T> {
-   return new RootLens<T>()
 }

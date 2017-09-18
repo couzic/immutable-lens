@@ -1,6 +1,6 @@
 import {expect} from 'chai'
-import {createLens} from './Lens'
 import {Source, source} from '../test/testData'
+import {createLens} from './createLens'
 
 const lens = createLens<Source>()
 
@@ -48,7 +48,7 @@ describe('RootLens', () => {
          })
       })
 
-      it('can update fields with Update', () => {
+      it('can update fields with Updater', () => {
          const result = lens.updateFields({
             counter: (v) => v + 1,
             todo: (v) => v

@@ -1,2 +1,3 @@
 export * from './Lens'
-export * from './pipeUpdates'
+export {createLens} from './createLens'
+export {pipe} from './pipe'

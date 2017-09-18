@@ -1,7 +1,7 @@
-import {FieldUpdates, FieldValues, Lens, NotAnArray, Update} from './Lens'
+import {FieldUpdaters, FieldValues, Lens, NotAnArray, Updater} from './Lens'
 import {setFieldValues} from './setFieldValues'
 import {updateFields} from './updateFields'
-import {pipeUpdates} from './pipeUpdates'
+import {pipe} from './pipe'
 
 export abstract class AbstractLens<T, Target> implements Lens<T, Target> {
 
@@ -11,7 +11,7 @@ export abstract class AbstractLens<T, Target> implements Lens<T, Target> {
 
    abstract read(source: T): Target
 
-   abstract setValue(newValue: Target): Update<T>
+   abstract setValue(newValue: Target): Updater<T>
 
    abstract getPath(): string
 
@@ -19,16 +19,16 @@ export abstract class AbstractLens<T, Target> implements Lens<T, Target> {
 
    abstract throwIfUndefined<SafeTarget extends Target>(this: Lens<T, SafeTarget | undefined>): Lens<T, SafeTarget>
 
-   update(update: Update<Target>): Update<T> {
+   update(updater: Updater<Target>): Updater<T> {
       return (source: T) => {
          const value = this.read(source)
-         const newValue = update(value)
+         const newValue = updater(value)
          if (newValue === value) return source
          return this.setValue(newValue)(source)
       }
    }
 
-   setFieldValues(newValues: FieldValues<Target>): Update<T> {
+   setFieldValues(newValues: FieldValues<Target>): Updater<T> {
       return (source: T) => {
          const currentTarget = this.read(source)
          const updatedTarget = setFieldValues(currentTarget, newValues)
@@ -37,17 +37,17 @@ export abstract class AbstractLens<T, Target> implements Lens<T, Target> {
       }
    }
 
-   updateFields(fieldUpdates: FieldUpdates<Target>): Update<T> {
+   updateFields(updaters: FieldUpdaters<Target>): Updater<T> {
       return (source: T) => {
          const currentTarget = this.read(source)
-         const updatedTarget = updateFields(currentTarget, fieldUpdates)
+         const updatedTarget = updateFields(currentTarget, updaters)
          if (updatedTarget === currentTarget) return source
          return this.setValue(updatedTarget)(source)
       }
    }
 
-   pipe(...updates: Update<Target>[]): Update<T> {
-      return this.update(pipeUpdates(...updates))
+   pipe(...updaters: Updater<Target>[]): Updater<T> {
+      return this.update(pipe(...updaters))
    }
 
 }

@@ -1,4 +1,4 @@
-import {Lens, NotAnArray, Update} from './Lens'
+import {Lens, NotAnArray, Updater} from './Lens'
 import {AbstractLens} from './AbstractLens'
 import {KeyFocusedLens} from './KeyFocusedLens'
 import {IndexFocusedLens} from './IndexFocusedLens'
@@ -23,7 +23,7 @@ export class ThrowIfUndefinedLens<T, Target> extends AbstractLens<T, Target> {
       else return value
    }
 
-   setValue(newValue: Target): Update<T> {
+   setValue(newValue: Target): Updater<T> {
       return this.parentLens.setValue(newValue)
    }
 

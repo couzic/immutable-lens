@@ -5,9 +5,9 @@
 ### Features
  - No mutations (obviously...)
  - Human-friendly API
- - Update your Redux store, your React component state... whatever !
- - Use it with your favorite libraries (Ramda, lodash-fp, date-fns, Immutable.js...)
- - Optimized support for the strict equality checks performed in `React.PureComponent`, `connect()`...
+ - Update your Redux store, your React component state, your Immutable.js collection... Whatever !
+ - Bring in your favorite libraries (Ramda, lodash-fp, date-fns...)
+ - Optimized for the strict equality checks performed in `React.PureComponent`, `connect()`...
  - Written in TypeScript, designed for maximal type-safety
 
 ### Quickstart
@@ -68,6 +68,36 @@ const setNameToJohn =
 const updatedState = setNameToJohn(state) // {user: {name: 'John', age: 18}}
 ```
 
+#### Compose updates with `pipe()`
+```ts
+type State = {
+   user: {
+      name: string
+   }
+}
+
+const state = {
+   user: {
+      name: 'Bob',
+      age: 18
+   }
+}
+
+const nameLens = createLens<State>()
+   .focusOn('user')
+   .focusOn('name')
+
+const setNameToJohn = nameLens.setValue('John')
+const uppercaseName = nameLens.update(name => name.toUpperCase())
+
+const setNameToJOHN = pipe(
+   setNameToJohn,
+   uppercaseName
+)
+
+const updatedState = setNameToJOHN(state) // {user: {name: 'JOHN', age: 18}}
+```
+
 #### Use `defaultTo()` to avoid undefined values when reading or updating optional types
 ```ts
 type State = {
@@ -92,36 +122,6 @@ const setNameToBob = nameLens.setValue('Bob')
 const updatedState = setNameToBob(state) // {user: {name: 'Bob', age: 0}}
 ```
 
-#### Use `pipe()` to compose updates
-```ts
-type State = {
-   user: {
-      name: string
-   }
-}
-
-const state = {
-   user: {
-      name: 'Bob',
-      age: 18
-   }
-}
-
-const nameLens = createLens<State>()
-   .focusOn('user')
-   .focusOn('name')
-
-const setNameToJohn = nameLens.setValue('John')
-const uppercaseName = nameLens.update(name => name.toUpperCase())
-
-const setNameToJOHN = pipeUpdates(
-   setNameToJohn,
-   uppercaseName
-)
-
-const updatedState = setNameToJOHN(state) // {user: {name: 'JOHN', age: 18}}
-```
-
 #### Focus on array index
 ```ts
 type Person = {
@@ -138,3 +138,6 @@ const firstFriendLens: Lens<State, Person | undefined> = createLens<State>()
 ```
 
 #### `getPath()`
+```ts
+
+```

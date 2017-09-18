@@ -1,4 +1,4 @@
-import {createLens} from './Lens'
+import {createLens} from './createLens'
 
 type State = {
    user: {

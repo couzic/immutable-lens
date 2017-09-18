@@ -1,4 +1,4 @@
-import {Lens, NotAnArray, Update} from './Lens'
+import {Lens, NotAnArray, Updater} from './Lens'
 import {AbstractLens} from './AbstractLens'
 import {DefaultValueLens} from './DefaultValueLens'
 import {IndexFocusedLens} from './IndexFocusedLens'
@@ -22,7 +22,7 @@ export class KeyFocusedLens<T, ParentTarget extends object, K extends keyof Pare
       return this.parentLens.read(source)[this.key]
    }
 
-   setValue(newValue: Target): Update<T> {
+   setValue(newValue: Target): Updater<T> {
       return (source: T) => {
          const parent = this.parentLens.read(source) as any
          if (parent[this.key] === newValue) return source

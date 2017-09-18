@@ -1,4 +1,5 @@
-import {createLens, Lens} from '../src/Lens'
+import {createLens} from '../src/createLens'
+import {Lens} from '../src/Lens'
 
 type TodoItem = {
    title: string

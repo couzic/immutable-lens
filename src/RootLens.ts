@@ -1,9 +1,9 @@
-import {FieldUpdates, FieldValues, Lens, UnfocusedLens, Update} from './Lens'
+import {FieldUpdaters, FieldValues, Lens, UnfocusedLens, Updater} from './Lens'
 import {KeyFocusedLens} from './KeyFocusedLens'
 import {IndexFocusedLens} from './IndexFocusedLens'
 import {updateFields} from './updateFields'
 import {setFieldValues} from './setFieldValues'
-import {pipeUpdates} from './pipeUpdates'
+import {pipe} from './pipe'
 
 export class RootLens<T extends object> implements UnfocusedLens<T> {
 
@@ -19,24 +19,24 @@ export class RootLens<T extends object> implements UnfocusedLens<T> {
       return source
    }
 
-   setValue(newValue: T): Update<T> {
+   setValue(newValue: T): Updater<T> {
       return () => newValue
    }
 
-   update(update: Update<T>): Update<T> {
-      return update
+   update(updater: Updater<T>): Updater<T> {
+      return updater
    }
 
-   setFieldValues(fields: FieldValues<T>): Update<T> {
-      return (source: T) => setFieldValues(source, fields)
+   setFieldValues(newValues: FieldValues<T>): Updater<T> {
+      return (source: T) => setFieldValues(source, newValues)
    }
 
-   updateFields(fields: FieldUpdates<T>): Update<T> {
-      return (source: T) => updateFields(source, fields)
+   updateFields(updaters: FieldUpdaters<T>): Updater<T> {
+      return (source: T) => updateFields(source, updaters)
    }
 
-   pipe(...updates: Update<T>[]): Update<T> {
-      return pipeUpdates(...updates)
+   pipe(...updaters: Updater<T>[]): Updater<T> {
+      return pipe(...updaters)
    }
 
    getPath() {

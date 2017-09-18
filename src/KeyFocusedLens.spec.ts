@@ -1,6 +1,6 @@
 import {expect} from 'chai'
 import {source} from '../test/testData'
-import {createLens} from './Lens'
+import {createLens} from './createLens'
 
 describe('KeyFocusedLens', () => {
 
@@ -198,7 +198,7 @@ describe('KeyFocusedLens', () => {
             expect(lens.read(data)).to.equal(undefined)
          })
 
-         it('returns same reference when update returns undefined', () => {
+         it('returns same reference when updater returns undefined', () => {
             const result = lens.update(user => undefined)(data)
             expect(result).to.equal(data)
          })

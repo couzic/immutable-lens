@@ -1,5 +1,5 @@
 import {expect} from 'chai'
-import {createLens} from './Lens'
+import {createLens} from './createLens'
 
 describe('IndexFocusedLens', () => {
 
