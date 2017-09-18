@@ -5,6 +5,8 @@ import {pipe} from './pipe'
 
 export abstract class AbstractLens<T, Target> implements Lens<T, Target> {
 
+   abstract readonly path: string
+
    abstract focusOn<K extends keyof Target>(this: Lens<T, Target & NotAnArray>, key: K): Lens<T, Target[K]>
 
    abstract focusIndex<Item>(this: Lens<T, Item[]>, index: number): Lens<T, Item | undefined>
@@ -12,8 +14,6 @@ export abstract class AbstractLens<T, Target> implements Lens<T, Target> {
    abstract read(source: T): Target
 
    abstract setValue(newValue: Target): Updater<T>
-
-   abstract getPath(): string
 
    abstract defaultTo<SafeTarget>(this: Lens<T, SafeTarget | undefined>, value: SafeTarget): Lens<T, SafeTarget>
 

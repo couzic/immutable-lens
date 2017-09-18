@@ -9,6 +9,10 @@ export class IndexFocusedLens<T, Item> extends AbstractLens<T, Item> {
       super()
    }
 
+   get path() {
+      return this.parentLens.path + `[${this.index}]`
+   }
+
    focusOn<K extends keyof Item>(key: K): Lens<T, Item[K]> {
       throw Error('Can NOT focus on a property of a possibly undefined value')
    }
@@ -37,10 +41,6 @@ export class IndexFocusedLens<T, Item> extends AbstractLens<T, Item> {
 
    updateFields(updaters: FieldUpdaters<Item>): Updater<T> {
       throw Error('updateFields() can NOT be called on a Lens focused on a possibly undefined value. Try calling defaultTo() first.')
-   }
-
-   getPath() {
-      return this.parentLens.getPath() + `[${this.index}]`
    }
 
    defaultTo<SafeTarget>(this: Lens<T, SafeTarget | undefined>, value: SafeTarget): Lens<T, SafeTarget> {

@@ -9,6 +9,10 @@ export class ThrowIfUndefinedLens<T, Target> extends AbstractLens<T, Target> {
       super()
    }
 
+   get path() {
+      return this.parentLens.path + '?.throwIfUndefined'
+   }
+
    focusOn<K extends keyof Target>(this: Lens<T, Target & NotAnArray>, key: K): Lens<T, Target[K]> {
       return new KeyFocusedLens(this, key)
    }
@@ -25,10 +29,6 @@ export class ThrowIfUndefinedLens<T, Target> extends AbstractLens<T, Target> {
 
    setValue(newValue: Target): Updater<T> {
       return this.parentLens.setValue(newValue)
-   }
-
-   getPath() {
-      return this.parentLens.getPath() + '?.throwIfUndefined'
    }
 
    defaultTo<SafeTarget>(this: ThrowIfUndefinedLens<T, SafeTarget | undefined>, value: SafeTarget): Lens<T, SafeTarget> {

@@ -10,6 +10,10 @@ export class DefaultValueLens<T, Target> extends AbstractLens<T, Target> {
       super()
    }
 
+   get path() {
+      return this.parentLens.path + '?.defaultTo(' + JSON.stringify(this.defaultValue) + ')'
+   }
+
    focusOn<K extends keyof Target>(this: Lens<T, Target & NotAnArray>, key: K): Lens<T, Target[K]> {
       return new KeyFocusedLens(this, key)
    }
@@ -26,10 +30,6 @@ export class DefaultValueLens<T, Target> extends AbstractLens<T, Target> {
 
    setValue(newValue: Target): Updater<T> {
       return this.parentLens.setValue(newValue)
-   }
-
-   getPath() {
-      return this.parentLens.getPath() + '?.defaultTo(' + JSON.stringify(this.defaultValue) + ')'
    }
 
    defaultTo<SafeTarget>(this: DefaultValueLens<T, SafeTarget | undefined>, value: SafeTarget): Lens<T, SafeTarget> {
