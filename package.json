@@ -27,7 +27,7 @@
     "build": "tsc",
     "prepare": "npm run build",
     "type-test": "node test/testCompilationErrors.js",
-    "test": "mocha --opts mocha.opts",
+    "test": "mocha --opts mocha.opts && npm run type-test",
     "tdd": "mocha --opts mocha.opts --watch"
   },
   "files": [

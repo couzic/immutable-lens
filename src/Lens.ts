@@ -14,13 +14,25 @@ export interface Lens<T, Target> {
 
    readonly path: string
 
+   ////////////
+   // FOCUS //
+   //////////
+
    focusOn<K extends keyof Target>(this: Lens<T, Target & NotAnArray>, key: K): Lens<T, Target[K]>
 
    // focusAt<NewTarget>(lens: Lens<Target, NewTarget>): Lens<T, NewTarget>
 
    focusIndex<Item>(this: Lens<T, Item[]>, index: number): Lens<T, Item | undefined>
 
+   ///////////
+   // READ //
+   /////////
+
    read(source: T): Target
+
+   /////////////
+   // UPDATE //
+   ///////////
 
    setValue(newValue: Target): Updater<T>
 
