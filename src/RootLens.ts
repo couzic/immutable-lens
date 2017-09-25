@@ -3,7 +3,7 @@ import {KeyFocusedLens} from './KeyFocusedLens'
 import {IndexFocusedLens} from './IndexFocusedLens'
 import {updateFields} from './updateFields'
 import {setFieldValues} from './setFieldValues'
-import {pipe} from './pipe'
+import {pipeUpdaters} from './pipeUpdaters'
 
 export class RootLens<T extends {}> implements UnfocusedLens<T> {
 
@@ -40,7 +40,7 @@ export class RootLens<T extends {}> implements UnfocusedLens<T> {
    }
 
    pipe(...updaters: Updater<T>[]): Updater<T> {
-      return pipe(...updaters)
+      return pipeUpdaters(...updaters)
    }
 
    // TODO Support optional types

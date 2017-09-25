@@ -1,23 +1,23 @@
 import {expect} from 'chai'
-import {pipe} from './pipe'
+import {pipeUpdaters} from './pipeUpdaters'
 
-describe('pipe', () => {
+describe('pipeUpdaters', () => {
 
    it('handles no updater', () => {
-      const result = pipe()
+      const result = pipeUpdaters()
       expect(result('something')).to.equal('something')
    })
 
    it('handles single updater', () => {
       const updater = (i: number) => i + 1
-      const result = pipe(updater)
+      const result = pipeUpdaters(updater)
       expect(result(42)).to.equal(43)
    })
 
    it('handles double updater', () => {
       const first = (i: number) => i * 2
       const second = (i: number) => i + 1
-      const result = pipe(first, second)
+      const result = pipeUpdaters(first, second)
       expect(result(42)).to.equal(85)
    })
 

@@ -10,6 +10,8 @@ export type FieldValues<T> = object & NotAnArray & { [K in keyof T]?: T[K] }
 
 export type FieldUpdaters<T> = object & NotAnArray & { [K in keyof T]?: Updater<T[K]> }
 
+export type FieldLenses<Source, Composition> = object & NotAnArray & {[K in keyof Composition]: Lens<Source, Composition[K]>}
+
 export interface Lens<T, Target> {
 
    readonly path: string

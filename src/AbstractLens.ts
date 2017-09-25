@@ -1,7 +1,7 @@
 import {FieldUpdaters, FieldValues, Lens, NotAnArray, Updater} from './Lens'
 import {setFieldValues} from './setFieldValues'
 import {updateFields} from './updateFields'
-import {pipe} from './pipe'
+import {pipeUpdaters} from './pipeUpdaters'
 
 export abstract class AbstractLens<T, Target> implements Lens<T, Target> {
 
@@ -47,7 +47,7 @@ export abstract class AbstractLens<T, Target> implements Lens<T, Target> {
    }
 
    pipe(...updaters: Updater<Target>[]): Updater<T> {
-      return this.update(pipe(...updaters))
+      return this.update(pipeUpdaters(...updaters))
    }
 
 }

@@ -1,3 +1,5 @@
 export * from './Lens'
+export {createComposedLens} from './createComposedLens'
 export {createLens} from './createLens'
-export {pipe} from './pipe'
+export {extract} from './extract'
+export {pipeUpdaters} from './pipeUpdaters'
