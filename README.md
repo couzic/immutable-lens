@@ -68,7 +68,7 @@ const setNameToJohn =
 const updatedState = setNameToJohn(state) // {user: {name: 'John', age: 18}}
 ```
 
-#### Compose updates with `pipe()`
+#### Compose updates with `pipeUpdaters()`
 ```ts
 type State = {
    user: {
@@ -90,7 +90,7 @@ const nameLens = createLens<State>()
 const setNameToJohn = nameLens.setValue('John')
 const uppercaseName = nameLens.update(name => name.toUpperCase())
 
-const setNameToJOHN = pipe(
+const setNameToJOHN = pipeUpdaters(
    setNameToJohn,
    uppercaseName
 )
@@ -135,6 +135,22 @@ type State = {
 const firstFriendLens: Lens<State, Person | undefined> = createLens<State>()
    .focusOn('friends')
    .focusIndex(0)
+```
+
+#### Compose Lenses
+```ts
+type State = {
+   todoList: string[]
+}
+const lens = createLens<State>()
+
+const composedLens = createComposedLens<State>().withFields({
+   firstTodoItem: lens.focusOn('todoList').focusIndex(0)
+})
+
+const setImproveReadmeAsFirstTodoItem = composedLens.setFieldValues({firstTodoItem: 'Improve README'})
+
+setImproveReadmeAsFirstTodoItem({todoList: []}) // {todoList: ['Improve README']}
 ```
 
 #### `getPath()`
