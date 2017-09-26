@@ -35,6 +35,7 @@ const lens = createLens<State>()
 
 const userLens = lens.focusOn('user')
 const nameLens = userLens.focusOn('name')
+const ageLens = lens.focusPath('user', 'age')
 
 ///////////
 // READ //
@@ -80,9 +81,7 @@ const state = {
    }
 }
 
-const nameLens = createLens<State>()
-   .focusOn('user')
-   .focusOn('name')
+const nameLens = createLens<State>().focusPath('user', 'name')
 
 const setNameToJohn = nameLens.setValue('John')
 const uppercaseName = nameLens.update(name => name.toUpperCase())

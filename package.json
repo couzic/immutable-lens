@@ -1,6 +1,6 @@
 {
   "name": "immutable-lens",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Type-safe Lens API for immutable updates in complex data structures",
   "keywords": [
     "lens",
@@ -23,7 +23,7 @@
     "url": "https://github.com/couzic"
   },
   "scripts": {
-    "prebuild": "shx rm -rf ./lib",
+    "prebuild": "npm run test && shx rm -rf ./lib",
     "build": "tsc",
     "prepare": "npm run build",
     "test": "mocha --opts mocha.opts && npm run test-compilation-errors",
