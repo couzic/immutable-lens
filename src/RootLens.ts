@@ -15,6 +15,12 @@ export class RootLens<T extends {}> implements UnfocusedLens<T> {
       return new KeyFocusedLens(this, key)
    }
 
+   focusPath(...keys: any[]) {
+      let lens: any = this
+      keys.forEach(key => lens = lens.focusOn(key))
+      return lens
+   }
+
    focusIndex<Item>(this: Lens<T, Item[]>, index: number): Lens<T, Item | undefined> {
       return new IndexFocusedLens(this, index)
    }

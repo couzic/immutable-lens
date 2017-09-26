@@ -6,6 +6,12 @@ const lens = createLens<Source>()
 
 describe('RootLens', () => {
 
+   it('can focus path', () => {
+      const pathLens = lens.focusPath('todo', 'list')
+      const todoList = pathLens.read(source)
+      expect(todoList).to.equal(source.todo.list)
+   })
+
    describe('when focused on object', () => {
 
       it('can read source', () => {

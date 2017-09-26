@@ -49,6 +49,12 @@ describe('KeyFocusedLens', () => {
 
       const lens = createLens(source).focusOn('todo')
 
+      it('can focus path', () => {
+         const pathLens = lens.focusPath('list', 'length')
+         const length = pathLens.read(source)
+         expect(length).to.equal(source.todo.list.length)
+      })
+
       it('can read value', () => {
          const result = lens.read(source)
          expect(result).to.equal(source.todo)

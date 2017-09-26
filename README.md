@@ -17,9 +17,9 @@
 $ npm i -S immutable-lens
 ```
 
-#### Create a Lens
-```ts
-import {createLens} from 'immutable-lens'
+#### Example
+```typescript
+import {createLens} from 'lib'
 
 type State = {
    user: {
@@ -28,48 +28,46 @@ type State = {
    }
 }
 const lens = createLens<State>()
-```
 
-#### Focus
-```ts
+////////////
+// FOCUS //
+//////////
+
 const userLens = lens.focusOn('user')
 const nameLens = userLens.focusOn('name')
-```
 
-#### Read
-```ts
-const state = {
+///////////
+// READ //
+/////////
+
+const state: State = {
    user: {
       name: 'Bob',
       age: 18
    }
 }
 
-const user = userLens.read(state) // {name: 'Bob', age: 18}
-const name = nameLens.read(state) // 'Bob'
-```
+userLens.read(state) // {name: 'Bob', age: 18}
+nameLens.read(state) // 'Bob'
 
-#### Describe and apply updates
-```ts
-const state = {
-   user: {
-      name: 'Bob',
-      age: 18
-   }
-}
+/////////////
+// UPDATE //
+///////////
 
 const setNameToJohn = 
-   // THE FOUR LINES BELOW ARE ALL EQUIVALENT
+   // THE FOUR LINES BELOW WILL ALL HAVE THE SAME EFFECT
    nameLens.setValue('John')
    nameLens.update(currentName => 'John')
    userLens.setFieldValues({name: 'John'})
    userLens.updateFields({name: (currentName) => 'John'})
 
-const updatedState = setNameToJohn(state) // {user: {name: 'John', age: 18}}
+setNameToJohn(state) // {user: {name: 'John', age: 18}}
 ```
 
 #### Compose updates with `pipeUpdaters()`
-```ts
+```typescript
+import {createLens, pipeUpdaters} from 'lib'
+
 type State = {
    user: {
       name: string
@@ -79,7 +77,6 @@ type State = {
 const state = {
    user: {
       name: 'Bob',
-      age: 18
    }
 }
 
@@ -99,7 +96,9 @@ const updatedState = setNameToJOHN(state) // {user: {name: 'JOHN', age: 18}}
 ```
 
 #### Use `defaultTo()` to avoid undefined values when reading or updating optional types
-```ts
+```typescript
+import {createLens} from 'lib'
+
 type State = {
    loggedUser?: {
       name: string
@@ -123,7 +122,9 @@ const updatedState = setNameToBob(state) // {user: {name: 'Bob', age: 0}}
 ```
 
 #### Focus on array index
-```ts
+```typescript
+import {Lens, createLens} from 'lib'
+
 type Person = {
    name: string
 }
@@ -132,13 +133,17 @@ type State = {
    friends: Person[] 
 }
 
-const firstFriendLens: Lens<State, Person | undefined> = createLens<State>()
+const firstFriendLens = createLens<State>()
    .focusOn('friends')
    .focusIndex(0)
+   
+const firstFriend: Person | undefined = firstFriendLens.read({friends: []})
 ```
 
 #### Compose Lenses
-```ts
+```typescript
+import {createLens, createComposedLens} from 'lib'
+
 type State = {
    todoList: string[]
 }
@@ -154,6 +159,6 @@ setImproveReadmeAsFirstTodoItem({todoList: []}) // {todoList: ['Improve README']
 ```
 
 #### `getPath()`
-```ts
+```typescript
 
 ```

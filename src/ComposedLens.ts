@@ -18,6 +18,12 @@ export class ComposedLens<Source extends object, Composition> implements Lens<So
       return new KeyFocusedLens(this, key)
    }
 
+   focusPath(...keys: any[]) {
+      let lens: any = this
+      keys.forEach(key => lens = lens.focusOn(key))
+      return lens
+   }
+
    focusIndex<Item>(this: Lens<Source, Item[]>, index: number): Lens<Source, Item | undefined> {
       throw Error('createComposedLens().withFields() is necessarily an object-focused lens. It can NOT focusIndex().')
    }

@@ -22,6 +22,39 @@ export interface Lens<T, Target> {
 
    focusOn<K extends keyof Target>(this: Lens<T, Target & NotAnArray>, key: K): Lens<T, Target[K]>
 
+   focusPath<K1 extends keyof Target,
+      K2 extends keyof Target[K1]>(key1: K1, key2: K2): Lens<T, Target[K1][K2]>
+
+   focusPath<K1 extends keyof Target,
+      K2 extends keyof Target[K1],
+      K3 extends keyof Target[K1][K2]>(key1: K1, key2: K2, key3: K3): Lens<T, Target[K1][K2][K3]>
+
+   focusPath<K1 extends keyof Target,
+      K2 extends keyof Target[K1],
+      K3 extends keyof Target[K1][K2],
+      K4 extends keyof Target[K1][K2][K3]>(key1: K1, key2: K2, key3: K3, key4: K4): Lens<T, Target[K1][K2][K3][K4]>
+
+   focusPath<K1 extends keyof Target,
+      K2 extends keyof Target[K1],
+      K3 extends keyof Target[K1][K2],
+      K4 extends keyof Target[K1][K2][K3],
+      K5 extends keyof Target[K1][K2][K3][K4]>(key1: K1, key2: K2, key3: K3, key4: K4, key5: K5): Lens<T, Target[K1][K2][K3][K4][K5]>
+
+   focusPath<K1 extends keyof Target,
+      K2 extends keyof Target[K1],
+      K3 extends keyof Target[K1][K2],
+      K4 extends keyof Target[K1][K2][K3],
+      K5 extends keyof Target[K1][K2][K3][K4],
+      K6 extends keyof Target[K1][K2][K3][K4][K5]>(key1: K1, key2: K2, key3: K3, key4: K4, key5: K5, key6: K6): Lens<T, Target[K1][K2][K3][K4][K5][K6]>
+
+   focusPath<K1 extends keyof Target,
+      K2 extends keyof Target[K1],
+      K3 extends keyof Target[K1][K2],
+      K4 extends keyof Target[K1][K2][K3],
+      K5 extends keyof Target[K1][K2][K3][K4],
+      K6 extends keyof Target[K1][K2][K3][K4][K5],
+      K7 extends keyof Target[K1][K2][K3][K4][K5][K6]>(key1: K1, key2: K2, key3: K3, key4: K4, key5: K5, key6: K6, key7: K7): Lens<T, Target[K1][K2][K3][K4][K5][K6][K7]>
+
    // focusAt<NewTarget>(lens: Lens<Target, NewTarget>): Lens<T, NewTarget>
 
    focusIndex<Item>(this: Lens<T, Item[]>, index: number): Lens<T, Item | undefined>

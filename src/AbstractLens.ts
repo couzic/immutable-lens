@@ -19,6 +19,12 @@ export abstract class AbstractLens<T, Target> implements Lens<T, Target> {
 
    abstract throwIfUndefined<SafeTarget extends Target>(this: Lens<T, SafeTarget | undefined>): Lens<T, SafeTarget>
 
+   focusPath(...keys: any[]) {
+      let lens: any = this
+      keys.forEach(key => lens = lens.focusOn(key))
+      return lens
+   }
+
    update(updater: Updater<Target>): Updater<T> {
       return (source: T) => {
          const value = this.read(source)
