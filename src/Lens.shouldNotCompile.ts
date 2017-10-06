@@ -193,6 +193,9 @@ counterLens.setFieldValues({})
 // Updating fields with primitive-focused lens @shouldNotCompile
 counterLens.updateFields({})
 
+// Updating field values with primitive-focused lens @shouldNotCompile
+counterLens.updateFieldValues(value => 42)
+
 // Setting field values with null fields @shouldNotCompile
 todoLens.setFieldValues(null)
 
@@ -226,6 +229,11 @@ todoLens.updateFields({input: (v: number) => ''})
 // Updating fields with wrong output type updaters @shouldNotCompile
 todoLens.updateFields({input: (v: string) => 42})
 
+// Updating field valuess with wrong output type @shouldNotCompile
+todoLens.updateFieldValues(value => ({
+   count: '42'
+}))
+
 // Setting object field values with wrong type @shouldNotCompile
 lens.setFieldValues({todo: {}})
 
@@ -240,6 +248,9 @@ todoListLens.setFieldValues({})
 
 // Updating fields of array @shouldNotCompile
 todoListLens.updateFields({})
+
+// Updating field valies of array @shouldNotCompile
+todoListLens.updateFieldValues(value => ({}))
 
 /////////////////////////
 // Handling undefined //

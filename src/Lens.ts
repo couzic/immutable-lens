@@ -10,6 +10,10 @@ export type FieldValues<T> = object & NotAnArray & { [K in keyof T]?: T[K] }
 
 export type FieldUpdaters<T> = object & NotAnArray & { [K in keyof T]?: Updater<T[K]> }
 
+export interface FieldsUpdater<T> {
+   (value: T): FieldValues<T>
+}
+
 export type FieldLenses<Source, Composition> = object & NotAnArray & {[K in keyof Composition]: Lens<Source, Composition[K]>}
 
 export interface Lens<T, Target> {
@@ -76,6 +80,8 @@ export interface Lens<T, Target> {
    setFieldValues(this: Lens<T, Target & NotAnArray>, newValues: FieldValues<Target>): Updater<T>
 
    updateFields(this: Lens<T, Target & NotAnArray>, updaters: FieldUpdaters<Target>): Updater<T>
+
+   updateFieldValues(this: Lens<T, Target & NotAnArray>, fieldsUpdater: FieldsUpdater<Target>): Updater<T>
 
    pipe(...updaters: Updater<Target>[]): Updater<T>
 

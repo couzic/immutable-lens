@@ -49,6 +49,15 @@ describe('IndexFocusedLens', () => {
             const result = lens.update(() => definedUser)(data)
             expect(result).to.equal(data)
          })
+
+         it('can update field values', () => {
+            const result = lens.throwIfUndefined().updateFieldValues(value => ({
+               name: value.name.toUpperCase()
+            }))(data)
+            expect(result).not.to.equal(data)
+            expect(result.users[0]).not.to.equal(data.users[0])
+            expect(result.users[0]).to.deep.equal({name: data.users[0].name.toUpperCase()})
+         })
       })
 
       describe('when target is undefined', () => {

@@ -1,4 +1,4 @@
-import {FieldUpdaters, FieldValues, Lens, NotAnArray, Updater} from './Lens'
+import {FieldsUpdater, FieldUpdaters, FieldValues, Lens, NotAnArray, Updater} from './Lens'
 import {setFieldValues} from './setFieldValues'
 import {updateFields} from './updateFields'
 import {pipeUpdaters} from './pipeUpdaters'
@@ -47,6 +47,16 @@ export abstract class AbstractLens<T, Target> implements Lens<T, Target> {
       return (source: T) => {
          const currentTarget = this.read(source)
          const updatedTarget = updateFields(currentTarget, updaters)
+         if (updatedTarget === currentTarget) return source
+         return this.setValue(updatedTarget)(source)
+      }
+   }
+
+   updateFieldValues(fieldsUpdater: FieldsUpdater<Target>): Updater<T> {
+      return (source: T) => {
+         const currentTarget = this.read(source)
+         const newValues = fieldsUpdater(currentTarget)
+         const updatedTarget = setFieldValues(currentTarget, newValues)
          if (updatedTarget === currentTarget) return source
          return this.setValue(updatedTarget)(source)
       }

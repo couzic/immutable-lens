@@ -104,6 +104,11 @@ describe('DefaultValueLens', () => {
             const result = lens.updateFields({name: (name) => name.toUpperCase()})(data)
             expect(result.user).to.deep.equal({name: definedUser.name.toUpperCase()})
          })
+
+         it('can update field values', () => {
+            const result = lens.updateFieldValues(value => ({name: value.name.toUpperCase()}))(data)
+            expect(result.user).to.deep.equal({name: definedUser.name.toUpperCase()})
+         })
       })
    })
 

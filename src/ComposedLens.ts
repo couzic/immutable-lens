@@ -1,4 +1,4 @@
-import {FieldLenses, FieldUpdaters, FieldValues, Lens, NotAnArray, Updater} from './Lens'
+import {FieldLenses, FieldsUpdater, FieldUpdaters, FieldValues, Lens, NotAnArray, Updater} from './Lens'
 import {extract} from './extract'
 import {keysOf} from './keysOf'
 import {pipeUpdaters} from './pipeUpdaters'
@@ -62,6 +62,14 @@ export class ComposedLens<Source extends object, Composition> implements Lens<So
          return lens.update(updater)
       })
       return pipeUpdaters(...sourceUpdaters)
+   }
+
+   updateFieldValues(fieldsUpdater: FieldsUpdater<Composition>): Updater<Source> {
+      return (source: Source): Source => {
+         const composition = this.read(source)
+         const newValues = fieldsUpdater(composition)
+         return this.setFieldValues(newValues)(source)
+      }
    }
 
    pipe(...updaters: Updater<Composition>[]): Updater<Source> {

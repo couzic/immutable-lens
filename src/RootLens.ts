@@ -1,9 +1,10 @@
-import {FieldUpdaters, FieldValues, Lens, UnfocusedLens, Updater} from './Lens'
+import {FieldsUpdater, FieldUpdaters, FieldValues, Lens, UnfocusedLens, Updater} from './Lens'
 import {KeyFocusedLens} from './KeyFocusedLens'
 import {IndexFocusedLens} from './IndexFocusedLens'
 import {updateFields} from './updateFields'
 import {setFieldValues} from './setFieldValues'
 import {pipeUpdaters} from './pipeUpdaters'
+import {source} from '../test/testData'
 
 export class RootLens<T extends {}> implements UnfocusedLens<T> {
 
@@ -43,6 +44,10 @@ export class RootLens<T extends {}> implements UnfocusedLens<T> {
 
    updateFields(updaters: FieldUpdaters<T>): Updater<T> {
       return (source: T) => updateFields(source, updaters)
+   }
+
+   updateFieldValues(fieldsUpdater: FieldsUpdater<T>): Updater<T> {
+      return (source: T) => setFieldValues(source, fieldsUpdater(source))
    }
 
    pipe(...updaters: Updater<T>[]): Updater<T> {

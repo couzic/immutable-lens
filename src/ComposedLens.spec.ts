@@ -66,6 +66,13 @@ describe('ComposedLens', () => {
       expect(updated.todo.list).to.equal(newList)
    })
 
+   it('can update field values', () => {
+      const updated = lens.updateFieldValues(value => ({
+         counter: value.counter + 1,
+      }))(source)
+      expect(updated.counter).to.equal(source.counter + 1)
+   })
+
    it('can pipe updaters', () => {
       const localLens = createLens<{ counter: number, todoList: TodoItem[] }>()
       const incrementCounter = localLens.focusOn('counter').update(c => c + 1)

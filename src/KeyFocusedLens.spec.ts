@@ -127,6 +127,22 @@ describe('KeyFocusedLens', () => {
          })
       })
 
+      it('can update field values', () => {
+         const result = lens.updateFieldValues(value => ({
+            count: value.count + 1
+         }))(source)
+         expect(result).to.not.equal(source)
+         expect(result.todo).to.not.equal(source.todo)
+         expect(result.todo.list).to.equal(source.todo.list)
+         expect(result).to.deep.equal({
+            ...source,
+            todo: {
+               ...source.todo,
+               count: 43
+            }
+         })
+      })
+
       it('returns same source reference when setting fields with same values', () => {
          const result = lens.setFieldValues({
             count: source.todo.count
