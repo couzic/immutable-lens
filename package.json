@@ -1,6 +1,6 @@
 {
   "name": "immutable-lens",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Type-safe Lens API for immutable updates in complex data structures",
   "keywords": [
     "lens",
@@ -24,7 +24,7 @@
   },
   "scripts": {
     "prebuild": "npm run test && shx rm -rf ./lib",
-    "build": "tsc",
+    "build": "tsc --project config/pub",
     "prepare": "npm run build",
     "test": "mocha --opts mocha.opts && npm run test-compilation-errors",
     "test-compilation-errors": "node ./testCompilationErrors.js",
@@ -45,6 +45,6 @@
     "ramda": "^0.24.1",
     "shx": "^0.2.2",
     "ts-node": "^3.3.0",
-    "typescript": "^2.5.2"
+    "typescript": "^2.5.3"
   }
 }

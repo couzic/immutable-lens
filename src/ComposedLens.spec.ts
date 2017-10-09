@@ -1,6 +1,6 @@
 import {expect} from 'chai'
 import {createLens} from './createLens'
-import {Source, source, TodoItem} from '../test/testData'
+import {Source, source, TodoItem} from '../test/data.test'
 import {createComposedLens} from './createComposedLens'
 
 describe('ComposedLens', () => {

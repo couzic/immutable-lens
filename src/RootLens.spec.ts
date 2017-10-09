@@ -1,5 +1,5 @@
 import {expect} from 'chai'
-import {Source, source} from '../test/testData'
+import {Source, source} from '../test/data.test'
 import {createLens} from './createLens'
 
 const lens = createLens<Source>()

@@ -1,6 +1,6 @@
 import {expect} from 'chai'
 import {createLens} from './createLens'
-import {Source, source} from '../test/testData'
+import {Source, source} from '../test/data.test'
 import {extract} from './extract'
 
 describe('extract()', () => {

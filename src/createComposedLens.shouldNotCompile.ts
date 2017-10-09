@@ -1,5 +1,5 @@
 import {createComposedLens} from './createComposedLens'
-import {Source} from '../test/testData'
+import {Source} from '../test/data.test'
 
 // composing null @shouldNotCompile
 createComposedLens<Source>().withFields(null)

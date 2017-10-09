@@ -1,5 +1,5 @@
 import {createLens} from './createLens'
-import {Source} from '../test/testData'
+import {Source} from '../test/data.test'
 import {pipeUpdaters} from './pipeUpdaters'
 
 const lens = createLens<Source>()

@@ -1,5 +1,5 @@
 import {expect} from 'chai'
-import {source} from '../test/testData'
+import {source} from '../test/data.test'
 import {createLens} from './createLens'
 
 describe('KeyFocusedLens', () => {

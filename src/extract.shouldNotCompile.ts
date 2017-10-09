@@ -1,4 +1,4 @@
-import {source} from '../test/testData'
+import {source} from '../test/data.test'
 import {extract} from './extract'
 import {createLens} from './createLens'
 
