@@ -9,7 +9,7 @@ describe('IndexFocusedLens', () => {
       const lens = createLens<Data>().focusOn('users').focusIndex(0)
 
       it('returns path', () => {
-         expect(lens.path).to.equal('source.users[0]')
+         expect(lens.path).to.equal('root.users[0]')
       })
 
       it('can default to value', () => {

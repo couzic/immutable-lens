@@ -83,6 +83,11 @@ export interface Lens<T, Target> {
 
    updateFieldValues(this: Lens<T, Target & NotAnArray>, fieldsUpdater: FieldsUpdater<Target>): Updater<T>
 
+   // TODO API DESIGN
+   // setIndexValues()
+   // updateIndexes()
+   // updateIndexValues()
+
    pipe(...updaters: Updater<Target>[]): Updater<T>
 
    defaultTo<SafeTarget extends Target>(this: Lens<T, SafeTarget | undefined>, value: SafeTarget): Lens<T, SafeTarget>

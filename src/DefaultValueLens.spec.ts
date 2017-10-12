@@ -38,7 +38,7 @@ describe('DefaultValueLens', () => {
       const lens = createLens<Data>().focusOn('user').defaultTo(defaultUser)
 
       it('returns path', () => {
-         expect(lens.path).to.equal('source.user?.defaultTo({"name":"Default User"})')
+         expect(lens.path).to.equal('root.user?.defaultTo({"name":"Default User"})')
       })
 
       describe('when target is undefined', () => {

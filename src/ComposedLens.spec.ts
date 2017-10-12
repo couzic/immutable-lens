@@ -16,7 +16,7 @@ describe('ComposedLens', () => {
    })
 
    it('has path', () => {
-      expect(lens.path).to.deep.equal('composed({counter:source.counter, todoList:source.todo.list})')
+      expect(lens.path).to.deep.equal('composed({counter:root.counter, todoList:root.todo.list})')
    })
 
    it('can focus path', () => {

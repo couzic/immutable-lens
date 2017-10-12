@@ -8,7 +8,7 @@ import {pipeUpdaters} from './pipeUpdaters'
 export class RootLens<T extends {}> implements UnfocusedLens<T> {
 
    get path() {
-      return 'source'
+      return 'root'
    }
 
    focusOn<K extends keyof T>(key: K): Lens<T, T[K]> {
