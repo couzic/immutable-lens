@@ -2,7 +2,8 @@ import {FieldLenses, FieldsUpdater, FieldUpdaters, FieldValues, Lens, NotAnArray
 import {extract} from './extract'
 import {keysOf} from './keysOf'
 import {pipeUpdaters} from './pipeUpdaters'
-import {KeyFocusedLens} from './KeyFocusedLens'
+import {ImmutableLens} from './ImmutableLens'
+import {setFieldValues} from './setFieldValues'
 
 export class ComposedLens<Source extends object, Composition> implements Lens<Source, Composition> {
 
@@ -15,7 +16,13 @@ export class ComposedLens<Source extends object, Composition> implements Lens<So
    }
 
    focusOn<K extends keyof Composition>(this: Lens<Source, Composition & NotAnArray>, key: K): Lens<Source, Composition[K]> {
-      return new KeyFocusedLens(this, key)
+      return new ImmutableLens(
+         this.path + '.' + key,
+         (source: Source) => this.read(source),
+         (target: Composition) => target[key],
+         (newValue: Composition[K]) => (target: Composition) => setFieldValues(target, {[key]: newValue} as any),
+         (target: Composition) => this.setValue(target)
+      )
    }
 
    focusPath(...keys: any[]) {
