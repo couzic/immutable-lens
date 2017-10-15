@@ -6,6 +6,12 @@ export interface Updater<T> {
    (value: T): T
 }
 
+export interface GeneratedUpdater<T> extends Updater<T> {
+   name: string
+   genericName: string
+   pipedUpdaters: GeneratedUpdater<T>[] | undefined
+}
+
 export type FieldValues<T> = object & NotAnArray & { [K in keyof T]?: T[K] }
 
 export type FieldUpdaters<T> = object & NotAnArray & { [K in keyof T]?: Updater<T[K]> }
@@ -25,6 +31,8 @@ export interface Lens<T, Target> {
    //////////
 
    focusOn<K extends keyof Target>(this: Lens<T, Target & NotAnArray>, key: K): Lens<T, Target[K]>
+
+   focusPath<K extends keyof Target>(this: Lens<T, Target & NotAnArray>, key: K): Lens<T, Target[K]>
 
    focusPath<K1 extends keyof Target,
       K2 extends keyof Target[K1]>(key1: K1, key2: K2): Lens<T, Target[K1][K2]>
