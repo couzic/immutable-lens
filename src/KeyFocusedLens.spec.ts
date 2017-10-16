@@ -1,5 +1,5 @@
 import {expect} from 'chai'
-import {source} from '../test/data.test'
+import {source, Source} from '../test/data.test'
 import {createLens} from './createLens'
 
 describe('KeyFocusedLens', () => {
@@ -313,4 +313,53 @@ describe('KeyFocusedLens', () => {
          expect(result.actions.action(0)).to.equal(8)
       })
    })
+
+   describe('when focused on number', () => {
+      const counter = createLens<Source>().focusPath('counter')
+
+      describe('setValue updater', () => {
+         const newValue = source.counter + 1
+         let updater = counter.setValue(newValue)
+         it('has path', () => {
+            expect(updater.lensPath).to.equal(counter.path)
+         })
+         it('has meta properties', () => {
+            const expectedName = 'setValue()'
+            const expectedDetailedName = 'setValue(' + newValue + ')'
+            expect(updater.name).to.equal(expectedName)
+            expect(updater.genericName).to.equal(expectedName)
+            expect(updater.detailedName).to.equal(expectedDetailedName)
+            expect(updater.details).to.equal(newValue)
+         })
+      })
+
+      describe('update updater', () => {
+         it('has path', () => {
+            const updater = counter.update(c => c)
+            expect(updater.lensPath).to.equal(counter.path)
+         })
+
+         describe('when wrapped updater has name', () => {
+            const increment = (i: number) => i + 1
+            let updater = counter.update(increment)
+            it('has meta properties', () => {
+               expect(updater.name).to.equal('increment()')
+               expect(updater.genericName).to.equal('update()')
+               expect(updater.detailedName).to.equal('update(increment)')
+               expect(updater.details).to.equal(increment)
+            })
+         })
+
+         describe('when wrapped updater is anonymous', () => {
+            let updater = counter.update(c => c + 1)
+            it('has meta properties', () => {
+               const genericName = 'update()'
+               expect(updater.name).to.equal(genericName)
+               expect(updater.genericName).to.equal(genericName)
+               expect(updater.detailedName).to.equal(genericName)
+            })
+         })
+      })
+   })
+
 })

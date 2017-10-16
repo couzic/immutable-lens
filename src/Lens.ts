@@ -6,11 +6,13 @@ export interface Updater<T> {
    (value: T): T
 }
 
-export interface GeneratedUpdater<T> extends Updater<T> {
+export interface LensCreatedUpdater<T> extends Updater<T> {
    readonly name: string
-   readonly generatedName: string
-   readonly path: string
-   readonly pipedUpdaters: GeneratedUpdater<T>[] | undefined
+   readonly genericName: string
+   readonly detailedName: string
+   readonly details: T | Updater<T> | FieldValues<T> | FieldUpdaters<T> | FieldsUpdater<T>
+   readonly lensPath: string
+   readonly pipedUpdaters: LensCreatedUpdater<T>[] | undefined
 }
 
 export type FieldValues<T> = object & NotAnArray & { [K in keyof T]?: T[K] }
@@ -82,15 +84,15 @@ export interface Lens<T, Target> {
    // UPDATE //
    ///////////
 
-   setValue(newValue: Target): GeneratedUpdater<T>
+   setValue(newValue: Target): LensCreatedUpdater<T>
 
-   update(updater: Updater<Target>): Updater<T>
+   update(updater: Updater<Target>): LensCreatedUpdater<T>
 
-   setFieldValues(this: Lens<T, Target & NotAnArray>, newValues: FieldValues<Target>): Updater<T>
+   setFieldValues(this: Lens<T, Target & NotAnArray>, newValues: FieldValues<Target>): LensCreatedUpdater<T>
 
-   updateFields(this: Lens<T, Target & NotAnArray>, updaters: FieldUpdaters<Target>): Updater<T>
+   updateFields(this: Lens<T, Target & NotAnArray>, updaters: FieldUpdaters<Target>): LensCreatedUpdater<T>
 
-   updateFieldValues(this: Lens<T, Target & NotAnArray>, fieldsUpdater: FieldsUpdater<Target>): Updater<T>
+   updateFieldValues(this: Lens<T, Target & NotAnArray>, fieldsUpdater: FieldsUpdater<Target>): LensCreatedUpdater<T>
 
    // TODO API DESIGN
    // setIndexValues()

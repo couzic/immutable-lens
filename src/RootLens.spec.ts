@@ -1,6 +1,7 @@
 import {expect} from 'chai'
 import {Source, source} from '../test/data.test'
 import {createLens} from './createLens'
+import {FieldsUpdater, FieldUpdaters} from './Lens'
 
 const lens = createLens<Source>()
 
@@ -124,15 +125,80 @@ describe('RootLens', () => {
       })
    })
 
-   describe('setValue updater', () => {
-      const newValue = source.counter + 1
-      let updater = lens.focusPath('counter').setValue(newValue)
-      it('has name', () => {
-         expect(updater.name).to.equal('setValue(' + newValue + ')')
-         expect(updater.generatedName).to.equal('setValue(' + newValue + ')')
-      })
+   describe('setFieldValues updater', () => {
       it('has path', () => {
-         expect(updater.path).to.equal('')
+         const updater = lens.setFieldValues({})
+         expect(updater.lensPath).to.equal(lens.path)
+      })
+
+      it('has meta properties', () => {
+         const values = {counter: 24}
+         const updater = lens.setFieldValues(values)
+         expect(updater.name).to.equal('setFieldValues()')
+         expect(updater.genericName).to.equal('setFieldValues()')
+         expect(updater.detailedName).to.equal('setFieldValues({counter})')
+         expect(updater.details).to.equal(values)
+      })
+   })
+
+   describe('updateFields updater', () => {
+      it('has path', () => {
+         const updater = lens.updateFields({})
+         expect(updater.lensPath).to.equal(lens.path)
+      })
+
+      describe('when field updater has name', () => {
+         it('has meta properties', () => {
+            const increment = (i: number) => i + 1
+            const updaters = {counter: increment}
+            const updater = lens.updateFields(updaters)
+            expect(updater.name).to.equal('updateFields()')
+            expect(updater.genericName).to.equal('updateFields()')
+            expect(updater.detailedName).to.equal('updateFields({counter: increment})')
+            expect(updater.details).to.equal(updaters)
+         })
+      })
+
+      describe('when field updater is anonymous', () => {
+         it('has meta properties', () => {
+            const updaters: FieldUpdaters<Source> = {counter: c => c + 1}
+            const updater = lens.updateFields(updaters)
+            expect(updater.name).to.equal('updateFields()')
+            expect(updater.genericName).to.equal('updateFields()')
+            expect(updater.detailedName).to.equal('updateFields({counter})')
+            expect(updater.details).to.equal(updaters)
+         })
+      })
+   })
+
+   describe('updateFieldValues updater', () => {
+      it('has path', () => {
+         const updater = lens.updateFieldValues(() => ({}))
+         expect(updater.lensPath).to.equal(lens.path)
+      })
+
+      describe('when field updater has name', () => {
+         it('has names', () => {
+            const incrementCounter: FieldsUpdater<Source> = ({counter}) => ({
+               counter: counter + 1
+            })
+            const updater = lens.updateFieldValues(incrementCounter)
+            expect(updater.name).to.equal('incrementCounter()')
+            expect(updater.genericName).to.equal('updateFieldValues()')
+            expect(updater.detailedName).to.equal('updateFieldValues(incrementCounter)')
+            expect(updater.details).to.equal(incrementCounter)
+         })
+      })
+
+      describe('when field updater is anonymous', () => {
+         it('has names', () => {
+            const updater = lens.updateFieldValues(({counter}) => ({
+               counter: counter + 1
+            }))
+            expect(updater.name).to.equal('updateFieldValues()')
+            expect(updater.genericName).to.equal('updateFieldValues()')
+            expect(updater.detailedName).to.equal('updateFieldValues()')
+         })
       })
    })
 })

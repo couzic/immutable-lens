@@ -1,4 +1,4 @@
-import {FieldLenses, FieldsUpdater, FieldUpdaters, FieldValues, GeneratedUpdater, Lens, NotAnArray, Updater} from './Lens'
+import {FieldLenses, FieldsUpdater, FieldUpdaters, FieldValues, Lens, LensCreatedUpdater, NotAnArray, Updater} from './Lens'
 import {extract} from './extract'
 import {keysOf} from './keysOf'
 import {pipeUpdaters} from './pipeUpdaters'
@@ -40,44 +40,46 @@ export class ComposedLens<Source extends object, Composition> implements Lens<So
       return extract(source, this.fieldLenses)
    }
 
-   setValue(newValue: Composition): GeneratedUpdater<Source> {
-      return this.setFieldValues(newValue) as GeneratedUpdater<Source>
+   setValue(newValue: Composition): LensCreatedUpdater<Source> {
+      return this.setFieldValues(newValue) as LensCreatedUpdater<Source>
    }
 
-   update(updater: Updater<Composition>): Updater<Source> {
-      return (source: Source): Source => {
+   update(updater: Updater<Composition>): LensCreatedUpdater<Source> {
+      const createdUpdater = (source: Source): Source => {
          const composition = this.read(source)
          const newValue = updater(composition)
          return this.setValue(newValue)(source)
       }
+      return createdUpdater as LensCreatedUpdater<Source>
    }
 
-   setFieldValues(newValues: FieldValues<Composition>): Updater<Source> {
+   setFieldValues(newValues: FieldValues<Composition>): LensCreatedUpdater<Source> {
       const keys = Object.keys(newValues)
       const updaters = keys.map(key => {
          const newValue = (newValues as any)[key]
          const lens = (this.fieldLenses as any)[key]
          return lens.setValue(newValue)
       })
-      return pipeUpdaters(...updaters)
+      return pipeUpdaters(...updaters) as LensCreatedUpdater<Source>
    }
 
-   updateFields(updaters: FieldUpdaters<Composition>): Updater<Source> {
+   updateFields(updaters: FieldUpdaters<Composition>): LensCreatedUpdater<Source> {
       const keys = Object.keys(updaters)
       const sourceUpdaters = keys.map(key => {
          const updater = (updaters as any)[key]
          const lens = (this.fieldLenses as any)[key]
          return lens.update(updater)
       })
-      return pipeUpdaters(...sourceUpdaters)
+      return pipeUpdaters(...sourceUpdaters) as LensCreatedUpdater<Source>
    }
 
-   updateFieldValues(fieldsUpdater: FieldsUpdater<Composition>): Updater<Source> {
-      return (source: Source): Source => {
+   updateFieldValues(fieldsUpdater: FieldsUpdater<Composition>): LensCreatedUpdater<Source> {
+      const updater = (source: Source): Source => {
          const composition = this.read(source)
          const newValues = fieldsUpdater(composition)
          return this.setFieldValues(newValues)(source)
       }
+      return updater as LensCreatedUpdater<Source>
    }
 
    pipe(...updaters: Updater<Composition>[]): Updater<Source> {
