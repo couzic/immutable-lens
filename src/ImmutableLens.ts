@@ -1,11 +1,20 @@
-import {FieldsUpdater, FieldUpdaters, FieldValues, Lens, NotAnArray, Updater} from './Lens'
+import {FieldsUpdater, FieldUpdaters, FieldValues, GeneratedUpdater, Lens, NotAnArray, Updater} from './Lens'
 import {pipeUpdaters} from './pipeUpdaters'
 import {setFieldValues} from './setFieldValues'
 import {updateFields} from './updateFields'
 
+export enum LensType {
+   ROOT,
+   KEY_FOCUSED,
+   INDEX_FOCUSED,
+   DEFAULT_VALUE,
+   THROW_IF_UNDEFINED
+}
+
 export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source, Target> {
 
    constructor(public readonly path: string,
+               private readonly type: LensType,
                private readonly readParentTargetFromSource: (source: Source) => ParentTarget,
                private readonly readFromParentTarget: (parentTarget: ParentTarget) => Target,
                private readonly updateOnParentTarget: (target: Target) => Updater<ParentTarget>,
@@ -24,6 +33,7 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
    focusOn<K extends keyof Target>(this: Lens<Source, Target & NotAnArray>, key: K): Lens<Source, Target[K]> {
       return new ImmutableLens(
          this.path + '.' + key,
+         LensType.KEY_FOCUSED,
          (source: Source) => this.read(source),
          (target: Target) => target[key],
          (newValue: Target[K]) => (target: Target) => setFieldValues(target, {[key]: newValue} as any),
@@ -40,6 +50,7 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
    focusIndex<Item>(this: Lens<Source, Item[]>, index: number): Lens<Source, Item | undefined> {
       return new ImmutableLens(
          this.path + '[' + index + ']',
+         LensType.INDEX_FOCUSED,
          (source: Source) => this.read(source),
          (target: Item[]) => target[index],
          (newValue: Item) => (target: Item[]) => {
@@ -53,9 +64,10 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
    }
 
    defaultTo<SafeTarget>(this: Lens<Source, SafeTarget | undefined>, defaultValue: SafeTarget): Lens<Source, SafeTarget> {
-      if (this.path.endsWith('throwIfUndefined')) {
+      if ((this as any).type === LensType.THROW_IF_UNDEFINED) {
          return new ImmutableLens(
             this.path.slice(0, -'?.throwIfUndefined'.length) + '?.defaultTo(' + JSON.stringify(defaultValue) + ')',
+            LensType.DEFAULT_VALUE,
             (source: Source) => (this as ImmutableLens<Source, Target, SafeTarget>).readParentTargetFromSource(source) as any,
             (target: SafeTarget | undefined) => target || defaultValue,
             (newValue: SafeTarget) => () => newValue,
@@ -64,6 +76,7 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
       }
       return new ImmutableLens(
          this.path + '?.defaultTo(' + JSON.stringify(defaultValue) + ')',
+         LensType.DEFAULT_VALUE,
          (source: Source) => this.read(source),
          (target: SafeTarget | undefined) => target || defaultValue,
          (newValue: SafeTarget) => () => newValue,
@@ -72,9 +85,10 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
    }
 
    throwIfUndefined<SafeTarget>(this: Lens<Source, SafeTarget | undefined>): Lens<Source, SafeTarget> {
-      if (this.path.endsWith('throwIfUndefined')) return this as any
+      if ((this as any).type === LensType.THROW_IF_UNDEFINED) return this as any
       return new ImmutableLens(
          this.path + '?.throwIfUndefined',
+         LensType.THROW_IF_UNDEFINED,
          (source: Source) => this.read(source),
          (target: SafeTarget | undefined) => {
             if (!target) throw Error('Unable to read data: ' + target)
@@ -89,12 +103,19 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
    // UPDATE //
    ///////////
 
-   setValue(value: Target): Updater<Source> {
-      return (source: Source) => {
+   setValue(value: Target) {
+      const updater = (source: Source) => {
          const parentTarget = this.readParentTargetFromSource(source)
          const updatedParentTarget = this.updateOnParentTarget(value)(parentTarget)
          return this.updateParentTargetOnSource(updatedParentTarget)(source)
       }
+      const name = 'setValue(' + value + ')'
+      Object.defineProperties(updater, {
+         name: {value: name},
+         generatedName: {value: name},
+         path: {value: ''}
+      })
+      return updater as GeneratedUpdater<Source>
    }
 
    update(updater: Updater<Target>): Updater<Source> {

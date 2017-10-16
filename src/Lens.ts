@@ -7,9 +7,10 @@ export interface Updater<T> {
 }
 
 export interface GeneratedUpdater<T> extends Updater<T> {
-   name: string
-   genericName: string
-   pipedUpdaters: GeneratedUpdater<T>[] | undefined
+   readonly name: string
+   readonly generatedName: string
+   readonly path: string
+   readonly pipedUpdaters: GeneratedUpdater<T>[] | undefined
 }
 
 export type FieldValues<T> = object & NotAnArray & { [K in keyof T]?: T[K] }
@@ -81,7 +82,7 @@ export interface Lens<T, Target> {
    // UPDATE //
    ///////////
 
-   setValue(newValue: Target): Updater<T>
+   setValue(newValue: Target): GeneratedUpdater<T>
 
    update(updater: Updater<Target>): Updater<T>
 

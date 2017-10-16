@@ -123,4 +123,16 @@ describe('RootLens', () => {
          expect(result).to.equal('Value')
       })
    })
+
+   describe('setValue updater', () => {
+      const newValue = source.counter + 1
+      let updater = lens.focusPath('counter').setValue(newValue)
+      it('has name', () => {
+         expect(updater.name).to.equal('setValue(' + newValue + ')')
+         expect(updater.generatedName).to.equal('setValue(' + newValue + ')')
+      })
+      it('has path', () => {
+         expect(updater.path).to.equal('')
+      })
+   })
 })

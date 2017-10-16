@@ -1,8 +1,8 @@
-import {FieldLenses, FieldsUpdater, FieldUpdaters, FieldValues, Lens, NotAnArray, Updater} from './Lens'
+import {FieldLenses, FieldsUpdater, FieldUpdaters, FieldValues, GeneratedUpdater, Lens, NotAnArray, Updater} from './Lens'
 import {extract} from './extract'
 import {keysOf} from './keysOf'
 import {pipeUpdaters} from './pipeUpdaters'
-import {ImmutableLens} from './ImmutableLens'
+import {ImmutableLens, LensType} from './ImmutableLens'
 import {setFieldValues} from './setFieldValues'
 
 export class ComposedLens<Source extends object, Composition> implements Lens<Source, Composition> {
@@ -18,6 +18,7 @@ export class ComposedLens<Source extends object, Composition> implements Lens<So
    focusOn<K extends keyof Composition>(this: Lens<Source, Composition & NotAnArray>, key: K): Lens<Source, Composition[K]> {
       return new ImmutableLens(
          this.path + '.' + key,
+         LensType.KEY_FOCUSED,
          (source: Source) => this.read(source),
          (target: Composition) => target[key],
          (newValue: Composition[K]) => (target: Composition) => setFieldValues(target, {[key]: newValue} as any),
@@ -39,8 +40,8 @@ export class ComposedLens<Source extends object, Composition> implements Lens<So
       return extract(source, this.fieldLenses)
    }
 
-   setValue(newValue: Composition): Updater<Source> {
-      return this.setFieldValues(newValue)
+   setValue(newValue: Composition): GeneratedUpdater<Source> {
+      return this.setFieldValues(newValue) as GeneratedUpdater<Source>
    }
 
    update(updater: Updater<Composition>): Updater<Source> {
