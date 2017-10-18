@@ -1,5 +1,4 @@
 export * from './Lens'
-export {createComposedLens} from './createComposedLens'
 export {createLens} from './createLens'
-export {extract} from './extract'
 export {pipeUpdaters} from './pipeUpdaters'
+export {cherryPick} from './cherryPick'

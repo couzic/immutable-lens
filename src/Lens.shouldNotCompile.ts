@@ -67,6 +67,30 @@ lens.focusAt(() => 'counter')
 // Focusing at primitive lens @shouldNotCompile
 lens.focusAt(42)
 
+// recomposing with null @shouldNotCompile
+lens.recompose(null)
+
+// recomposing with undefined @shouldNotCompile
+lens.recompose(undefined)
+
+// recomposing field with null @shouldNotCompile
+lens.recompose({fieldName: null})
+
+// recomposing field with undefined @shouldNotCompile
+lens.recompose({fieldName: undefined})
+
+// recomposing field with string @shouldNotCompile
+lens.recompose({fieldName: 'string'})
+
+// recomposing field with updater @shouldNotCompile
+lens.recompose({fieldName: (value) => value})
+
+// recomposing number-focused lens @shouldNotCompile
+counterLens.recompose({})
+
+// recomposing array-focused lens @shouldNotCompile
+todoListLens.recompose({})
+
 // Focusing at parent lens @shouldNotCompile
 todoLens.focusAt(lens)
 
@@ -315,6 +339,9 @@ lens.updateFields({
 //////////////////////////////////
 // Should not but does compile //
 ////////////////////////////////
+
+// Recomposing lens with function @shouldNotButDoesCompile
+lens.recompose(() => null)
 
 // Adding unknown props in Updater output @shouldNotButDoesCompile
 const updater: Updater<Source> = (source) => ({

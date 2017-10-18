@@ -21,6 +21,16 @@ describe('RootLens', () => {
          expect(result).to.deep.equal(source)
       })
 
+      it('can recompose', () => {
+         lens.recompose({
+            todoList: lens.focusPath('todo', 'list')
+         })
+      })
+
+      it('throws error when provided a function as lens fields', () => {
+         expect(() => lens.recompose(() => ({}))).to.throw()
+      })
+
       it('can set new value', () => {
          const newValue = {
             ...source,

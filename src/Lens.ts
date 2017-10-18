@@ -23,9 +23,9 @@ export interface FieldsUpdater<T> {
    (value: T): FieldValues<T>
 }
 
-export type FieldLenses<Source, Composition> = object & NotAnArray & {[K in keyof Composition]: Lens<Source, Composition[K]>}
+export type FieldLenses<T, Composition> = object & NotAnArray & {[K in keyof Composition]: Lens<T, Composition[K]>}
 
-export interface Lens<T, Target> {
+export interface Lens<Source, Target> {
 
    readonly path: string
 
@@ -33,34 +33,34 @@ export interface Lens<T, Target> {
    // FOCUS //
    //////////
 
-   focusOn<K extends keyof Target>(this: Lens<T, Target & NotAnArray>, key: K): Lens<T, Target[K]>
+   focusOn<K extends keyof Target>(this: Lens<Source, Target & NotAnArray>, key: K): Lens<Source, Target[K]>
 
-   focusPath<K extends keyof Target>(this: Lens<T, Target & NotAnArray>, key: K): Lens<T, Target[K]>
+   focusPath<K extends keyof Target>(this: Lens<Source, Target & NotAnArray>, key: K): Lens<Source, Target[K]>
 
    focusPath<K1 extends keyof Target,
-      K2 extends keyof Target[K1]>(key1: K1, key2: K2): Lens<T, Target[K1][K2]>
+      K2 extends keyof Target[K1]>(key1: K1, key2: K2): Lens<Source, Target[K1][K2]>
 
    focusPath<K1 extends keyof Target,
       K2 extends keyof Target[K1],
-      K3 extends keyof Target[K1][K2]>(key1: K1, key2: K2, key3: K3): Lens<T, Target[K1][K2][K3]>
+      K3 extends keyof Target[K1][K2]>(key1: K1, key2: K2, key3: K3): Lens<Source, Target[K1][K2][K3]>
 
    focusPath<K1 extends keyof Target,
       K2 extends keyof Target[K1],
       K3 extends keyof Target[K1][K2],
-      K4 extends keyof Target[K1][K2][K3]>(key1: K1, key2: K2, key3: K3, key4: K4): Lens<T, Target[K1][K2][K3][K4]>
+      K4 extends keyof Target[K1][K2][K3]>(key1: K1, key2: K2, key3: K3, key4: K4): Lens<Source, Target[K1][K2][K3][K4]>
 
    focusPath<K1 extends keyof Target,
       K2 extends keyof Target[K1],
       K3 extends keyof Target[K1][K2],
       K4 extends keyof Target[K1][K2][K3],
-      K5 extends keyof Target[K1][K2][K3][K4]>(key1: K1, key2: K2, key3: K3, key4: K4, key5: K5): Lens<T, Target[K1][K2][K3][K4][K5]>
+      K5 extends keyof Target[K1][K2][K3][K4]>(key1: K1, key2: K2, key3: K3, key4: K4, key5: K5): Lens<Source, Target[K1][K2][K3][K4][K5]>
 
    focusPath<K1 extends keyof Target,
       K2 extends keyof Target[K1],
       K3 extends keyof Target[K1][K2],
       K4 extends keyof Target[K1][K2][K3],
       K5 extends keyof Target[K1][K2][K3][K4],
-      K6 extends keyof Target[K1][K2][K3][K4][K5]>(key1: K1, key2: K2, key3: K3, key4: K4, key5: K5, key6: K6): Lens<T, Target[K1][K2][K3][K4][K5][K6]>
+      K6 extends keyof Target[K1][K2][K3][K4][K5]>(key1: K1, key2: K2, key3: K3, key4: K4, key5: K5, key6: K6): Lens<Source, Target[K1][K2][K3][K4][K5][K6]>
 
    focusPath<K1 extends keyof Target,
       K2 extends keyof Target[K1],
@@ -68,45 +68,47 @@ export interface Lens<T, Target> {
       K4 extends keyof Target[K1][K2][K3],
       K5 extends keyof Target[K1][K2][K3][K4],
       K6 extends keyof Target[K1][K2][K3][K4][K5],
-      K7 extends keyof Target[K1][K2][K3][K4][K5][K6]>(key1: K1, key2: K2, key3: K3, key4: K4, key5: K5, key6: K6, key7: K7): Lens<T, Target[K1][K2][K3][K4][K5][K6][K7]>
+      K7 extends keyof Target[K1][K2][K3][K4][K5][K6]>(key1: K1, key2: K2, key3: K3, key4: K4, key5: K5, key6: K6, key7: K7): Lens<Source, Target[K1][K2][K3][K4][K5][K6][K7]>
 
-   // focusAt<NewTarget>(lens: Lens<Target, NewTarget>): Lens<T, NewTarget>
+   // focusAt<NewTarget>(lens: Lens<Sourcearget, NewTarget>): Lens<Source, NewTarget>
 
-   focusIndex<Item>(this: Lens<T, Item[]>, index: number): Lens<T, Item | undefined>
+   focusIndex<Item>(this: Lens<Source, Item[]>, index: number): Lens<Source, Item | undefined>
+
+   recompose<Composition>(this: Lens<Source, Target & object & NotAnArray>, fields: FieldLenses<Target, Composition>): Lens<Source, Composition>
 
    ///////////
    // READ //
    /////////
 
-   read(source: T): Target
+   read(source: Source): Target
 
    /////////////
    // UPDATE //
    ///////////
 
-   setValue(newValue: Target): LensCreatedUpdater<T>
+   setValue(newValue: Target): LensCreatedUpdater<Source>
 
-   update(updater: Updater<Target>): LensCreatedUpdater<T>
+   update(updater: Updater<Target>): LensCreatedUpdater<Source>
 
-   setFieldValues(this: Lens<T, Target & NotAnArray>, newValues: FieldValues<Target>): LensCreatedUpdater<T>
+   setFieldValues(this: Lens<Source, Target & NotAnArray>, newValues: FieldValues<Target>): LensCreatedUpdater<Source>
 
-   updateFields(this: Lens<T, Target & NotAnArray>, updaters: FieldUpdaters<Target>): LensCreatedUpdater<T>
+   updateFields(this: Lens<Source, Target & NotAnArray>, updaters: FieldUpdaters<Target>): LensCreatedUpdater<Source>
 
-   updateFieldValues(this: Lens<T, Target & NotAnArray>, fieldsUpdater: FieldsUpdater<Target>): LensCreatedUpdater<T>
+   updateFieldValues(this: Lens<Source, Target & NotAnArray>, fieldsUpdater: FieldsUpdater<Target>): LensCreatedUpdater<Source>
 
    // TODO API DESIGN
    // setIndexValues()
    // updateIndexes()
    // updateIndexValues()
 
-   pipe(...updaters: Updater<Target>[]): Updater<T>
+   pipe(...updaters: Updater<Target>[]): Updater<Source>
 
-   defaultTo<SafeTarget extends Target>(this: Lens<T, SafeTarget | undefined>, value: SafeTarget): Lens<T, SafeTarget>
+   defaultTo<SafeTarget extends Target>(this: Lens<Source, SafeTarget | undefined>, value: SafeTarget): Lens<Source, SafeTarget>
 
-   throwIfUndefined<SafeTarget extends Target>(this: Lens<T, SafeTarget | undefined>): Lens<T, SafeTarget>
+   throwIfUndefined<SafeTarget extends Target>(this: Lens<Source, SafeTarget | undefined>): Lens<Source, SafeTarget>
 
-   // abortIfUndefined<SafeTarget>(this: Lens<T, SafeTarget | undefined>): Lens<T, SafeTarget>
+   // abortIfUndefined<SafeTarget>(this: Lens<Source, SafeTarget | undefined>): Lens<Source, SafeTarget>
 }
 
-export interface UnfocusedLens<T> extends Lens<T, T> {
+export interface UnfocusedLens<Source> extends Lens<Source, Source> {
 }

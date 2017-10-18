@@ -1,14 +1,16 @@
-import {FieldsUpdater, FieldUpdaters, FieldValues, Lens, LensCreatedUpdater, NotAnArray, Updater} from './Lens'
+import {FieldLenses, FieldsUpdater, FieldUpdaters, FieldValues, Lens, LensCreatedUpdater, NotAnArray, Updater} from './Lens'
 import {pipeUpdaters} from './pipeUpdaters'
 import {setFieldValues} from './setFieldValues'
 import {updateFields} from './updateFields'
+import {cherryPick} from './cherryPick'
 
 export enum LensType {
    ROOT,
    KEY_FOCUSED,
    INDEX_FOCUSED,
    DEFAULT_VALUE,
-   THROW_IF_UNDEFINED
+   THROW_IF_UNDEFINED,
+   RECOMPOSED
 }
 
 export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source, Target> {
@@ -96,6 +98,26 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
          },
          (newValue: SafeTarget) => () => newValue,
          (target: SafeTarget | undefined) => this.setValue(target)
+      )
+   }
+
+   recompose<Composition>(fieldLenses: FieldLenses<Target, Composition>): Lens<Source, Composition> {
+      if (typeof fieldLenses === 'function') throw Error('Lens.recompose() received a function as an argument. This is NOT supported.')
+      return new ImmutableLens(
+         'recomposed({' + Object.keys(fieldLenses).join(', ') + '})',
+         LensType.RECOMPOSED,
+         source => this.read(source),
+         target => cherryPick(target as any, fieldLenses),
+         composition => {
+            const keys = Object.keys(composition)
+            const updaters = keys.map(key => {
+               const fieldValue = (composition as any)[key]
+               const lens = (fieldLenses as any)[key]
+               return lens.setValue(fieldValue)
+            })
+            return pipeUpdaters(...updaters)
+         },
+         target => this.setValue(target)
       )
    }
 
@@ -202,7 +224,7 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
       return this.update(pipeUpdaters(...updaters))
    }
 
-   addMetaProperties<Source>(updater: Updater<Source>, properties: {
+   private addMetaProperties<Source>(updater: Updater<Source>, properties: {
       name: string
       genericName: string
       detailedName: string

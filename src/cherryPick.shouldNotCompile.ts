@@ -1,28 +1,28 @@
 import {source} from '../test/data.test'
-import {extract} from './extract'
+import {cherryPick} from './cherryPick'
 import {createLens} from './createLens'
 
 // Extracting null source @shouldNotCompile
-extract(null, {})
+cherryPick(null, {})
 
 // Extracting undefined source @shouldNotCompile
-extract(undefined, {})
+cherryPick(undefined, {})
 
 // Extracting with null extractors @shouldNotCompile
-extract(source, null)
+cherryPick(source, null)
 
 // Extracting with undefined extractors @shouldNotCompile
-extract(source, undefined)
+cherryPick(source, undefined)
 
 // Extracting with unknown key extractor @shouldNotCompile
-extract(source, {unknown: {} as any})
+cherryPick(source, {unknown: {} as any})
 
 // Extracting with wrong lens source @shouldNotCompile
-extract(source, {counter: createLens({counter: 0})})
+cherryPick(source, {counter: createLens({counter: 0})})
 
 //////////////////////////////////
 // Should not but does compile //
 ////////////////////////////////
 
 // Extracting wrong source type @shouldNotButDoesCompile
-extract(source, () => null)
+cherryPick(source, () => null)
