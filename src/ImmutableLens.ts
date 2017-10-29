@@ -65,12 +65,12 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
       )
    }
 
-   defaultTo<SafeTarget>(this: Lens<Source, SafeTarget | undefined>, defaultValue: SafeTarget): Lens<Source, SafeTarget> {
-      if ((this as any).type === LensType.THROW_IF_UNDEFINED) {
+   defaultTo<SafeTarget>(this: ImmutableLens<Source, ParentTarget, SafeTarget | undefined>, defaultValue: SafeTarget): Lens<Source, SafeTarget> {
+      if (this.type === LensType.THROW_IF_UNDEFINED) {
          return new ImmutableLens(
             this.path.slice(0, -'?.throwIfUndefined'.length) + '?.defaultTo(' + JSON.stringify(defaultValue) + ')',
             LensType.DEFAULT_VALUE,
-            (source: Source) => (this as ImmutableLens<Source, Target, SafeTarget>).readParentTargetFromSource(source) as any,
+            (source: Source) => this.readParentTargetFromSource(source) as any,
             (target: SafeTarget | undefined) => target || defaultValue,
             (newValue: SafeTarget) => () => newValue,
             (target: SafeTarget | undefined) => this.setValue(target)
@@ -86,8 +86,8 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
       )
    }
 
-   throwIfUndefined<SafeTarget>(this: Lens<Source, SafeTarget | undefined>): Lens<Source, SafeTarget> {
-      if ((this as any).type === LensType.THROW_IF_UNDEFINED) return this as any
+   throwIfUndefined<SafeTarget>(this: ImmutableLens<Source, ParentTarget, SafeTarget | undefined>): Lens<Source, SafeTarget> {
+      if (this.type === LensType.THROW_IF_UNDEFINED) return this as any
       return new ImmutableLens(
          this.path + '?.throwIfUndefined',
          LensType.THROW_IF_UNDEFINED,
