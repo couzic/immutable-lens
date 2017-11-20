@@ -1,8 +1,17 @@
-import {FieldLenses, FieldsUpdater, FieldUpdaters, FieldValues, Lens, LensCreatedUpdater, NotAnArray, Updater} from './Lens'
-import {pipeUpdaters} from './pipeUpdaters'
-import {setFieldValues} from './setFieldValues'
-import {updateFields} from './updateFields'
-import {cherryPick} from './cherryPick'
+import { cherryPick } from './cherryPick'
+import {
+   FieldLenses,
+   FieldsUpdater,
+   FieldUpdaters,
+   FieldValues,
+   Lens,
+   LensCreatedUpdater,
+   NotAnArray,
+   Updater,
+} from './Lens'
+import { pipeUpdaters } from './pipeUpdaters'
+import { setFieldValues } from './setFieldValues'
+import { updateFields } from './updateFields'
 
 export enum LensType {
    ROOT,
@@ -16,11 +25,11 @@ export enum LensType {
 export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source, Target> {
 
    constructor(public readonly path: string,
-               private readonly type: LensType,
-               private readonly readParentTargetFromSource: (source: Source) => ParentTarget,
-               private readonly readFromParentTarget: (parentTarget: ParentTarget) => Target,
-               private readonly updateOnParentTarget: (target: Target) => Updater<ParentTarget>,
-               private readonly updateParentTargetOnSource: (parentTarget: ParentTarget) => Updater<Source>) {
+      private readonly type: LensType,
+      private readonly readParentTargetFromSource: (source: Source) => ParentTarget,
+      private readonly readFromParentTarget: (parentTarget: ParentTarget) => Target,
+      private readonly updateOnParentTarget: (target: Target) => Updater<ParentTarget>,
+      private readonly updateParentTargetOnSource: (parentTarget: ParentTarget) => Updater<Source>) {
    }
 
    read(source: Source): Target {
@@ -38,7 +47,21 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
          LensType.KEY_FOCUSED,
          (source: Source) => this.read(source),
          (target: Target) => target[key],
-         (newValue: Target[K]) => (target: Target) => setFieldValues(target, {[key]: newValue} as any),
+         (newValue: Target[K]) => (target: Target) => setFieldValues(target, { [key]: newValue } as any),
+         (target: Target) => this.setValue(target)
+      )
+   }
+
+   focus<NewTarget>(
+      get: (value: Target) => NewTarget,
+      set: (newValue: NewTarget) => Updater<Target>
+   ): Lens<Source, NewTarget> {
+      return new ImmutableLens<Source, Target, NewTarget>(
+         this.path + '.focus()',
+         LensType.KEY_FOCUSED,
+         (source: Source) => this.read(source),
+         get,
+         set,
          (target: Target) => this.setValue(target)
       )
    }
@@ -62,7 +85,7 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
             return targetCopy
          },
          (target: Item[]) => this.setValue(target)
-      )
+      ) as Lens<Source, Item | undefined>
    }
 
    defaultTo<SafeTarget>(this: ImmutableLens<Source, ParentTarget, SafeTarget | undefined>, defaultValue: SafeTarget): Lens<Source, SafeTarget> {
@@ -231,11 +254,11 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
       details: Target | Updater<Target> | FieldValues<Target> | FieldUpdaters<Target> | FieldsUpdater<Target>
    }): LensCreatedUpdater<Source> {
       Object.defineProperties(updater, {
-         name: {value: properties.name},
-         genericName: {value: properties.genericName},
-         detailedName: {value: properties.detailedName},
-         details: {value: properties.details},
-         lensPath: {value: this.path}
+         name: { value: properties.name },
+         genericName: { value: properties.genericName },
+         detailedName: { value: properties.detailedName },
+         details: { value: properties.details },
+         lensPath: { value: this.path }
       })
       return updater as LensCreatedUpdater<Source>
    }

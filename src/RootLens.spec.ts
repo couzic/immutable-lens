@@ -89,6 +89,12 @@ describe('RootLens', () => {
          })
       })
 
+      // it('throws error when updating unknown field value', () => {
+      //    expect(() => lens.updateFieldValues(() => ({
+      //       unknown: 'unknown'
+      //    }))).to.throw()
+      // })
+
       it('returns same source reference if no fields', () => {
          const result = lens.updateFields({})(source)
          expect(result).to.equal(source)

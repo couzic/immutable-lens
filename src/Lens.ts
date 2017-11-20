@@ -15,9 +15,9 @@ export interface LensCreatedUpdater<T> extends Updater<T> {
    readonly pipedUpdaters: LensCreatedUpdater<T>[] | undefined
 }
 
-export type FieldValues<T> = object & NotAnArray & { [K in keyof T]?: T[K] }
+export type FieldValues<T> = object & NotAnArray & Partial<T>
 
-export type FieldUpdaters<T> = object & NotAnArray & { [K in keyof T]?: Updater<T[K]> }
+export type FieldUpdaters<T> = object & NotAnArray & {[K in keyof T]?: Updater<T[K]>}
 
 export interface FieldsUpdater<T> {
    (value: T): FieldValues<T>
@@ -33,6 +33,12 @@ export interface Lens<Source, Target> {
    // FOCUS //
    //////////
 
+   focus<NewTarget>(
+      get: (value: Target) => NewTarget,
+      set: (newValue: NewTarget) => Updater<Target>
+   ): Lens<Source, NewTarget>
+
+   // TODO Deprecate ? Rename to focus() ?
    focusOn<K extends keyof Target>(this: Lens<Source, Target & NotAnArray>, key: K): Lens<Source, Target[K]>
 
    focusPath<K extends keyof Target>(this: Lens<Source, Target & NotAnArray>, key: K): Lens<Source, Target[K]>
@@ -70,7 +76,8 @@ export interface Lens<Source, Target> {
       K6 extends keyof Target[K1][K2][K3][K4][K5],
       K7 extends keyof Target[K1][K2][K3][K4][K5][K6]>(key1: K1, key2: K2, key3: K3, key4: K4, key5: K5, key6: K6, key7: K7): Lens<Source, Target[K1][K2][K3][K4][K5][K6][K7]>
 
-   // focusAt<NewTarget>(lens: Lens<Sourcearget, NewTarget>): Lens<Source, NewTarget>
+   // TODO is there a use case for this ?
+   // focusWith<NewTarget>(lens: Lens<Target, NewTarget>): Lens<Source, NewTarget>
 
    focusIndex<Item>(this: Lens<Source, Item[]>, index: number): Lens<Source, Item | undefined>
 
@@ -97,11 +104,32 @@ export interface Lens<Source, Target> {
    updateFieldValues(this: Lens<Source, Target & NotAnArray>, fieldsUpdater: FieldsUpdater<Target>): LensCreatedUpdater<Source>
 
    // TODO API DESIGN
-   // setIndexValues()
+   // view()
+   // map()
+   // pick<K extends keyof Target>(...keys: K[]): (source:Source) => Pick<Target, K>
+   // pluck()
+   // cherryPick()
+   // recompute()
+
+   // set()
+   // setPartial()
+   // setFields()
+   // setFieldPartials()
+   // update()
+   // updatePartial()
+   // updateFields()
+   // updateFieldPartials() TODO ???
+   // pipe()
+
+   // TODO Array-focused update functions ???
+   // setIndexes()
    // updateIndexes()
    // updateIndexValues()
 
+   // TODO Non-variadic
    pipe(...updaters: Updater<Target>[]): Updater<Source>
+
+   // pipe(updaters: Updater<Target>[], source: Source): Source
 
    defaultTo<SafeTarget extends Target>(this: Lens<Source, SafeTarget | undefined>, value: SafeTarget): Lens<Source, SafeTarget>
 

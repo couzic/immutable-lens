@@ -21,16 +21,15 @@ pipeUpdaters(
    (data: number) => data,
    (data: string) => data
 )
-
-//////////////////////////////////
-// Should not but does compile //
-////////////////////////////////
-
-// Piping single updater with output type being a subset of input type @shouldNotButDoesCompile
+// Piping single updater with output type being a subset of input type @shouldNotCompile
 pipeUpdaters((value: { toto: string }) => ({}))
 
-// Piping multiple updaters with output type being a subset of input type @shouldNotButDoesCompile
+// Piping multiple updaters with output type being a subset of input type @shouldNotCompile
 pipeUpdaters(
    (value: { toto: string }) => ({}),
    (value: { toto: string }) => ({})
 )
+
+//////////////////////////////////
+// Should not but does compile //
+////////////////////////////////

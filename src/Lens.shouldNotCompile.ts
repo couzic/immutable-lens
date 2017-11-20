@@ -211,6 +211,12 @@ counterLens.update((counter: number) => '42')
 // Updating object with wrong output type updater @shouldNotCompile
 todoLens.update(todo => 'todo')
 
+// Updating indexed-focused value with non-optional input updater @shouldNotCompile
+todoListItemLens.update((item: TodoItem) => item)
+
+// Updating optional value with non-optional input updater @shouldNotCompile
+const userUpdated: Source = userLens.update((current: User) => source.user)(source)
+
 // Setting field values with primitive-focused lens @shouldNotCompile
 counterLens.setFieldValues({})
 
@@ -336,6 +342,8 @@ lens.updateFields({
    }
 })
 
+
+
 //////////////////////////////////
 // Should not but does compile //
 ////////////////////////////////
@@ -343,18 +351,16 @@ lens.updateFields({
 // Recomposing lens with function @shouldNotButDoesCompile
 lens.recompose(() => null)
 
+// Updating field values with unknown prop @shouldNotButDoesCompile
+lens.updateFieldValues(state => ({
+   unknown: 'unknown'
+}))
+
 // Adding unknown props in Updater output @shouldNotButDoesCompile
 const updater: Updater<Source> = (source) => ({
    ...source,
    unknownProp: 42
 })
-
-// Updating optional value with non-optional input updater @shouldNotButDoesCompile
-const userUpdated: Source = userLens.update((current: User) => source.user)(source)
-
-// Updating indexed-focused value with non-optional input updater @shouldNotButDoesCompile
-todoListItemLens.update((item: TodoItem) => item)
-
 
 ///////////////////////
 // Maybe one day... //
