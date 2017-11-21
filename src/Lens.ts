@@ -127,7 +127,7 @@ export interface Lens<Source, Target> {
    // updateIndexValues()
 
    // TODO Non-variadic
-   pipe(...updaters: Updater<Target>[]): Updater<Source>
+   pipe(...updaters: Updater<Target>[]): LensCreatedUpdater<Source>
 
    // pipe(updaters: Updater<Target>[], source: Source): Source
 

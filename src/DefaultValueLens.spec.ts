@@ -73,8 +73,9 @@ describe('DefaultValueLens', () => {
             expect(result.user).to.deep.equal({name: defaultUser.name.toUpperCase()})
          })
 
+         // TODO add a type test
          it('returns default value even if asked to throw if undefined', () => {
-            expect(lens.throwIfUndefined().read(data)).to.equal(defaultUser)
+            expect((lens as any).throwIfUndefined().read(data)).to.equal(defaultUser)
          })
       })
 

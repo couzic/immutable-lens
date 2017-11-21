@@ -243,7 +243,7 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
       })
    }
 
-   pipe(...updaters: Updater<Target>[]): Updater<Source> {
+   pipe(...updaters: Updater<Target>[]): LensCreatedUpdater<Source> {
       return this.update(pipeUpdaters(...updaters))
    }
 
