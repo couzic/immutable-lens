@@ -6,13 +6,17 @@ export interface Updater<T> {
    (value: T): T
 }
 
-export interface LensCreatedUpdater<T> extends Updater<T> {
+export interface UpdaterMeta {
    readonly name: string
    readonly genericName: string
    readonly detailedName: string
-   readonly details: T | Updater<T> | FieldValues<T> | FieldUpdaters<T> | FieldsUpdater<T>
+   readonly details: any
    readonly lensPath: string
-   readonly pipedUpdaters: LensCreatedUpdater<T>[] | undefined
+   readonly pipedUpdaters?: UpdaterWithMeta<any>[]
+}
+
+export interface UpdaterWithMeta<T> extends Updater<T> {
+   meta: UpdaterMeta
 }
 
 export type FieldValues<T> = object & NotAnArray & Partial<T>
@@ -93,15 +97,15 @@ export interface Lens<Source, Target> {
    // UPDATE //
    ///////////
 
-   setValue(newValue: Target): LensCreatedUpdater<Source>
+   setValue(newValue: Target): UpdaterWithMeta<Source>
 
-   update(updater: Updater<Target>): LensCreatedUpdater<Source>
+   update(updater: Updater<Target>): UpdaterWithMeta<Source>
 
-   setFieldValues(this: Lens<Source, Target & NotAnArray>, newValues: FieldValues<Target>): LensCreatedUpdater<Source>
+   setFieldValues(this: Lens<Source, Target & NotAnArray>, newValues: FieldValues<Target>): UpdaterWithMeta<Source>
 
-   updateFields(this: Lens<Source, Target & NotAnArray>, updaters: FieldUpdaters<Target>): LensCreatedUpdater<Source>
+   updateFields(this: Lens<Source, Target & NotAnArray>, updaters: FieldUpdaters<Target>): UpdaterWithMeta<Source>
 
-   updateFieldValues(this: Lens<Source, Target & NotAnArray>, fieldsUpdater: FieldsUpdater<Target>): LensCreatedUpdater<Source>
+   updateFieldValues(this: Lens<Source, Target & NotAnArray>, fieldsUpdater: FieldsUpdater<Target>): UpdaterWithMeta<Source>
 
    // TODO API DESIGN
    // view()
@@ -127,7 +131,7 @@ export interface Lens<Source, Target> {
    // updateIndexValues()
 
    // TODO Non-variadic
-   pipe(...updaters: Updater<Target>[]): LensCreatedUpdater<Source>
+   pipe(...updaters: Updater<Target>[]): UpdaterWithMeta<Source>
 
    // pipe(updaters: Updater<Target>[], source: Source): Source
 

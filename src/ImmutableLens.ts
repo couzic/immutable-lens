@@ -1,14 +1,6 @@
 import { cherryPick } from './cherryPick'
-import {
-   FieldLenses,
-   FieldsUpdater,
-   FieldUpdaters,
-   FieldValues,
-   Lens,
-   LensCreatedUpdater,
-   NotAnArray,
-   Updater,
-} from './Lens'
+import { UpdaterMeta } from './index'
+import { FieldLenses, FieldsUpdater, FieldUpdaters, FieldValues, Lens, NotAnArray, Updater, UpdaterWithMeta } from './Lens'
 import { pipeUpdaters } from './pipeUpdaters'
 import { setFieldValues } from './setFieldValues'
 import { updateFields } from './updateFields'
@@ -164,7 +156,7 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
       })
    }
 
-   update(updater: Updater<Target>): LensCreatedUpdater<Source> {
+   update(updater: Updater<Target>): UpdaterWithMeta<Source> {
       const createdUpdater = (source: Source) => {
          const value = this.read(source)
          const newValue = updater(value)
@@ -186,7 +178,7 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
       })
    }
 
-   setFieldValues(newValues: FieldValues<Target>): LensCreatedUpdater<Source> {
+   setFieldValues(newValues: FieldValues<Target>): UpdaterWithMeta<Source> {
       const updater = (source: Source) => {
          const currentTarget = this.read(source)
          const updatedTarget = setFieldValues(currentTarget, newValues)
@@ -203,7 +195,7 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
       })
    }
 
-   updateFields(updaters: FieldUpdaters<Target>): LensCreatedUpdater<Source> {
+   updateFields(updaters: FieldUpdaters<Target>): UpdaterWithMeta<Source> {
       const updater = (source: Source) => {
          const currentTarget = this.read(source)
          const updatedTarget = updateFields(currentTarget, updaters)
@@ -220,7 +212,7 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
       })
    }
 
-   updateFieldValues(fieldsUpdater: FieldsUpdater<Target>): LensCreatedUpdater<Source> {
+   updateFieldValues(fieldsUpdater: FieldsUpdater<Target>): UpdaterWithMeta<Source> {
       const updater = (source: Source) => {
          const currentTarget = this.read(source)
          const newValues = fieldsUpdater(currentTarget)
@@ -243,7 +235,7 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
       })
    }
 
-   pipe(...updaters: Updater<Target>[]): LensCreatedUpdater<Source> {
+   pipe(...updaters: Updater<Target>[]): UpdaterWithMeta<Source> {
       return this.update(pipeUpdaters(...updaters))
    }
 
@@ -252,15 +244,17 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
       genericName: string
       detailedName: string
       details: Target | Updater<Target> | FieldValues<Target> | FieldUpdaters<Target> | FieldsUpdater<Target>
-   }): LensCreatedUpdater<Source> {
-      Object.defineProperties(updater, {
-         name: { value: properties.name },
-         genericName: { value: properties.genericName },
-         detailedName: { value: properties.detailedName },
-         details: { value: properties.details },
-         lensPath: { value: this.path }
-      })
-      return updater as LensCreatedUpdater<Source>
+   }): UpdaterWithMeta<Source> {
+      const meta: UpdaterMeta = {
+         name: properties.name,
+         genericName: properties.genericName,
+         detailedName: properties.detailedName,
+         details: properties.details,
+         lensPath: this.path
+      }
+      const updaterWithMeta = updater as UpdaterWithMeta<Source>
+      updaterWithMeta.meta = meta
+      return updaterWithMeta
    }
 
 }
