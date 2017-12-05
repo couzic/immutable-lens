@@ -6,19 +6,6 @@ export interface Updater<T> {
    (value: T): T
 }
 
-export interface UpdaterMeta {
-   readonly name: string
-   readonly genericName: string
-   readonly detailedName: string
-   readonly details: any
-   readonly lensPath: string
-   readonly pipedUpdaters?: UpdaterWithMeta<any>[]
-}
-
-export interface UpdaterWithMeta<T> extends Updater<T> {
-   meta: UpdaterMeta
-}
-
 export type FieldValues<T> = object & NotAnArray & Partial<T>
 
 export type FieldUpdaters<T> = object & NotAnArray & {[K in keyof T]?: Updater<T[K]>}
@@ -97,15 +84,15 @@ export interface Lens<Source, Target> {
    // UPDATE //
    ///////////
 
-   setValue(newValue: Target): UpdaterWithMeta<Source>
+   setValue(newValue: Target): Updater<Source>
 
-   update(updater: Updater<Target>): UpdaterWithMeta<Source>
+   update(updater: Updater<Target>): Updater<Source>
 
-   setFieldValues(this: Lens<Source, Target & NotAnArray>, newValues: FieldValues<Target>): UpdaterWithMeta<Source>
+   setFieldValues(this: Lens<Source, Target & NotAnArray>, newValues: FieldValues<Target>): Updater<Source>
 
-   updateFields(this: Lens<Source, Target & NotAnArray>, updaters: FieldUpdaters<Target>): UpdaterWithMeta<Source>
+   updateFields(this: Lens<Source, Target & NotAnArray>, updaters: FieldUpdaters<Target>): Updater<Source>
 
-   updateFieldValues(this: Lens<Source, Target & NotAnArray>, fieldsUpdater: FieldsUpdater<Target>): UpdaterWithMeta<Source>
+   updateFieldValues(this: Lens<Source, Target & NotAnArray>, fieldsUpdater: FieldsUpdater<Target>): Updater<Source>
 
    // TODO API DESIGN
    // view()
@@ -131,7 +118,7 @@ export interface Lens<Source, Target> {
    // updateIndexValues()
 
    // TODO Non-variadic
-   pipe(...updaters: Updater<Target>[]): UpdaterWithMeta<Source>
+   pipe(...updaters: Updater<Target>[]): Updater<Source>
 
    // pipe(updaters: Updater<Target>[], source: Source): Source
 

@@ -1,6 +1,5 @@
 import { cherryPick } from './cherryPick'
-import { UpdaterMeta } from './index'
-import { FieldLenses, FieldsUpdater, FieldUpdaters, FieldValues, Lens, NotAnArray, Updater, UpdaterWithMeta } from './Lens'
+import { FieldLenses, FieldsUpdater, FieldUpdaters, FieldValues, Lens, NotAnArray, Updater } from './Lens'
 import { pipeUpdaters } from './pipeUpdaters'
 import { setFieldValues } from './setFieldValues'
 import { updateFields } from './updateFields'
@@ -146,73 +145,44 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
          const updatedParentTarget = this.updateOnParentTarget(value)(parentTarget)
          return this.updateParentTargetOnSource(updatedParentTarget)(source)
       }
-      const name = 'setValue()'
-      const detailedName = 'setValue(' + value + ')'
-      return this.addMetaProperties(updater, {
-         name,
-         genericName: name,
-         detailedName,
-         details: value
-      })
+      setFunctionName(updater, 'setValue')
+      return updater
    }
 
-   update(updater: Updater<Target>): UpdaterWithMeta<Source> {
+   update(updater: Updater<Target>): Updater<Source> {
       const createdUpdater = (source: Source) => {
          const value = this.read(source)
          const newValue = updater(value)
          if (newValue === value) return source
          return this.setValue(newValue)(source)
       }
-      const genericName = 'update()'
-      const name = updater.name
-         ? updater.name + '()'
-         : genericName
-      const detailedName = updater.name
-         ? 'update(' + updater.name + ')'
-         : genericName
-      return this.addMetaProperties(createdUpdater, {
-         name,
-         genericName,
-         detailedName,
-         details: updater
-      })
+      setFunctionName(createdUpdater, 'update')
+      return createdUpdater
    }
 
-   setFieldValues(newValues: FieldValues<Target>): UpdaterWithMeta<Source> {
+   setFieldValues(newValues: FieldValues<Target>): Updater<Source> {
       const updater = (source: Source) => {
          const currentTarget = this.read(source)
          const updatedTarget = setFieldValues(currentTarget, newValues)
          if (updatedTarget === currentTarget) return source
          return this.setValue(updatedTarget)(source)
       }
-      const name = 'setFieldValues()'
-      const detailedName = 'setFieldValues({' + Object.keys(newValues).join(', ') + '})'
-      return this.addMetaProperties(updater, {
-         name,
-         genericName: name,
-         detailedName,
-         details: newValues
-      })
+      setFunctionName(updater, 'setFieldValues')
+      return updater
    }
 
-   updateFields(updaters: FieldUpdaters<Target>): UpdaterWithMeta<Source> {
+   updateFields(updaters: FieldUpdaters<Target>): Updater<Source> {
       const updater = (source: Source) => {
          const currentTarget = this.read(source)
          const updatedTarget = updateFields(currentTarget, updaters)
          if (updatedTarget === currentTarget) return source
          return this.setValue(updatedTarget)(source)
       }
-      const name = 'updateFields()'
-      const detailedName = 'updateFields({' + asKeyList(updaters) + '})'
-      return this.addMetaProperties(updater, {
-         name,
-         genericName: name,
-         detailedName,
-         details: updaters
-      })
+      setFunctionName(updater, 'updateFields')
+      return updater
    }
 
-   updateFieldValues(fieldsUpdater: FieldsUpdater<Target>): UpdaterWithMeta<Source> {
+   updateFieldValues(fieldsUpdater: FieldsUpdater<Target>): Updater<Source> {
       const updater = (source: Source) => {
          const currentTarget = this.read(source)
          const newValues = fieldsUpdater(currentTarget)
@@ -220,43 +190,25 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
          if (updatedTarget === currentTarget) return source
          return this.setValue(updatedTarget)(source)
       }
-      const genericName = 'updateFieldValues()'
-      const name = fieldsUpdater.name
-         ? fieldsUpdater.name + '()'
-         : genericName
-      const detailedName = fieldsUpdater.name
-         ? 'updateFieldValues(' + fieldsUpdater.name + ')'
-         : genericName
-      return this.addMetaProperties(updater, {
-         name,
-         genericName,
-         detailedName,
-         details: fieldsUpdater
-      })
+      setFunctionName(updater, 'updateFieldValues')
+      return updater
    }
 
-   pipe(...updaters: Updater<Target>[]): UpdaterWithMeta<Source> {
-      return this.update(pipeUpdaters(...updaters))
+   pipe(...updaters: Updater<Target>[]): Updater<Source> {
+      const updater = this.update(pipeUpdaters(...updaters))
+      setFunctionName(updater, 'pipe')
+      return updater
    }
 
-   private addMetaProperties<Source>(updater: Updater<Source>, properties: {
-      name: string
-      genericName: string
-      detailedName: string
-      details: Target | Updater<Target> | FieldValues<Target> | FieldUpdaters<Target> | FieldsUpdater<Target>
-   }): UpdaterWithMeta<Source> {
-      const meta: UpdaterMeta = {
-         name: properties.name,
-         genericName: properties.genericName,
-         detailedName: properties.detailedName,
-         details: properties.details,
-         lensPath: this.path
-      }
-      const updaterWithMeta = updater as UpdaterWithMeta<Source>
-      updaterWithMeta.meta = meta
-      return updaterWithMeta
-   }
+}
 
+function setFunctionName(f: any, name: string) {
+   Object.defineProperty(f, 'name', {
+      value: name,
+      writable: false,
+      enumerable: false,
+      configurable: true
+   });
 }
 
 function asKeyList<Target>(object: FieldUpdaters<Target>): string {
