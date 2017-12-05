@@ -127,6 +127,9 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
             const updaters = keys.map(key => {
                const fieldValue = (composition as any)[key]
                const lens = (fieldLenses as any)[key]
+               if (lens === undefined) {
+                  throw Error(`Property "${key}" does not exist in recomposed Lens target: { ${Object.keys(fieldLenses).join(', ')} } (path: ${this.path})`, )
+               }
                return lens.setValue(fieldValue)
             })
             return pipeUpdaters(...updaters)
