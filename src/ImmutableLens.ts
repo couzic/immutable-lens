@@ -128,7 +128,7 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
                const fieldValue = (composition as any)[key]
                const lens = (fieldLenses as any)[key]
                if (lens === undefined) {
-                  throw Error(`Property "${key}" does not exist in recomposed Lens : { ${Object.keys(fieldLenses).join(', ')} }`)
+                  throw Error(`Property "${key}" does not exist in recomposed Lens { ${Object.keys(fieldLenses).join(', ')} }`)
                }
                return lens.setValue(fieldValue)
             })
