@@ -1,12 +1,13 @@
-import {expect} from 'chai'
-import {createLens} from './createLens'
+import { expect } from 'chai'
+
+import { createLens } from './createLens'
 
 describe('DefaultValueLens', () => {
 
    describe('when defaults to undefined', () => {
       type User = { name: string }
       type Data = { user?: User }
-      const lens = createLens<Data>().focusOn('user').defaultTo(undefined)
+      const lens = createLens<Data>().focusPath('user').defaultTo(undefined)
 
       it('returns same reference when updater returns undefined', () => {
          const data = {}
@@ -15,15 +16,15 @@ describe('DefaultValueLens', () => {
       })
 
       it('updates target', () => {
-         const updatedUser = {name: 'Updated User'}
+         const updatedUser = { name: 'Updated User' }
          const result = lens.update(user => updatedUser)({})
          expect(result.user).to.equal(updatedUser)
       })
 
       it('can override default to defined value', () => {
          const name = 'User Name'
-         const user = lens.defaultTo({name}).read({})
-         expect(user).to.deep.equal({name})
+         const user = lens.defaultTo({ name }).read({})
+         expect(user).to.deep.equal({ name })
       })
 
       it('can throw', () => {
@@ -34,8 +35,8 @@ describe('DefaultValueLens', () => {
    describe('when focused on object', () => {
       type User = { name: string }
       type Data = { user?: User }
-      const defaultUser: User = {name: 'Default User'}
-      const lens = createLens<Data>().focusOn('user').defaultTo(defaultUser)
+      const defaultUser: User = { name: 'Default User' }
+      const lens = createLens<Data>().focusPath('user').defaultTo(defaultUser)
 
       it('returns path', () => {
          expect(lens.path).to.equal('root.user?.defaultTo({"name":"Default User"})')
@@ -52,25 +53,25 @@ describe('DefaultValueLens', () => {
          })
 
          it('reads default target property', () => {
-            const name: string = lens.focusOn('name').read(data)
+            const name: string = lens.focusPath('name').read(data)
             expect(name).to.equal(defaultUser.name)
          })
 
          it('can set value', () => {
-            const newUser: User = {name: 'New User'}
+            const newUser: User = { name: 'New User' }
             const result = lens.setValue(newUser)(data)
             expect(result.user).to.equal(newUser)
          })
 
          it('can update value', () => {
             const updatedName = 'Updated Name'
-            const result = lens.update(user => ({name: updatedName}))(data)
-            expect(result.user).to.deep.equal({name: updatedName})
+            const result = lens.update(user => ({ name: updatedName }))(data)
+            expect(result.user).to.deep.equal({ name: updatedName })
          })
 
          it('can update fields', () => {
-            const result = lens.updateFields({name: (name) => name.toUpperCase()})(data)
-            expect(result.user).to.deep.equal({name: defaultUser.name.toUpperCase()})
+            const result = lens.updateFields({ name: (name) => name.toUpperCase() })(data)
+            expect(result.user).to.deep.equal({ name: defaultUser.name.toUpperCase() })
          })
 
          // TODO add a type test
@@ -80,7 +81,7 @@ describe('DefaultValueLens', () => {
       })
 
       describe('when target is defined', () => {
-         const definedUser: User = {name: 'Defined User'}
+         const definedUser: User = { name: 'Defined User' }
          const data: Data = {
             user: definedUser
          }
@@ -91,24 +92,24 @@ describe('DefaultValueLens', () => {
          })
 
          it('reads defined target property', () => {
-            const name: string = lens.focusOn('name').read(data)
+            const name: string = lens.focusPath('name').read(data)
             expect(name).to.equal(definedUser.name)
          })
 
          it('can set field values', () => {
             const newName = 'New Name'
-            const result = lens.setFieldValues({name: newName})(data)
-            expect(result.user).to.deep.equal({name: newName})
+            const result = lens.setFields({ name: newName })(data)
+            expect(result.user).to.deep.equal({ name: newName })
          })
 
          it('can update fields', () => {
-            const result = lens.updateFields({name: (name) => name.toUpperCase()})(data)
-            expect(result.user).to.deep.equal({name: definedUser.name.toUpperCase()})
+            const result = lens.updateFields({ name: (name) => name.toUpperCase() })(data)
+            expect(result.user).to.deep.equal({ name: definedUser.name.toUpperCase() })
          })
 
          it('can update field values', () => {
-            const result = lens.updateFieldValues(value => ({name: value.name.toUpperCase()}))(data)
-            expect(result.user).to.deep.equal({name: definedUser.name.toUpperCase()})
+            const result = lens.updatePartial(value => ({ name: value.name.toUpperCase() }))(data)
+            expect(result.user).to.deep.equal({ name: definedUser.name.toUpperCase() })
          })
       })
    })
@@ -117,10 +118,10 @@ describe('DefaultValueLens', () => {
       type Data = { names?: string[] }
       const defaultName = 'Default Name'
       const defaultArray = [defaultName]
-      const lens = createLens<Data>().focusOn('names').defaultTo(defaultArray)
+      const lens = createLens<Data>().focusPath('names').defaultTo(defaultArray)
 
       describe('when target is undefined', () => {
-         const data: Data = {names: undefined}
+         const data: Data = { names: undefined }
 
          describe('when focusing on default array defined index', () => {
             const indexLens = lens.focusIndex(0)
@@ -144,11 +145,11 @@ describe('DefaultValueLens', () => {
    describe('when focused on array item', () => {
       type User = { name: string }
       type Data = { users: User[] }
-      const defaultUser = {name: 'Default User'}
-      const lens = createLens<Data>().focusOn('users').focusIndex(0).defaultTo(defaultUser)
+      const defaultUser = { name: 'Default User' }
+      const lens = createLens<Data>().focusPath('users').focusIndex(0).defaultTo(defaultUser)
 
       describe('when target is undefined', () => {
-         const data: Data = {users: []}
+         const data: Data = { users: [] }
 
          it('reads default value', () => {
             const user = lens.read(data)

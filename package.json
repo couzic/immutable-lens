@@ -1,6 +1,6 @@
 {
   "name": "immutable-lens",
-  "version": "0.1.9",
+  "version": "0.2.0",
   "description": "Type-safe Lens API for immutable updates in complex data structures",
   "keywords": [
     "lens",
@@ -41,7 +41,7 @@
     "chai": "^4.1.2",
     "chalk": "^2.3.0",
     "glob-promise": "^3.3.0",
-    "mocha": "^3.5.3",
+    "mocha": "^4.0.1",
     "ramda": "^0.25.0",
     "shx": "^0.2.2",
     "ts-node": "^3.3.0",

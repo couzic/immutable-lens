@@ -1,16 +1,17 @@
-import {expect} from 'chai'
-import {createLens} from './createLens'
-import {Source, source} from '../test/data.test'
-import {cherryPick} from './cherryPick'
+import { expect } from 'chai'
+
+import { Source, source } from '../test/data.test'
+import { cherryPick } from './cherryPick'
+import { createLens } from './createLens'
 
 describe('cherryPick()', () => {
 
    it('extracts single deep field', () => {
       const lens = createLens<Source>()
       const result = cherryPick(source, {
-         todoList: lens.focusOn('todo').focusOn('list')
+         todoList: lens.focusPath('todo', 'list')
       })
-      expect(result).to.deep.equal({todoList: source.todo.list})
+      expect(result).to.deep.equal({ todoList: source.todo.list })
       expect(result.todoList).to.equal(source.todo.list)
    })
 

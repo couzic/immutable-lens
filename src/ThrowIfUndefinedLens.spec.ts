@@ -5,7 +5,7 @@ describe('ThrowIfUndefinedLens', () => {
 
    describe('when focused on object', () => {
       type Data = { user?: { name: string } }
-      const lens = createLens<Data>().focusOn('user').throwIfUndefined()
+      const lens = createLens<Data>().focusPath('user').throwIfUndefined()
 
       it('returns path', () => {
          expect(lens.path).to.equal('root.user?.throwIfUndefined')

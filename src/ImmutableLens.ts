@@ -32,7 +32,8 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
    // FOCUS //
    //////////
 
-   focusOn<K extends keyof Target>(this: Lens<Source, Target & NotAnArray>, key: K): Lens<Source, Target[K]> {
+   // TODO Remove
+   private focusOn<K extends keyof Target>(this: Lens<Source, Target & NotAnArray>, key: K): Lens<Source, Target[K]> {
       return new ImmutableLens(
          this.path + '.' + key,
          LensType.KEY_FOCUSED,
@@ -57,6 +58,7 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
       )
    }
 
+   // TODO Better implementation
    focusPath(...keys: any[]) {
       let lens: any = this
       keys.forEach(key => lens = lens.focusOn(key))
@@ -163,7 +165,7 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
       return createdUpdater
    }
 
-   setFieldValues(newValues: FieldValues<Target>): Updater<Source> {
+   setFields(newValues: FieldValues<Target>): Updater<Source> {
       const updater = (source: Source) => {
          const currentTarget = this.read(source)
          const updatedTarget = setFieldValues(currentTarget, newValues)
@@ -185,7 +187,7 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
       return updater
    }
 
-   updateFieldValues(fieldsUpdater: FieldsUpdater<Target>): Updater<Source> {
+   updatePartial(fieldsUpdater: FieldsUpdater<Target>): Updater<Source> {
       const updater = (source: Source) => {
          const currentTarget = this.read(source)
          const newValues = fieldsUpdater(currentTarget)

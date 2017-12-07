@@ -20,10 +20,10 @@ const message: Message = {
    }
 }
 
-describe('ImmutableLens.updateFieldValues()', () => {
+describe('ImmutableLens.updatePartial()', () => {
 
    it('can update field', () => {
-      const result = lens.updateFieldValues(state => ({
+      const result = lens.updatePartial(state => ({
          text: state.text.toLowerCase()
       }))(message)
       expect(result.text).to.equal(message.text.toLowerCase())
@@ -35,7 +35,7 @@ describe('ImmutableLens.updateFieldValues()', () => {
       })
 
       it('throws error when trying to update unknown field', () => {
-         expect(() => recomposed.updateFieldValues(state => ({
+         expect(() => recomposed.updatePartial(state => ({
             unknown: state.user.firstName
          }))(message)).to.throw('unknown')
       })

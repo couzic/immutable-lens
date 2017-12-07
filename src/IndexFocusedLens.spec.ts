@@ -1,12 +1,13 @@
-import {expect} from 'chai'
-import {createLens} from './createLens'
+import { expect } from 'chai'
+
+import { createLens } from './createLens'
 
 describe('IndexFocusedLens', () => {
 
    describe('when focused on object', () => {
       type User = { name: string }
       type Data = { users: User[] }
-      const lens = createLens<Data>().focusOn('users').focusIndex(0)
+      const lens = createLens<Data>().focusPath('users').focusIndex(0)
 
       it('returns path', () => {
          expect(lens.path).to.equal('root.users[0]')
@@ -51,7 +52,7 @@ describe('IndexFocusedLens', () => {
          })
 
          it('can update field values', () => {
-            const result = lens.throwIfUndefined().updateFieldValues(value => ({
+            const result = lens.throwIfUndefined().updatePartial(value => ({
                name: value.name.toUpperCase()
             }))(data)
             expect(result).not.to.equal(data)

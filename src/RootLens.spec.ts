@@ -1,7 +1,7 @@
-import {expect} from 'chai'
-import {Source, source} from '../test/data.test'
-import {createLens} from './createLens'
-import {FieldsUpdater, FieldUpdaters} from './Lens'
+import { expect } from 'chai'
+
+import { Source, source } from '../test/data.test'
+import { createLens } from './createLens'
 
 const lens = createLens<Source>()
 
@@ -54,7 +54,7 @@ describe('RootLens', () => {
       })
 
       it('can set field values', () => {
-         const result = lens.setFieldValues({
+         const result = lens.setFields({
             counter: 24
          })(source)
          expect(result).to.not.equal(source)
@@ -78,7 +78,7 @@ describe('RootLens', () => {
       })
 
       it('can update field values', () => {
-         const result = lens.updateFieldValues(({counter, todo}) => ({
+         const result = lens.updatePartial(({ counter, todo }) => ({
             counter: counter + 1,
             todo
          }))(source)
@@ -102,7 +102,7 @@ describe('RootLens', () => {
       })
 
       it('returns same source reference if field values unchanged', () => {
-         const result = lens.setFieldValues({
+         const result = lens.setFields({
             counter: source.counter
          })(source)
          expect(result).to.equal(source)

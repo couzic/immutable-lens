@@ -29,8 +29,9 @@ export interface Lens<Source, Target> {
       set: (newValue: NewTarget) => Updater<Target>
    ): Lens<Source, NewTarget>
 
-   // TODO Deprecate ? Rename to focus() ?
-   focusOn<K extends keyof Target>(this: Lens<Source, Target & NotAnArray>, key: K): Lens<Source, Target[K]>
+   focusIndex<Item>(this: Lens<Source, Item[]>, index: number): Lens<Source, Item | undefined>
+
+   recompose<Composition>(this: Lens<Source, Target & object & NotAnArray>, fields: FieldLenses<Target, Composition>): Lens<Source, Composition>
 
    focusPath<K extends keyof Target>(this: Lens<Source, Target & NotAnArray>, key: K): Lens<Source, Target[K]>
 
@@ -67,13 +68,6 @@ export interface Lens<Source, Target> {
       K6 extends keyof Target[K1][K2][K3][K4][K5],
       K7 extends keyof Target[K1][K2][K3][K4][K5][K6]>(key1: K1, key2: K2, key3: K3, key4: K4, key5: K5, key6: K6, key7: K7): Lens<Source, Target[K1][K2][K3][K4][K5][K6][K7]>
 
-   // TODO is there a use case for this ?
-   // focusWith<NewTarget>(lens: Lens<Target, NewTarget>): Lens<Source, NewTarget>
-
-   focusIndex<Item>(this: Lens<Source, Item[]>, index: number): Lens<Source, Item | undefined>
-
-   recompose<Composition>(this: Lens<Source, Target & object & NotAnArray>, fields: FieldLenses<Target, Composition>): Lens<Source, Composition>
-
    ///////////
    // READ //
    /////////
@@ -88,11 +82,11 @@ export interface Lens<Source, Target> {
 
    update(updater: Updater<Target>): Updater<Source>
 
-   setFieldValues(this: Lens<Source, Target & NotAnArray>, newValues: FieldValues<Target>): Updater<Source>
+   setFields(this: Lens<Source, Target & NotAnArray>, newValues: FieldValues<Target>): Updater<Source>
 
    updateFields(this: Lens<Source, Target & NotAnArray>, updaters: FieldUpdaters<Target>): Updater<Source>
 
-   updateFieldValues(this: Lens<Source, Target & NotAnArray>, fieldsUpdater: FieldsUpdater<Target>): Updater<Source>
+   updatePartial(this: Lens<Source, Target & NotAnArray>, fieldsUpdater: FieldsUpdater<Target>): Updater<Source>
 
    // TODO API DESIGN
    // view()

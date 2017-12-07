@@ -1,12 +1,13 @@
-import {expect} from 'chai'
-import {source, Source} from '../test/data.test'
-import {createLens} from './createLens'
+import { expect } from 'chai'
+
+import { source } from '../test/data.test'
+import { createLens } from './createLens'
 
 describe('KeyFocusedLens', () => {
 
    describe('when focused on primitive', () => {
 
-      const lens = createLens(source).focusOn('counter')
+      const lens = createLens(source).focusPath('counter')
 
       it('can read value', () => {
          const result = lens.read(source)
@@ -47,7 +48,7 @@ describe('KeyFocusedLens', () => {
 
    describe('when focused on object', () => {
 
-      const lens = createLens(source).focusOn('todo')
+      const lens = createLens(source).focusPath('todo')
 
       it('can focus path', () => {
          const pathLens = lens.focusPath('list', 'length')
@@ -96,7 +97,7 @@ describe('KeyFocusedLens', () => {
       })
 
       it('can set field values with new values', () => {
-         const result = lens.setFieldValues({
+         const result = lens.setFields({
             count: 24
          })(source)
          expect(result).to.not.equal(source)
@@ -128,7 +129,7 @@ describe('KeyFocusedLens', () => {
       })
 
       it('can update field values', () => {
-         const result = lens.updateFieldValues(value => ({
+         const result = lens.updatePartial(value => ({
             count: value.count + 1
          }))(source)
          expect(result).to.not.equal(source)
@@ -144,7 +145,7 @@ describe('KeyFocusedLens', () => {
       })
 
       it('returns same source reference when setting fields with same values', () => {
-         const result = lens.setFieldValues({
+         const result = lens.setFields({
             count: source.todo.count
          })(source)
          expect(result).to.equal(source)
@@ -190,7 +191,7 @@ describe('KeyFocusedLens', () => {
       })
 
       it('can focus', () => {
-         const grandChildLens = lens.focusOn('count')
+         const grandChildLens = lens.focusPath('count')
          const result = grandChildLens.read(source)
          expect(result).to.equal(source.todo.count)
       })
@@ -200,11 +201,11 @@ describe('KeyFocusedLens', () => {
    describe('when focused on optional object', () => {
       type User = { name: string }
       type Data = { user?: User }
-      const lens = createLens<Data>().focusOn('user')
+      const lens = createLens<Data>().focusPath('user')
 
       describe('when target is defined', () => {
-         const definedUser: User = {name: 'Defined User'}
-         const data: Data = {user: definedUser}
+         const definedUser: User = { name: 'Defined User' }
+         const data: Data = { user: definedUser }
 
          it('can read value', () => {
             const user = lens.read(data)
@@ -226,7 +227,7 @@ describe('KeyFocusedLens', () => {
          })
 
          it('updates target', () => {
-            const updatedUser = {name: 'Updated User'}
+            const updatedUser = { name: 'Updated User' }
             const result = lens.update(user => updatedUser)(data)
             expect(result.user).to.equal(updatedUser)
          })
@@ -239,8 +240,8 @@ describe('KeyFocusedLens', () => {
 
    describe('when focused on Date', () => {
       type Model = { date: Date }
-      const lens = createLens<Model>().focusOn('date')
-      const model: Model = {date: new Date()}
+      const lens = createLens<Model>().focusPath('date')
+      const model: Model = { date: new Date() }
 
       it('can read value', () => {
          const result = lens.read(model)
@@ -260,18 +261,18 @@ describe('KeyFocusedLens', () => {
             date: Date
          }
       }
-      const lens = createLens<Model>().focusOn('clock')
-      const model: Model = {clock: {date: new Date()}}
+      const lens = createLens<Model>().focusPath('clock')
+      const model: Model = { clock: { date: new Date() } }
 
       it('can set date field value', () => {
          const newDate = new Date()
-         const result = lens.setFieldValues({date: newDate})(model)
+         const result = lens.setFields({ date: newDate })(model)
          expect(result.clock.date).to.equal(newDate)
       })
 
       it('can update date field', () => {
          const newDate = new Date()
-         const result = lens.updateFields({date: () => newDate})(model)
+         const result = lens.updateFields({ date: () => newDate })(model)
          expect(result.clock.date).to.equal(newDate)
       })
    })
@@ -280,8 +281,8 @@ describe('KeyFocusedLens', () => {
       type Model = {
          action: (val: number) => number
       }
-      const lens = createLens<Model>().focusOn('action')
-      const model: Model = {action: (val) => val + 1}
+      const lens = createLens<Model>().focusPath('action')
+      const model: Model = { action: (val) => val + 1 }
 
       it('can set value', () => {
          const result = lens.setValue((val) => val + 5)(model)
@@ -300,16 +301,16 @@ describe('KeyFocusedLens', () => {
             action: (val: number) => number
          }
       }
-      const lens = createLens<Model>().focusOn('actions')
-      const model: Model = {actions: {action: (val) => val + 1}}
+      const lens = createLens<Model>().focusPath('actions')
+      const model: Model = { actions: { action: (val) => val + 1 } }
 
       it('can set function field values', () => {
-         const result = lens.setFieldValues({action: (val) => val + 5})(model)
+         const result = lens.setFields({ action: (val) => val + 5 })(model)
          expect(result.actions.action(0)).to.equal(5)
       })
 
       it('can update function fields', () => {
-         const result = lens.updateFields({action: (action) => (val) => action(val) + 7})(model)
+         const result = lens.updateFields({ action: (action) => (val) => action(val) + 7 })(model)
          expect(result.actions.action(0)).to.equal(8)
       })
    })
