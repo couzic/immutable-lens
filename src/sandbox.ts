@@ -1,4 +1,4 @@
-import {createLens} from './createLens'
+import { createLens } from './createLens'
 
 type State = {
    user: {
@@ -14,10 +14,10 @@ const setUserNameToJohn =
    // THE FOUR LINES BELOW ARE ALL EQUIVALENT
    userNameLens.setValue('John')
 userNameLens.update(name => 'John')
-userLens.setFields({name: 'John'})
-userLens.updateFields({name: (name) => 'John'})
+userLens.setFields({ name: 'John' })
+userLens.updateFields({ name: name => 'John' })
 
-setUserNameToJohn({user: {name: 'Bob'}}) // {user: {name: 'John'}}
+setUserNameToJohn({ user: { name: 'Bob' } }) // {user: {name: 'John'}}
 
 type StateOpt = {
    loggedUser?: {
@@ -26,10 +26,8 @@ type StateOpt = {
 }
 const defaultUserLens = createLens<StateOpt>()
    .focusPath('loggedUser')
-   .defaultTo({name: 'Default User'})
+   .defaultTo({ name: 'Default User' })
 
-const setLoggedUserNameToBob = defaultUserLens
-   .focusPath('name')
-   .setValue('Bob')
+const setLoggedUserNameToBob = defaultUserLens.focusPath('name').setValue('Bob')
 
 setLoggedUserNameToBob({}) // {user: {name: 'Bob'}}

@@ -24,7 +24,7 @@ type Source = {
    matrix: number[][]
 }
 
-const source = {} as Source
+const source: Source = {} as any
 
 const lens = createLens<Source>()
 const counterLens = lens.focusPath('counter')
@@ -38,7 +38,7 @@ counterLens.updatePartial(value => 42)
 
 // Updating field valuess with wrong output type @shouldNotCompile
 todoLens.updatePartial(value => ({
-   count: '42'
+   count: '42',
 }))
 
 // Updating field valies of array @shouldNotCompile
@@ -50,5 +50,5 @@ todoListLens.updatePartial(value => ({}))
 
 // Updating field values with unknown prop @shouldNotButDoesCompile
 lens.updatePartial(state => ({
-   unknown: 'unknown'
+   unknown: 'unknown',
 }))

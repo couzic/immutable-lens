@@ -26,11 +26,11 @@ export const source: Source = {
    todo: {
       input: 'input',
       list: [
-         {title: 'item0', done: false},
-         {title: 'item1', done: false},
-         {title: 'item2', done: false}
+         { title: 'item0', done: false },
+         { title: 'item1', done: false },
+         { title: 'item2', done: false },
       ],
-      count: 42
+      count: 42,
    },
-   user: undefined
+   user: undefined,
 }

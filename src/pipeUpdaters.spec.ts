@@ -1,8 +1,7 @@
-import {expect} from 'chai'
-import {pipeUpdaters} from './pipeUpdaters'
+import { expect } from 'chai'
+import { pipeUpdaters } from './pipeUpdaters'
 
 describe('pipeUpdaters', () => {
-
    it('handles no updater', () => {
       const result = pipeUpdaters()
       expect(result('something')).to.equal('something')
@@ -20,5 +19,4 @@ describe('pipeUpdaters', () => {
       const result = pipeUpdaters(first, second)
       expect(result(42)).to.equal(85)
    })
-
 })

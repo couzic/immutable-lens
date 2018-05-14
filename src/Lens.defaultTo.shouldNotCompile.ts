@@ -1,5 +1,5 @@
-import {createLens} from '../src/createLens'
-import {Lens, Updater} from '../src/Lens'
+import { createLens } from '../src/createLens'
+import { Lens, Updater } from '../src/Lens'
 
 type TodoItem = {
    title: string
@@ -25,7 +25,7 @@ type Source = {
    matrix: number[][]
 }
 
-const source = {} as Source
+const source: Source = {} as any
 
 const lens = createLens<Source>()
 const counterLens = lens.focusPath('counter')
@@ -48,7 +48,9 @@ userLens.defaultTo({})
 counterLens.defaultTo(44)
 
 // Defaulting to undefined and assigning to non optional reference @shouldNotCompile
-const defaultToUndefined: TodoItem = todoListItemLens.defaultTo(undefined).read(source)
+const defaultToUndefined: TodoItem = todoListItemLens
+   .defaultTo(undefined)
+   .read(source)
 
 // Creating lens with optional type @shouldNotCompile
 createLens<{} | undefined>()

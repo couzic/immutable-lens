@@ -24,7 +24,7 @@ type Source = {
    matrix: number[][]
 }
 
-const source = {} as Source
+const source: Source = {} as any
 
 const lens = createLens<Source>()
 const counterLens = lens.focusPath('counter')
@@ -67,7 +67,7 @@ lens.recompose({ fieldName: undefined })
 lens.recompose({ fieldName: 'string' })
 
 // recomposing field with updater @shouldNotCompile
-lens.recompose({ fieldName: (value) => value })
+lens.recompose({ fieldName: value => value })
 
 // recomposing number-focused lens @shouldNotCompile
 counterLens.recompose({})
@@ -107,7 +107,10 @@ const nonOptionalUserLens: Lens<Source, User> = lens.focusPath('user')
 userLens.focusPath('name')
 
 // Focusing index on index-focused lens @shouldNotCompile
-lens.focusPath('matrix').focusIndex(0).focusIndex(0)
+lens
+   .focusPath('matrix')
+   .focusIndex(0)
+   .focusIndex(0)
 
 // Creating lens with optional type @shouldNotCompile
 createLens<{} | undefined>()
@@ -121,6 +124,5 @@ lens.recompose(() => null)
 
 // Updating field values with unknown prop @shouldNotButDoesCompile
 lens.updatePartial(state => ({
-   unknown: 'unknown'
+   unknown: 'unknown',
 }))
-

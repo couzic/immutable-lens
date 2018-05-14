@@ -4,9 +4,7 @@ import { source } from '../test/data.test'
 import { createLens } from './createLens'
 
 describe('KeyFocusedLens', () => {
-
    describe('when focused on primitive', () => {
-
       const lens = createLens(source).focusPath('counter')
 
       it('can read value', () => {
@@ -19,7 +17,7 @@ describe('KeyFocusedLens', () => {
          expect(result).to.not.equal(source)
          expect(result).to.deep.equal({
             ...source,
-            counter: 24
+            counter: 24,
          })
       })
 
@@ -34,7 +32,7 @@ describe('KeyFocusedLens', () => {
          expect(result).to.not.equal(source)
          expect(result).to.deep.equal({
             ...source,
-            counter: source.counter + 1
+            counter: source.counter + 1,
          })
       })
 
@@ -43,11 +41,9 @@ describe('KeyFocusedLens', () => {
          expect(result).to.equal(source)
          expect(result).to.deep.equal(source)
       })
-
    })
 
    describe('when focused on object', () => {
-
       const lens = createLens(source).focusPath('todo')
 
       it('can focus path', () => {
@@ -65,7 +61,7 @@ describe('KeyFocusedLens', () => {
       it('can set new value', () => {
          const result = lens.setValue({
             ...source.todo,
-            count: 24
+            count: 24,
          })(source)
          expect(result).to.not.equal(source)
          expect(result.todo).to.not.equal(source.todo)
@@ -74,15 +70,15 @@ describe('KeyFocusedLens', () => {
             ...source,
             todo: {
                ...source.todo,
-               count: 24
-            }
+               count: 24,
+            },
          })
       })
 
       it('can update value', () => {
          const result = lens.update(todo => ({
             ...todo,
-            count: 24
+            count: 24,
          }))(source)
          expect(result).to.not.equal(source)
          expect(result.todo).to.not.equal(source.todo)
@@ -91,14 +87,14 @@ describe('KeyFocusedLens', () => {
             ...source,
             todo: {
                ...source.todo,
-               count: 24
-            }
+               count: 24,
+            },
          })
       })
 
       it('can set field values with new values', () => {
          const result = lens.setFields({
-            count: 24
+            count: 24,
          })(source)
          expect(result).to.not.equal(source)
          expect(result.todo).to.not.equal(source.todo)
@@ -107,14 +103,14 @@ describe('KeyFocusedLens', () => {
             ...source,
             todo: {
                ...source.todo,
-               count: 24
-            }
+               count: 24,
+            },
          })
       })
 
       it('can update fields with different values', () => {
          const result = lens.updateFields({
-            count: (val) => val + 1
+            count: val => val + 1,
          })(source)
          expect(result).to.not.equal(source)
          expect(result.todo).to.not.equal(source.todo)
@@ -123,14 +119,14 @@ describe('KeyFocusedLens', () => {
             ...source,
             todo: {
                ...source.todo,
-               count: 43
-            }
+               count: 43,
+            },
          })
       })
 
       it('can update field values', () => {
          const result = lens.updatePartial(value => ({
-            count: value.count + 1
+            count: value.count + 1,
          }))(source)
          expect(result).to.not.equal(source)
          expect(result.todo).to.not.equal(source.todo)
@@ -139,14 +135,14 @@ describe('KeyFocusedLens', () => {
             ...source,
             todo: {
                ...source.todo,
-               count: 43
-            }
+               count: 43,
+            },
          })
       })
 
       it('returns same source reference when setting fields with same values', () => {
          const result = lens.setFields({
-            count: source.todo.count
+            count: source.todo.count,
          })(source)
          expect(result).to.equal(source)
          expect(result.todo).to.equal(source.todo)
@@ -156,7 +152,7 @@ describe('KeyFocusedLens', () => {
 
       it('returns same source reference when updating fields with same values', () => {
          const result = lens.updateFields({
-            count: () => source.todo.count
+            count: () => source.todo.count,
          })(source)
          expect(result).to.equal(source)
          expect(result.todo).to.equal(source.todo)
@@ -166,7 +162,7 @@ describe('KeyFocusedLens', () => {
 
       it('can update fields with value updates', () => {
          const result = lens.updateFields({
-            count: v => v + 1
+            count: v => v + 1,
          })(source)
          expect(result).to.not.equal(source)
          expect(result.todo).to.not.equal(source.todo)
@@ -175,14 +171,14 @@ describe('KeyFocusedLens', () => {
             ...source,
             todo: {
                ...source.todo,
-               count: source.todo.count + 1
-            }
+               count: source.todo.count + 1,
+            },
          })
       })
 
       it('returns same source reference when updates return same values', () => {
          const result = lens.updateFields({
-            count: v => v
+            count: v => v,
          })(source)
          expect(result).to.equal(source)
          expect(result.todo).to.equal(source.todo)
@@ -195,7 +191,6 @@ describe('KeyFocusedLens', () => {
          const result = grandChildLens.read(source)
          expect(result).to.equal(source.todo.count)
       })
-
    })
 
    describe('when focused on optional object', () => {
@@ -282,15 +277,15 @@ describe('KeyFocusedLens', () => {
          action: (val: number) => number
       }
       const lens = createLens<Model>().focusPath('action')
-      const model: Model = { action: (val) => val + 1 }
+      const model: Model = { action: val => val + 1 }
 
       it('can set value', () => {
-         const result = lens.setValue((val) => val + 5)(model)
+         const result = lens.setValue(val => val + 5)(model)
          expect(result.action(0)).to.equal(5)
       })
 
       it('can update value', () => {
-         const result = lens.update((action) => (val) => action(val) + 7)(model)
+         const result = lens.update(action => val => action(val) + 7)(model)
          expect(result.action(0)).to.equal(8)
       })
    })
@@ -302,17 +297,18 @@ describe('KeyFocusedLens', () => {
          }
       }
       const lens = createLens<Model>().focusPath('actions')
-      const model: Model = { actions: { action: (val) => val + 1 } }
+      const model: Model = { actions: { action: val => val + 1 } }
 
       it('can set function field values', () => {
-         const result = lens.setFields({ action: (val) => val + 5 })(model)
+         const result = lens.setFields({ action: val => val + 5 })(model)
          expect(result.actions.action(0)).to.equal(5)
       })
 
       it('can update function fields', () => {
-         const result = lens.updateFields({ action: (action) => (val) => action(val) + 7 })(model)
+         const result = lens.updateFields({
+            action: action => val => action(val) + 7,
+         })(model)
          expect(result.actions.action(0)).to.equal(8)
       })
    })
-
 })

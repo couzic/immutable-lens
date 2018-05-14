@@ -1,5 +1,14 @@
 import { cherryPick } from './cherryPick'
-import { FieldLenses, FieldsUpdater, FieldUpdaters, FieldValues, Lens, NotAnArray, Updater } from './Lens'
+import {
+   FieldLenses,
+   FieldsUpdater,
+   FieldUpdaters,
+   FieldValues,
+   Lens,
+   NotAnArray,
+   UnfocusedLens,
+   Updater,
+} from './Lens'
 import { pipeUpdaters } from './pipeUpdaters'
 import { setFieldValues } from './setFieldValues'
 import { updateFields } from './updateFields'
@@ -10,20 +19,29 @@ export enum LensType {
    INDEX_FOCUSED,
    DEFAULT_VALUE,
    THROW_IF_UNDEFINED,
-   RECOMPOSED
+   RECOMPOSED,
 }
 
-export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source, Target> {
-
-   constructor(public readonly path: string,
+export class ImmutableLens<Source, ParentTarget, Target>
+   implements Lens<Source, Target> {
+   constructor(
+      public readonly path: string,
       private readonly type: LensType,
-      private readonly readParentTargetFromSource: (source: Source) => ParentTarget,
-      private readonly readFromParentTarget: (parentTarget: ParentTarget) => Target,
-      private readonly updateOnParentTarget: (target: Target) => Updater<ParentTarget>,
-      private readonly updateParentTargetOnSource: (parentTarget: ParentTarget) => Updater<Source>) {
-   }
+      private readonly readParentTargetFromSource: (
+         source: Source,
+      ) => ParentTarget,
+      private readonly readFromParentTarget: (
+         parentTarget: ParentTarget,
+      ) => Target,
+      private readonly updateOnParentTarget: (
+         target: Target,
+      ) => Updater<ParentTarget>,
+      private readonly updateParentTargetOnSource: (
+         parentTarget: ParentTarget,
+      ) => Updater<Source>,
+   ) {}
 
-   read(source: Source): Target {
+   public read(source: Source): Target {
       const parentTarget = this.readParentTargetFromSource(source)
       return this.readFromParentTarget(parentTarget)
    }
@@ -33,20 +51,24 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
    //////////
 
    // TODO Remove
-   private focusOn<K extends keyof Target>(this: Lens<Source, Target & NotAnArray>, key: K): Lens<Source, Target[K]> {
+   private focusOn<K extends keyof Target>(
+      this: Lens<Source, Target & NotAnArray>,
+      key: K,
+   ): Lens<Source, Target[K]> {
       return new ImmutableLens(
          this.path + '.' + key,
          LensType.KEY_FOCUSED,
          (source: Source) => this.read(source),
          (target: Target) => target[key],
-         (newValue: Target[K]) => (target: Target) => setFieldValues(target, { [key]: newValue } as any),
-         (target: Target) => this.setValue(target)
+         (newValue: Target[K]) => (target: Target) =>
+            setFieldValues(target, { [key]: newValue } as any),
+         (target: Target) => this.setValue(target),
       )
    }
 
-   focus<NewTarget>(
+   public focus<NewTarget>(
       get: (value: Target) => NewTarget,
-      set: (newValue: NewTarget) => Updater<Target>
+      set: (newValue: NewTarget) => Updater<Target>,
    ): Lens<Source, NewTarget> {
       return new ImmutableLens<Source, Target, NewTarget>(
          this.path + '.focus()',
@@ -54,42 +76,58 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
          (source: Source) => this.read(source),
          get,
          set,
-         (target: Target) => this.setValue(target)
+         (target: Target) => this.setValue(target),
       )
    }
 
    // TODO Better implementation
-   focusPath(...keys: any[]) {
-      let lens: any = this
-      keys.forEach(key => lens = lens.focusOn(key))
+   public focusPath(...keys: any[]) {
+      let lens = this as any
+      keys.forEach(key => (lens = lens.focusOn(key)))
       return lens
    }
 
-   focusIndex<Item>(this: Lens<Source, Item[]>, index: number): Lens<Source, Item | undefined> {
+   public focusIndex<Item>(
+      this: UnfocusedLens<Item[]>,
+      index: number,
+   ): Lens<Item[], Item | undefined>
+
+   public focusIndex<Item>(
+      this: Lens<Source, Item[]>,
+      index: number,
+   ): Lens<Source, Item | undefined>
+
+   public focusIndex(index: number) {
       return new ImmutableLens(
          this.path + '[' + index + ']',
          LensType.INDEX_FOCUSED,
          (source: Source) => this.read(source),
-         (target: Item[]) => target[index],
-         (newValue: Item) => (target: Item[]) => {
+         (target: any) => target[index],
+         (newValue: any) => (target: any) => {
             if (target[index] === newValue) return target
             const targetCopy = [...target]
             targetCopy[index] = newValue
             return targetCopy
          },
-         (target: Item[]) => this.setValue(target)
-      ) as Lens<Source, Item | undefined>
+         (target: any) => this.setValue(target),
+      ) as any
    }
 
-   defaultTo<SafeTarget>(this: ImmutableLens<Source, ParentTarget, SafeTarget | undefined>, defaultValue: SafeTarget): Lens<Source, SafeTarget> {
+   public defaultTo<SafeTarget>(
+      this: ImmutableLens<Source, ParentTarget, SafeTarget | undefined>,
+      defaultValue: SafeTarget,
+   ): Lens<Source, SafeTarget> {
       if (this.type === LensType.THROW_IF_UNDEFINED) {
          return new ImmutableLens(
-            this.path.slice(0, -'?.throwIfUndefined'.length) + '?.defaultTo(' + JSON.stringify(defaultValue) + ')',
+            this.path.slice(0, -'?.throwIfUndefined'.length) +
+               '?.defaultTo(' +
+               JSON.stringify(defaultValue) +
+               ')',
             LensType.DEFAULT_VALUE,
             (source: Source) => this.readParentTargetFromSource(source) as any,
             (target: SafeTarget | undefined) => target || defaultValue,
             (newValue: SafeTarget) => () => newValue,
-            (target: SafeTarget | undefined) => this.setValue(target)
+            (target: SafeTarget | undefined) => this.setValue(target),
          )
       }
       return new ImmutableLens(
@@ -98,11 +136,13 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
          (source: Source) => this.read(source),
          (target: SafeTarget | undefined) => target || defaultValue,
          (newValue: SafeTarget) => () => newValue,
-         (target: SafeTarget | undefined) => this.setValue(target)
+         (target: SafeTarget | undefined) => this.setValue(target),
       )
    }
 
-   throwIfUndefined<SafeTarget>(this: ImmutableLens<Source, ParentTarget, SafeTarget | undefined>): Lens<Source, SafeTarget> {
+   public throwIfUndefined<SafeTarget>(
+      this: ImmutableLens<Source, ParentTarget, SafeTarget | undefined>,
+   ): Lens<Source, SafeTarget> {
       if (this.type === LensType.THROW_IF_UNDEFINED) return this as any
       return new ImmutableLens(
          this.path + '?.throwIfUndefined',
@@ -113,12 +153,17 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
             return target
          },
          (newValue: SafeTarget) => () => newValue,
-         (target: SafeTarget | undefined) => this.setValue(target)
+         (target: SafeTarget | undefined) => this.setValue(target),
       )
    }
 
-   recompose<Composition>(fieldLenses: FieldLenses<Target, Composition>): Lens<Source, Composition> {
-      if (typeof fieldLenses === 'function') throw Error('Lens.recompose() received a function as an argument. This is NOT supported.')
+   public recompose<Composition>(
+      fieldLenses: FieldLenses<Target, Composition>,
+   ): Lens<Source, Composition> {
+      if (typeof fieldLenses === 'function')
+         throw Error(
+            'Lens.recompose() received a function as an argument. This is NOT supported.',
+         )
       return new ImmutableLens(
          'recomposed({' + Object.keys(fieldLenses).join(', ') + '})',
          LensType.RECOMPOSED,
@@ -130,13 +175,17 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
                const fieldValue = (composition as any)[key]
                const lens = (fieldLenses as any)[key]
                if (lens === undefined) {
-                  throw Error(`Property "${key}" does not exist in recomposed Lens { ${Object.keys(fieldLenses).join(', ')} }`)
+                  throw Error(
+                     `Property "${key}" does not exist in recomposed Lens { ${Object.keys(
+                        fieldLenses,
+                     ).join(', ')} }`,
+                  )
                }
                return lens.setValue(fieldValue)
             })
             return pipeUpdaters(...updaters)
          },
-         target => this.setValue(target)
+         target => this.setValue(target),
       )
    }
 
@@ -144,17 +193,19 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
    // UPDATE //
    ///////////
 
-   setValue(value: Target) {
+   public setValue(value: Target) {
       const updater = (source: Source) => {
          const parentTarget = this.readParentTargetFromSource(source)
-         const updatedParentTarget = this.updateOnParentTarget(value)(parentTarget)
+         const updatedParentTarget = this.updateOnParentTarget(value)(
+            parentTarget,
+         )
          return this.updateParentTargetOnSource(updatedParentTarget)(source)
       }
       setFunctionName(updater, 'setValue')
       return updater
    }
 
-   update(updater: Updater<Target>): Updater<Source> {
+   public update(updater: Updater<Target>): Updater<Source> {
       const createdUpdater = (source: Source) => {
          const value = this.read(source)
          const newValue = updater(value)
@@ -165,7 +216,7 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
       return createdUpdater
    }
 
-   setFields(newValues: FieldValues<Target>): Updater<Source> {
+   public setFields(newValues: FieldValues<Target>): Updater<Source> {
       const updater = (source: Source) => {
          const currentTarget = this.read(source)
          const updatedTarget = setFieldValues(currentTarget, newValues)
@@ -176,7 +227,7 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
       return updater
    }
 
-   updateFields(updaters: FieldUpdaters<Target>): Updater<Source> {
+   public updateFields(updaters: FieldUpdaters<Target>): Updater<Source> {
       const updater = (source: Source) => {
          const currentTarget = this.read(source)
          const updatedTarget = updateFields(currentTarget, updaters)
@@ -187,7 +238,7 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
       return updater
    }
 
-   updatePartial(fieldsUpdater: FieldsUpdater<Target>): Updater<Source> {
+   public updatePartial(fieldsUpdater: FieldsUpdater<Target>): Updater<Source> {
       const updater = (source: Source) => {
          const currentTarget = this.read(source)
          const newValues = fieldsUpdater(currentTarget)
@@ -199,12 +250,11 @@ export class ImmutableLens<Source, ParentTarget, Target> implements Lens<Source,
       return updater
    }
 
-   pipe(...updaters: Updater<Target>[]): Updater<Source> {
+   public pipe(...updaters: Array<Updater<Target>>): Updater<Source> {
       const updater = this.update(pipeUpdaters(...updaters))
       setFunctionName(updater, 'pipe')
       return updater
    }
-
 }
 
 function setFunctionName(f: any, name: string) {
@@ -212,17 +262,15 @@ function setFunctionName(f: any, name: string) {
       value: name,
       writable: false,
       enumerable: false,
-      configurable: true
-   });
+      configurable: true,
+   })
 }
 
 function asKeyList<Target>(object: FieldUpdaters<Target>): string {
    return Object.keys(object)
       .map(key => {
          const fieldUpdater = (object as any)[key]
-         return fieldUpdater.name === key
-            ? key
-            : key + ': ' + fieldUpdater.name
+         return fieldUpdater.name === key ? key : key + ': ' + fieldUpdater.name
       })
       .join(', ')
 }

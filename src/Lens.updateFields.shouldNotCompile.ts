@@ -24,7 +24,7 @@ type Source = {
    matrix: number[][]
 }
 
-const source = {} as Source
+const source: Source = {} as any
 
 const lens = createLens<Source>()
 const counterLens = lens.focusPath('counter')

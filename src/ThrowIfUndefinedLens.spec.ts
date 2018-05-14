@@ -1,11 +1,13 @@
 import { expect } from 'chai'
+
 import { createLens } from './createLens'
 
 describe('ThrowIfUndefinedLens', () => {
-
    describe('when focused on object', () => {
       type Data = { user?: { name: string } }
-      const lens = createLens<Data>().focusPath('user').throwIfUndefined()
+      const lens = createLens<Data>()
+         .focusPath('user')
+         .throwIfUndefined()
 
       it('returns path', () => {
          expect(lens.path).to.equal('root.user?.throwIfUndefined')
@@ -34,7 +36,9 @@ describe('ThrowIfUndefinedLens', () => {
          // TODO Add type test
          it('can default to value', () => {
             const defaultUser = { name: 'Default user' }
-            expect((lens as any).defaultTo(defaultUser).read(data)).to.equal(defaultUser)
+            expect((lens as any).defaultTo(defaultUser).read(data)).to.equal(
+               defaultUser,
+            )
          })
       })
    })

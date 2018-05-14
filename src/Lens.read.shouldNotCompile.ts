@@ -25,7 +25,7 @@ type Source = {
    matrix: number[][]
 }
 
-const source = {} as Source
+const source: Source = {} as any
 
 const lens = createLens<Source>()
 const counterLens = lens.focusPath('counter')
@@ -33,7 +33,6 @@ const todoLens = lens.focusPath('todo')
 const todoListLens = todoLens.focusPath('list')
 const todoListItemLens = todoListLens.focusIndex(0)
 const userLens = lens.focusPath('user')
-
 
 // Reading null source @shouldNotCompile
 lens.read(null)

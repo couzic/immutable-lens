@@ -1,5 +1,5 @@
-import {createLens} from '../src/createLens'
-import {Lens, Updater} from '../src/Lens'
+import { createLens } from '../src/createLens'
+import { Lens, Updater } from '../src/Lens'
 
 type TodoItem = {
    title: string
@@ -25,7 +25,7 @@ type Source = {
    matrix: number[][]
 }
 
-const source = {} as Source
+const source: Source = {} as any
 
 const lens = createLens<Source>()
 const counterLens = lens.focusPath('counter')
@@ -44,7 +44,7 @@ counterLens.update(() => 42)(undefined)
 counterLens.update(() => 42)(42)
 
 // Updating on wrong type source @shouldNotCompile
-counterLens.update(() => 42)({counter: 42})
+counterLens.update(() => 42)({ counter: 42 })
 
 // Updating with null updater @shouldNotCompile
 counterLens.update(null)
@@ -56,7 +56,7 @@ counterLens.update(undefined)
 counterLens.update(42)
 
 // Updating with object updater @shouldNotCompile
-counterLens.update({counter: 42})
+counterLens.update({ counter: 42 })
 
 // Updating with wrong input type updater @shouldNotCompile
 counterLens.update((counter: string) => 42)
@@ -71,7 +71,9 @@ todoLens.update(todo => 'todo')
 todoListItemLens.update((item: TodoItem) => item)
 
 // Updating optional value with non-optional input updater @shouldNotCompile
-const userUpdated: Source = userLens.update((current: User) => source.user)(source)
+const userUpdated: Source = userLens.update((current: User) => source.user)(
+   source,
+)
 
 /////////////////////////
 // Handling undefined //

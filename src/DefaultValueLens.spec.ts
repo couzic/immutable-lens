@@ -3,11 +3,12 @@ import { expect } from 'chai'
 import { createLens } from './createLens'
 
 describe('DefaultValueLens', () => {
-
    describe('when defaults to undefined', () => {
       type User = { name: string }
       type Data = { user?: User }
-      const lens = createLens<Data>().focusPath('user').defaultTo(undefined)
+      const lens = createLens<Data>()
+         .focusPath('user')
+         .defaultTo(undefined)
 
       it('returns same reference when updater returns undefined', () => {
          const data = {}
@@ -36,15 +37,19 @@ describe('DefaultValueLens', () => {
       type User = { name: string }
       type Data = { user?: User }
       const defaultUser: User = { name: 'Default User' }
-      const lens = createLens<Data>().focusPath('user').defaultTo(defaultUser)
+      const lens = createLens<Data>()
+         .focusPath('user')
+         .defaultTo(defaultUser)
 
       it('returns path', () => {
-         expect(lens.path).to.equal('root.user?.defaultTo({"name":"Default User"})')
+         expect(lens.path).to.equal(
+            'root.user?.defaultTo({"name":"Default User"})',
+         )
       })
 
       describe('when target is undefined', () => {
          const data: Data = {
-            user: undefined
+            user: undefined,
          }
 
          it('reads default target', () => {
@@ -70,20 +75,26 @@ describe('DefaultValueLens', () => {
          })
 
          it('can update fields', () => {
-            const result = lens.updateFields({ name: (name) => name.toUpperCase() })(data)
-            expect(result.user).to.deep.equal({ name: defaultUser.name.toUpperCase() })
+            const result = lens.updateFields({
+               name: name => name.toUpperCase(),
+            })(data)
+            expect(result.user).to.deep.equal({
+               name: defaultUser.name.toUpperCase(),
+            })
          })
 
          // TODO add a type test
          it('returns default value even if asked to throw if undefined', () => {
-            expect((lens as any).throwIfUndefined().read(data)).to.equal(defaultUser)
+            expect((lens as any).throwIfUndefined().read(data)).to.equal(
+               defaultUser,
+            )
          })
       })
 
       describe('when target is defined', () => {
          const definedUser: User = { name: 'Defined User' }
          const data: Data = {
-            user: definedUser
+            user: definedUser,
          }
 
          it('reads defined target', () => {
@@ -103,13 +114,21 @@ describe('DefaultValueLens', () => {
          })
 
          it('can update fields', () => {
-            const result = lens.updateFields({ name: (name) => name.toUpperCase() })(data)
-            expect(result.user).to.deep.equal({ name: definedUser.name.toUpperCase() })
+            const result = lens.updateFields({
+               name: name => name.toUpperCase(),
+            })(data)
+            expect(result.user).to.deep.equal({
+               name: definedUser.name.toUpperCase(),
+            })
          })
 
          it('can update field values', () => {
-            const result = lens.updatePartial(value => ({ name: value.name.toUpperCase() }))(data)
-            expect(result.user).to.deep.equal({ name: definedUser.name.toUpperCase() })
+            const result = lens.updatePartial(value => ({
+               name: value.name.toUpperCase(),
+            }))(data)
+            expect(result.user).to.deep.equal({
+               name: definedUser.name.toUpperCase(),
+            })
          })
       })
    })
@@ -118,7 +137,9 @@ describe('DefaultValueLens', () => {
       type Data = { names?: string[] }
       const defaultName = 'Default Name'
       const defaultArray = [defaultName]
-      const lens = createLens<Data>().focusPath('names').defaultTo(defaultArray)
+      const lens = createLens<Data>()
+         .focusPath('names')
+         .defaultTo(defaultArray)
 
       describe('when target is undefined', () => {
          const data: Data = { names: undefined }
@@ -146,7 +167,10 @@ describe('DefaultValueLens', () => {
       type User = { name: string }
       type Data = { users: User[] }
       const defaultUser = { name: 'Default User' }
-      const lens = createLens<Data>().focusPath('users').focusIndex(0).defaultTo(defaultUser)
+      const lens = createLens<Data>()
+         .focusPath('users')
+         .focusIndex(0)
+         .defaultTo(defaultUser)
 
       describe('when target is undefined', () => {
          const data: Data = { users: [] }

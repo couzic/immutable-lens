@@ -1,6 +1,6 @@
-import {createLens} from './createLens'
-import {Source} from '../test/data.test'
-import {pipeUpdaters} from './pipeUpdaters'
+import { Source } from '../test/data.test'
+import { createLens } from './createLens'
+import { pipeUpdaters } from './pipeUpdaters'
 
 const lens = createLens<Source>()
 
@@ -17,17 +17,14 @@ pipeUpdaters((value: number) => '42')
 pipeUpdaters<{ toto: string }>(value => ({}))
 
 // Piping updaters of different type @shouldNotCompile
-pipeUpdaters(
-   (data: number) => data,
-   (data: string) => data
-)
+pipeUpdaters((data: number) => data, (data: string) => data)
 // Piping single updater with output type being a subset of input type @shouldNotCompile
 pipeUpdaters((value: { toto: string }) => ({}))
 
 // Piping multiple updaters with output type being a subset of input type @shouldNotCompile
 pipeUpdaters(
    (value: { toto: string }) => ({}),
-   (value: { toto: string }) => ({})
+   (value: { toto: string }) => ({}),
 )
 
 //////////////////////////////////
