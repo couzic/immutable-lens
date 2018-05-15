@@ -39,6 +39,16 @@ describe('RootLens', () => {
          expect(result).to.deep.equal(newValue)
       })
 
+      it('can set new value (curried)', () => {
+         const newValue = {
+            ...source,
+            counter: 24,
+         }
+         const result = lens.setValue()(newValue)(source)
+         expect(result).to.not.equal(source)
+         expect(result).to.deep.equal(newValue)
+      })
+
       it('can update value', () => {
          const result = lens.update(current => ({
             ...current,
@@ -53,6 +63,18 @@ describe('RootLens', () => {
 
       it('can set field values', () => {
          const result = lens.setFields({
+            counter: 24,
+         })(source)
+         expect(result).to.not.equal(source)
+         expect(result).to.deep.equal({
+            ...source,
+            counter: 24,
+            todo: source.todo,
+         })
+      })
+
+      it('can set field values (curried)', () => {
+         const result = lens.setFields()({
             counter: 24,
          })(source)
          expect(result).to.not.equal(source)

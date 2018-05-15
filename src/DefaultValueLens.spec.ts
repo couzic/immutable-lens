@@ -68,6 +68,12 @@ describe('DefaultValueLens', () => {
             expect(result.user).to.equal(newUser)
          })
 
+         it('can set value (curried)', () => {
+            const newUser: User = { name: 'New User' }
+            const result = lens.setValue()(newUser)(data)
+            expect(result.user).to.equal(newUser)
+         })
+
          it('can update value', () => {
             const updatedName = 'Updated Name'
             const result = lens.update(user => ({ name: updatedName }))(data)
@@ -110,6 +116,12 @@ describe('DefaultValueLens', () => {
          it('can set field values', () => {
             const newName = 'New Name'
             const result = lens.setFields({ name: newName })(data)
+            expect(result.user).to.deep.equal({ name: newName })
+         })
+
+         it('can set field values (curried)', () => {
+            const newName = 'New Name'
+            const result = lens.setFields()({ name: newName })(data)
             expect(result.user).to.deep.equal({ name: newName })
          })
 

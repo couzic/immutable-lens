@@ -34,6 +34,14 @@ describe('IndexFocusedLens', () => {
             expect(result.users[0]).to.deep.equal(newUser)
          })
 
+         it('can set value (curried)', () => {
+            const newUser: User = { name: 'New User' }
+            const result = lens.setValue()(newUser)(data)
+            expect(result.users.length).to.equal(data.users.length)
+            expect(result.users[0]).to.equal(newUser)
+            expect(result.users[0]).to.deep.equal(newUser)
+         })
+
          it('returns same data reference if value does not change', () => {
             const result = lens.setValue(data.users[0])(data)
             expect(result).to.equal(data)

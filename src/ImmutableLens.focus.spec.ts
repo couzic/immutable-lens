@@ -32,4 +32,10 @@ describe('ImmutableLens.focus()', () => {
       const result = textLens.setValue('New Text')(message)
       expect(result).to.deep.equal({ ...message, text: 'New Text' })
    })
+
+   it('can set value (curried)', () => {
+      const textLens = lens.focus(m => m.text, text => m => ({ ...m, text }))
+      const result = textLens.setValue()('New Text')(message)
+      expect(result).to.deep.equal({ ...message, text: 'New Text' })
+   })
 })

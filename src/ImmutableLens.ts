@@ -193,7 +193,19 @@ export class ImmutableLens<Source, ParentTarget, Target>
    // UPDATE //
    ///////////
 
-   public setValue(value: Target) {
+   public setValue(newValue: Target): Updater<Source>
+
+   public setValue(): (newValue: Target) => Updater<Source>
+
+   public setValue(newValue?: Target) {
+      if (newValue === undefined) {
+         return (value: Target) => this.setValueUpdater(value)
+      } else {
+         return this.setValueUpdater(newValue)
+      }
+   }
+
+   private setValueUpdater(value: Target): Updater<Source> {
       const updater = (source: Source) => {
          const parentTarget = this.readParentTargetFromSource(source)
          const updatedParentTarget = this.updateOnParentTarget(value)(
@@ -216,7 +228,19 @@ export class ImmutableLens<Source, ParentTarget, Target>
       return createdUpdater
    }
 
-   public setFields(newValues: FieldValues<Target>): Updater<Source> {
+   public setFields(newValues: FieldValues<Target>): Updater<Source>
+
+   public setFields(): (newValues: FieldValues<Target>) => Updater<Source>
+
+   public setFields(newValues?: FieldValues<Target>) {
+      if (newValues === undefined) {
+         return (values: FieldValues<Target>) => this.setFieldsUpdater(values)
+      } else {
+         return this.setFieldsUpdater(newValues)
+      }
+   }
+
+   private setFieldsUpdater(newValues: FieldValues<Target>): Updater<Source> {
       const updater = (source: Source) => {
          const currentTarget = this.read(source)
          const updatedTarget = setFieldValues(currentTarget, newValues)

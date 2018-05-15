@@ -29,4 +29,16 @@ describe('RecomposedLens', () => {
       })
       expect(result.todo.list).to.equal(newList)
    })
+
+   it('can set value (curried)', () => {
+      const newList: TodoItem[] = []
+      const result = lens.setValue()({
+         todoList: newList,
+      })(source)
+      expect(result.todo).to.deep.equal({
+         ...source.todo,
+         list: newList,
+      })
+      expect(result.todo.list).to.equal(newList)
+   })
 })

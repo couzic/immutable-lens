@@ -135,12 +135,18 @@ export interface Lens<Source, Target> {
 
    setValue(newValue: Target): Updater<Source>
 
+   setValue(): (newValue: Target) => Updater<Source>
+
    update(updater: Updater<Target>): Updater<Source>
 
    setFields(
       this: Lens<Source, Target & NotAnArray>,
       newValues: FieldValues<Target>,
    ): Updater<Source>
+
+   setFields(
+      this: Lens<Source, Target & NotAnArray>,
+   ): (newValues: FieldValues<Target>) => Updater<Source>
 
    updateFields(
       this: Lens<Source, Target & NotAnArray>,
