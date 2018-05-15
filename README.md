@@ -17,9 +17,9 @@
 $ npm i -S immutable-lens
 ```
 
-#### Example
+#### Create lens
 ```typescript
-import {createLens} from 'lib'
+import {createLens} from 'immutable-lens'
 
 type State = {
    user: {
@@ -28,19 +28,17 @@ type State = {
    }
 }
 const lens = createLens<State>()
+```
 
-////////////
-// FOCUS //
-//////////
-
-const userLens = lens.focusOn('user')
-const nameLens = userLens.focusOn('name')
+#### Focus
+```typescript
+const userLens = lens.focusPath('user')
+const nameLens = userLens.focusPath('name')
 const ageLens = lens.focusPath('user', 'age')
+```
 
-///////////
-// READ //
-/////////
-
+#### Read
+```typescript
 const state: State = {
    user: {
       name: 'Bob',
@@ -50,11 +48,10 @@ const state: State = {
 
 userLens.read(state) // {name: 'Bob', age: 18}
 nameLens.read(state) // 'Bob'
+```
 
-/////////////
-// UPDATE //
-///////////
-
+#### Update
+```typescript
 const setNameToJohn = 
    // THE FOUR LINES BELOW WILL ALL HAVE THE SAME EFFECT
    nameLens.setValue('John')
@@ -67,7 +64,7 @@ setNameToJohn(state) // {user: {name: 'John', age: 18}}
 
 #### Compose updates with `pipeUpdaters()`
 ```typescript
-import {createLens, pipeUpdaters} from 'lib'
+import {createLens, pipeUpdaters} from 'immutable-lens'
 
 type State = {
    user: {
@@ -96,7 +93,7 @@ const updatedState = setNameToJOHN(state) // {user: {name: 'JOHN', age: 18}}
 
 #### Use `defaultTo()` to avoid undefined values when reading or updating optional types
 ```typescript
-import {createLens} from 'lib'
+import {createLens} from 'immutable-lens'
 
 type State = {
    loggedUser?: {
@@ -122,7 +119,7 @@ const updatedState = setNameToBob(state) // {user: {name: 'Bob', age: 0}}
 
 #### Focus on array index
 ```typescript
-import {Lens, createLens} from 'lib'
+import {Lens, createLens} from 'immutable-lens'
 
 type Person = {
    name: string
@@ -139,9 +136,9 @@ const firstFriendLens = createLens<State>()
 const firstFriend: Person | undefined = firstFriendLens.read({friends: []})
 ```
 
-#### Compose Lenses
+<!-- #### Compose Lenses
 ```typescript
-import {createLens, createComposedLens} from 'lib'
+import {createLens, createComposedLens} from 'immutable-lens'
 
 type State = {
    todoList: string[]
@@ -155,9 +152,4 @@ const composedLens = createComposedLens<State>().withFields({
 const setImproveReadmeAsFirstTodoItem = composedLens.setFieldValues({firstTodoItem: 'Improve README'})
 
 setImproveReadmeAsFirstTodoItem({todoList: []}) // {todoList: ['Improve README']}
-```
-
-#### `getPath()`
-```typescript
-
-```
+``` -->

@@ -166,16 +166,6 @@ export interface Lens<Source, Target> {
    // cherryPick()
    // recompute()
 
-   // set()
-   // setPartial()
-   // setFields()
-   // setFieldPartials()
-   // update()
-   // updatePartial()
-   // updateFields()
-   // updateFieldPartials() TODO ???
-   // pipe()
-
    // TODO Array-focused update functions ???
    // setIndexes()
    // updateIndexes()
