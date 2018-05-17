@@ -53,11 +53,12 @@ nameLens.read(state) // 'Bob'
 #### Update
 ```typescript
 const setNameToJohn = 
-   // THE FOUR LINES BELOW WILL ALL HAVE THE SAME EFFECT
+   // THE FOUR LINES BELOW WILL ALL EQUIVALENT
    nameLens.setValue('John')
    nameLens.update(currentName => 'John')
-   userLens.setFieldValues({name: 'John'})
+   userLens.setFields({name: 'John'})
    userLens.updateFields({name: (currentName) => 'John'})
+   userLens.updatePartial(user => ({name: 'John'}))
 
 setNameToJohn(state) // {user: {name: 'John', age: 18}}
 ```
