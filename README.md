@@ -53,7 +53,7 @@ nameLens.read(state) // 'Bob'
 #### Update
 ```typescript
 const setNameToJohn = 
-   // THE FOUR LINES BELOW WILL ALL EQUIVALENT
+   // THE FOUR LINES BELOW ARE ALL EQUIVALENT
    nameLens.setValue('John')
    nameLens.update(currentName => 'John')
    userLens.setFields({name: 'John'})
