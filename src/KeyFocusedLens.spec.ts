@@ -191,6 +191,19 @@ describe('KeyFocusedLens', () => {
          const result = grandChildLens.read(source)
          expect(result).to.equal(source.todo.count)
       })
+
+      it('can pipe updaters', () => {
+         const updater = lens.pipe(
+            value => ({ ...value, count: 0 }),
+            value => ({ ...value, input: 'New input' }),
+         )
+         const updated = updater(source)
+         expect(lens.read(updated)).to.deep.equal({
+            count: 0,
+            input: 'New input',
+            list: lens.focusPath('list').read(source),
+         })
+      })
    })
 
    describe('when focused on optional object', () => {
