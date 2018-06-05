@@ -197,11 +197,11 @@ export class ImmutableLens<Source, ParentTarget, Target>
 
    public setValue(): (newValue: Target) => Updater<Source>
 
-   public setValue(newValue?: Target) {
-      if (newValue === undefined) {
+   public setValue(...args: any[]) {
+      if (args.length === 0) {
          return (value: Target) => this.setValueUpdater(value)
       } else {
-         return this.setValueUpdater(newValue)
+         return this.setValueUpdater(args[0])
       }
    }
 

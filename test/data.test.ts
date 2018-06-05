@@ -32,5 +32,11 @@ export const source: Source = {
       ],
       count: 42,
    },
-   user: undefined,
+   user: {
+      name: 'Bob',
+      address: {
+         city: 'Paris',
+         street: 'rue du Javelot',
+      },
+   },
 }
