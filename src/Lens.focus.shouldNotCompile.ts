@@ -121,8 +121,3 @@ createLens<{} | undefined>()
 
 // Recomposing lens with function @shouldNotButDoesCompile
 lens.recompose(() => null)
-
-// Updating field values with unknown prop @shouldNotButDoesCompile
-lens.updatePartial(state => ({
-   unknown: 'unknown',
-}))

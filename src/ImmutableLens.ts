@@ -5,7 +5,6 @@ import {
    FieldUpdaters,
    FieldValues,
    Lens,
-   NotAnArray,
    UnfocusedLens,
    Updater,
 } from './Lens'
@@ -52,7 +51,7 @@ export class ImmutableLens<Source, ParentTarget, Target>
 
    // TODO Remove
    private focusOn<K extends keyof Target>(
-      this: Lens<Source, Target & NotAnArray>,
+      this: Lens<Source, Target>,
       key: K,
    ): Lens<Source, Target[K]> {
       return new ImmutableLens(

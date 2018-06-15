@@ -1,20 +1,18 @@
-export interface NotAnArray {
-   reduceRight?: 'NotAnArray'
-}
+export type PlainObject<T> = T extends any[]
+   ? never
+   : T extends (...args: any[]) => any ? never : T extends object ? T : never
 
 export type Updater<T> = (value: T) => T
 
-export type FieldValues<T> = object & NotAnArray & Partial<T>
+export type FieldValues<T> = Partial<PlainObject<T>>
 
-export type FieldUpdaters<T> = object &
-   NotAnArray &
-   { [K in keyof T]?: Updater<T[K]> }
+export type FieldUpdaters<T> = PlainObject<{ [K in keyof T]?: Updater<T[K]> }>
 
 export type FieldsUpdater<T> = (value: T) => FieldValues<T>
 
-export type FieldLenses<T, Composition> = object &
-   NotAnArray &
+export type FieldLenses<T, Composition> = PlainObject<
    { [K in keyof Composition]: Lens<T, Composition[K]> }
+>
 
 export interface Lens<Source, Target> {
    readonly path: string
@@ -39,12 +37,12 @@ export interface Lens<Source, Target> {
    ): Lens<Source, Item | undefined>
 
    recompose<Composition>(
-      this: Lens<Source, Target & object & NotAnArray>,
+      this: Lens<Source, PlainObject<Target>>,
       fields: FieldLenses<Target, Composition>,
    ): Lens<Source, Composition>
 
    focusPath<K extends keyof Target>(
-      this: Lens<Source, Target & NotAnArray>,
+      this: Lens<Source, PlainObject<Target>>,
       key: K,
    ): Lens<Source, Target[K]>
 
@@ -140,21 +138,21 @@ export interface Lens<Source, Target> {
    update(updater: Updater<Target>): Updater<Source>
 
    setFields(
-      this: Lens<Source, Target & NotAnArray>,
+      this: Lens<Source, PlainObject<Target>>,
       newValues: FieldValues<Target>,
    ): Updater<Source>
 
    setFields(
-      this: Lens<Source, Target & NotAnArray>,
+      this: Lens<Source, PlainObject<Target>>,
    ): (newValues: FieldValues<Target>) => Updater<Source>
 
    updateFields(
-      this: Lens<Source, Target & NotAnArray>,
+      this: Lens<Source, PlainObject<Target>>,
       updaters: FieldUpdaters<Target>,
    ): Updater<Source>
 
    updatePartial(
-      this: Lens<Source, Target & NotAnArray>,
+      this: Lens<Source, PlainObject<Target>>,
       fieldsUpdater: FieldsUpdater<Target>,
    ): Updater<Source>
 

@@ -24,14 +24,10 @@ type Source = {
    matrix: number[][]
 }
 
-const source: Source = {} as any
-
 const lens = createLens<Source>()
 const counterLens = lens.focusPath('counter')
 const todoLens = lens.focusPath('todo')
 const todoListLens = todoLens.focusPath('list')
-const todoListItemLens = todoListLens.focusIndex(0)
-const userLens = lens.focusPath('user')
 
 // Updating field values with primitive-focused lens @shouldNotCompile
 counterLens.updatePartial(value => 42)
@@ -44,11 +40,7 @@ todoLens.updatePartial(value => ({
 // Updating field valies of array @shouldNotCompile
 todoListLens.updatePartial(value => ({}))
 
-//////////////////////////////////
-// Should not but does compile //
-////////////////////////////////
-
-// Updating field values with unknown prop @shouldNotButDoesCompile
+// Updating field values with unknown prop @shouldNotCompile
 lens.updatePartial(state => ({
    unknown: 'unknown',
 }))
