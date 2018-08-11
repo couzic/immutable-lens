@@ -58,10 +58,13 @@ todoLens.updateFields({ input: (v: string) => 42 })
 lens.updateFields({ todo: (value: { input: number }) => source.todo })
 
 // Updating object fields with wrong output type updaters @shouldNotCompile
-lens.updateFields({ todo: (value) => ({}) })
+lens.updateFields({ todo: value => ({}) })
 
 // Updating fields of array @shouldNotCompile
 todoListLens.updateFields({})
+
+// Passing function as fields object @shouldNotCompile
+lens.updateFields(() => '')
 
 /////////////////////////
 // Handling undefined //
@@ -75,8 +78,8 @@ todoListItemLens.updateFields({ done: () => true })
 
 // Accessing properties in updaters of optional fields @shouldNotCompile
 lens.updateFields({
-   user: (user) => {
+   user: user => {
       const name = user.name
       return user
-   }
+   },
 })

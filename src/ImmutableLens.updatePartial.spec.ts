@@ -32,13 +32,5 @@ describe('ImmutableLens.updatePartial()', () => {
       const recomposed = lens.recompose({
          user: lens.focusPath('user'),
       })
-
-      it('throws error when trying to update unknown field', () => {
-         expect(() =>
-            recomposed.updatePartial(state => ({
-               unknown: state.user.firstName,
-            }))(message),
-         ).to.throw('unknown')
-      })
    })
 })

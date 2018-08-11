@@ -145,10 +145,6 @@ describe('RootLens', () => {
          expect(result).to.deep.equal(source)
       })
 
-      it('throws error when passing function as fields object', () => {
-         expect(() => lens.updateFields(() => '')(source)).to.throw()
-      })
-
       it('can set field value to undefined', () => {
          const updater = lens.focusPath('user').setValue(undefined)
          const updated = updater(source)
