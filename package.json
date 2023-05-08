@@ -1,6 +1,6 @@
 {
   "name": "immutable-lens",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "Type-safe Lens API for immutable updates in complex data structures",
   "keywords": [
     "lens",

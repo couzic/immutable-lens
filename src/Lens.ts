@@ -1,4 +1,4 @@
-export type PlainObject<T = object> = T extends any[]
+export type PlainObject<T> = T extends any[]
    ? never
    : T extends (...args: any[]) => any ? never : T extends object ? T : never
 
